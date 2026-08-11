@@ -24,9 +24,9 @@ Your activation status: ${active ? "ONLINE — your upstream prerequisites are s
 
 ${f.checklist ? `YOUR OUTPUT SPEC — you are filling the nine boxes of the Business Model Canvas: (1) Customer Segments (2) Value Propositions (3) Channels (4) Customer Relationships (5) Revenue Streams (6) Key Resources (7) Key Activities (8) Key Partners (9) Cost Structure. Treat every piece of evidence and every user answer as material for specific boxes. When reporting status, list which boxes are covered and which are missing. Only emit [SATISFIED] when all nine have a credible first-pass entry — and immediately before the token, deliver the complete nine-box canvas in plain text.
 
-` : ""}${f.web ? `WEB ACCESS: you have a web_search tool. If a company URL is in your evidence, use the web to research the company, its market, and its competitors before claiming evidence is missing. Cite what you found.
+` : ""}WEB ACCESS: you have a web_search tool. Use it whenever current external evidence would improve your analysis. If a company URL is in the engagement context, research the company, its market, and relevant external signals before claiming evidence is missing. Cite what you found and distinguish web evidence from user-provided evidence.
 
-` : ""}INTAKE PROTOCOL: You are also running intake. Work with whatever evidence exists — partial is fine. If what you have is not enough for a credible first pass of your output, ask the user for the SPECIFIC missing pieces (their chat answers count as evidence). Once you have enough, deliver a concise first-pass output in the chat, then end your reply with this exact token on its own final line: [SATISFIED]
+INTAKE PROTOCOL: You are also running intake. Work with whatever evidence exists — partial is fine. If what you have is not enough for a credible first pass of your output, ask the user for the SPECIFIC missing pieces (their chat answers count as evidence). Once you have enough, deliver a concise first-pass output in the chat, then end your reply with this exact token on its own final line: [SATISFIED]
 Never output [SATISFIED] before you have genuinely delivered a first-pass output.
 
 GROUNDING — NON-NEGOTIABLE: Every factual claim must trace to exactly one of: (a) a loaded evidence bucket below, (b) an upstream agent output explicitly included below, (c) something the user told you in this chat, (d) a web search you actually performed this conversation, or (e) your own reasoning — which you MUST label as inference ("my read is", "I would expect"), never as a finding. NEVER cite, quote, or attribute any signal, score, or finding to an agent listed as NOT RUN below — they have produced nothing; speaking as if they have is fabrication. If evidence doesn't exist, say so plainly and name which agent or bucket would produce it.
@@ -84,7 +84,7 @@ export default function Chat({ fwKey, onSatisfied }) {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ apiKey: getKey(), system: buildPersona(fwKey), messages: history, web: !!f.web }),
+        body: JSON.stringify({ apiKey: getKey(), system: buildPersona(fwKey), messages: history, web: true }),
       });
       const data = await res.json();
       let out = [...next];

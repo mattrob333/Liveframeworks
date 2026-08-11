@@ -23,7 +23,7 @@ export default function Settings() {
           <button className="btn primary" onClick={() => { setKey(key.trim()); setStatus("Key saved to this browser."); }}>▸ SAVE KEY</button>
           <button className="btn" onClick={() => { setKeyState(""); setKey(""); setStatus("Key removed."); }}>✕ REMOVE</button>
         </div>
-        <div className={"status" + (status ? " ok" : "")}>{status || "Web-enabled agents (Cartographer, Terrain Scout, Weather Station, Moat Inspector, Map Redrawer) will also use your key for live web search."}</div>
+        <div className={"status" + (status ? " ok" : "")}>{status || "All framework agents can use your key for live web search when external evidence improves the analysis."}</div>
       </div>
 
       <div className="panel mt" style={{ maxWidth: 640 }}>
