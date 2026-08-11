@@ -2,34 +2,16 @@
 import { useEffect, useRef, useState } from "react";
 import { FW, SOURCES, INTAKE } from "@/lib/frameworks";
 import { getKey, getBucket, getOutput, setOutput, getActive, setActive, getChat, setChat } from "@/lib/store";
+import { buildEvidenceBlock, buildUpstreamStatus, deriveActiveAgents, readEngagementState } from "@/lib/agentContext";
 
 function agentSources(key) {
   return INTAKE.filter(s => s.readers.includes(key));
 }
 
-function evidenceBlock(key) {
-  const parts = [];
-  agentSources(key).forEach(s => {
-    const v = (getBucket(s.key) || "").trim();
-    if (v) parts.push(`--- BUCKET: ${s.name} ---\n${v.length > 6000 ? v.slice(0, 6000) + "\n[...truncated]" : v}`);
-  });
-  SOURCES[key].forEach(u => {
-    const v = (getOutput(u) || "").trim();
-    if (v) parts.push(`--- UPSTREAM AGENT OUTPUT: ${FW[u].name} (${FW[u].role}) — locked first-pass output, treat as shared state ---\n${v.length > 5000 ? v.slice(0, 5000) + "\n[...truncated]" : v}`);
-  });
-  return parts.length ? parts.join("\n\n") : "No evidence buckets are loaded and no upstream agent outputs exist yet.";
-}
-
-function upstreamStatus(key) {
-  if (!SOURCES[key].length) return "You have no upstream agents — you are fed by intake buckets only.";
-  return SOURCES[key].map(u =>
-    `${FW[u].name} (${FW[u].role}): ${getOutput(u) ? "OUTPUT PRESENT — included in evidence below" : "NOT RUN — has produced NOTHING. It does not exist as evidence."}`
-  ).join("\n");
-}
-
 function buildPersona(key) {
   const f = FW[key];
-  const active = getActive().includes(key);
+  const state = readEngagementState(getBucket, getOutput);
+  const active = deriveActiveAgents(state.outputs).includes(key);
   return `You are "${f.name}", a framework agent inside LiveFrameworks, a system that runs classic business frameworks as connected programs against a company's shared state. Your role name is "${f.role}". Stay in character at all times — speak in first person as this framework.
 
 Your personality/voice: ${f.voice}
@@ -52,10 +34,10 @@ GROUNDING — NON-NEGOTIABLE: Every factual claim must trace to exactly one of: 
 Rules: sharp, direct, useful — a seasoned specialist, slightly opinionated, never corporate. Under 150 words unless asked for a full analysis. Plain text, no markdown. Point cross-domain questions to the right agent.
 
 UPSTREAM AGENT STATUS (what actually exists right now):
-${upstreamStatus(key)}
+${buildUpstreamStatus(key, state.outputs)}
 
 LIVE EVIDENCE (buckets you read + upstream outputs, as currently loaded):
-${evidenceBlock(key)}`;
+${buildEvidenceBlock(key, state.buckets, state.outputs)}`;
 }
 
 function greeting(key) {
@@ -113,13 +95,15 @@ export default function Chat({ fwKey, onSatisfied }) {
         const satisfied = reply.includes("[SATISFIED]");
         reply = reply.replace(/\[SATISFIED\]/g, "").trim();
         out.push({ role: "assistant", content: reply });
-        if (reply.length >= 120) setOutput(fwKey, reply);
         if (satisfied) {
           setOutput(fwKey, reply);
+          const state = readEngagementState(getBucket, getOutput);
+          state.outputs[fwKey] = reply;
           const active = getActive();
-          const newly = f.feeds.filter(d => !active.includes(d));
+          const nextActive = deriveActiveAgents(state.outputs);
+          const newly = nextActive.filter(key => !active.includes(key));
+          setActive(nextActive);
           if (newly.length) {
-            setActive([...active, ...newly]);
             out.push({ sys: true, content: "⚡ " + f.role.toUpperCase() + " IS SATISFIED — WAKING: " + newly.map(n => FW[n].name).join(" · ") + ". They're online in the pipeline now." });
           } else {
             out.push({ sys: true, content: "⚡ " + f.role.toUpperCase() + " IS SATISFIED — first-pass output locked in." });

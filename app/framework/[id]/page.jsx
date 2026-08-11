@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FW, SOURCES, INTAKE } from "@/lib/frameworks";
 import { getActive, getOutput, getBucket } from "@/lib/store";
 import Chat from "@/components/Chat";
@@ -18,15 +18,17 @@ const BMC_CELLS = [
 ];
 
 export default function FrameworkPage({ params }) {
-  const { id } = use(params);
+  const { id } = params;
   const f = FW[id];
   const [active, setActive] = useState(["bmc"]);
   const [output, setOutput] = useState("");
   const [tick, setTick] = useState(0);
+  const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => { setActive(getActive()); setOutput(getOutput(id)); }, [id, tick]);
+  useEffect(() => { setActive(getActive()); setOutput(getOutput(id)); setHydrated(true); }, [id, tick]);
 
   if (!f) return <main style={{ padding: "60px 0" }}><h1>Unknown framework</h1><p className="sub"><Link href="/">← back to the pipeline</Link></p></main>;
+  if (!hydrated) return <main style={{ padding: "60px 0" }}><p className="sub">Loading framework…</p></main>;
 
   const on = active.includes(id);
   const myBuckets = INTAKE.filter(s => s.readers.includes(id));

@@ -27,7 +27,7 @@ To ship: import this repo at vercel.com/new, framework preset **Next.js**, no en
 
 - **"Sign in" = bring your own Anthropic API key**, entered on the Settings page. It lives in `localStorage`, is sent per-request to the `/api/chat` edge proxy, and is never stored server-side.
 - **All state is per-browser**: buckets, outputs, activation, chats persist in `localStorage`. Clear the browser, lose the engagement (Export first). No accounts, no database — by design, for now.
-- Chat model: `claude-sonnet-4-5`, with Anthropic's `web_search` tool enabled for the five web-enabled agents.
+- Chat model: `claude-sonnet-5`, with Anthropic's `web_search` tool enabled for the five web-enabled agents.
 
 ## Roadmap
 

@@ -12,7 +12,7 @@ export default function Settings() {
       <header style={{ padding: "40px 0 8px" }}>
         <div className="eyebrow">Access</div>
         <h1>Bring Your Own Key</h1>
-        <p className="sub">LiveFrameworks runs on your Anthropic API key. It is stored only in this browser, sent per-request to power the agents, and never saved on any server. Get a key at console.anthropic.com.</p>
+        <p className="sub">LiveFrameworks runs Claude Sonnet 5 on your Anthropic API key. The key is stored only in this browser, sent per-request to power the agents, and never saved on any server. Get a key at console.anthropic.com.</p>
       </header>
 
       <div className="panel mt" style={{ maxWidth: 640 }}>

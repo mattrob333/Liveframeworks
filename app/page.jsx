@@ -10,9 +10,12 @@ export default function Pipeline() {
   const [active, setActiveState] = useState(["bmc"]);
   const [text, setText] = useState("");
   const [status, setStatus] = useState("");
+  const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => { setActiveState(getActive()); }, [tick]);
+  useEffect(() => { setActiveState(getActive()); setHydrated(true); }, [tick]);
   useEffect(() => { if (sel) { setText(getBucket(sel)); setStatus(""); } }, [sel]);
+
+  if (!hydrated) return <main style={{ padding: "60px 0" }}><p className="sub">Loading engagement…</p></main>;
 
   const src = sel ? INTAKE.find(s => s.key === sel) : null;
 
