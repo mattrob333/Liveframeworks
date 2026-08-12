@@ -22,22 +22,26 @@ export default function Settings() {
         <p className="sub">LiveFrameworks runs Claude Sonnet 5 on your Anthropic API key. The key remains in this browser and is sent only with an explicit agent request.</p>
       </header>
 
-      <div className="panel mt settings-panel">
+      <form
+        className="panel mt settings-panel"
+        onSubmit={event => { event.preventDefault(); saveKey(); }}
+      >
         <label className="i-label" htmlFor="anthropic-api-key">Anthropic API key</label>
         <input
           id="anthropic-api-key"
           className="area key-input"
           type="password"
+          autoComplete="off"
           value={key}
           onChange={event => setKeyState(event.target.value)}
           placeholder="sk-ant-…"
         />
         <div className="btnrow">
-          <button className="btn primary" onClick={saveKey}>SAVE KEY</button>
-          <button className="btn" onClick={() => { setKeyState(""); setKey(""); setStatus("Key removed."); }}>REMOVE</button>
+          <button className="btn primary" type="submit">SAVE KEY</button>
+          <button className="btn" type="button" onClick={() => { setKeyState(""); setKey(""); setStatus("Key removed."); }}>REMOVE</button>
         </div>
         <div className={`status${status ? " ok" : ""}`}>{status || "Every framework run and follow-up agent can use live web research."}</div>
-      </div>
+      </form>
 
       <div className="panel mt settings-panel">
         <div className="i-label">Danger zone</div>
