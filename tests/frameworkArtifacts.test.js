@@ -207,6 +207,27 @@ test("context snapshots preserve full evidence and exact direct upstream revisio
   assert.match(snapshot.trustBoundary, /untrusted evidence/i);
 });
 
+test("chat answers travel as authoritative clarifications and change the input fingerprint", () => {
+  const chats = {
+    bmc: [
+      { role: "assistant", content: "Which segment pays the bills?" },
+      { role: "user", content: "Mid-market manufacturers are 80% of revenue." },
+      { role: "user", content: "" },
+      { sys: true, content: "system notice" },
+    ],
+    industrymap: [{ role: "user", content: "We only sell in North America." }],
+  };
+  const withChats = buildContextSnapshot("fiveforces", { biz: "desc" }, {}, "Run it", chats);
+  assert.equal(withChats.userClarifications.length, 2);
+  assert.equal(withChats.userClarifications[0].statement, "Mid-market manufacturers are 80% of revenue.");
+  assert.equal(withChats.manifest.clarificationCount, 2);
+  assert.match(withChats.trustBoundary, /first-party/);
+
+  const withoutChats = buildContextSnapshot("fiveforces", { biz: "desc" }, {}, "Run it");
+  assert.equal(withoutChats.userClarifications.length, 0);
+  assert.notEqual(withChats.inputFingerprint, withoutChats.inputFingerprint);
+});
+
 test("stale propagation reaches every transitive descendant and snapshots preserve legacy text", () => {
   assert.deepEqual(getAffectedFrameworks(["bmc"], false), ORDER.filter(key => key !== "bmc"));
   assert.deepEqual(getAffectedFrameworks(["jtbd"], false), ["vpc", "kano", "bsc", "toc", "raci"]);

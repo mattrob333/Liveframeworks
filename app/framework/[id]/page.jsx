@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, use } from "react";
-import { FW, SOURCES, INTAKE } from "@/lib/frameworks";
+import { FW, SOURCES, INTAKE, ORDER } from "@/lib/frameworks";
 import {
   getArtifact,
   getBucket,
@@ -11,7 +11,7 @@ import {
   getSelectedSection,
   setSelectedSection,
 } from "@/lib/store";
-import { artifactIsComplete } from "@/lib/agentContext";
+import { artifactIsComplete, deriveActiveAgents } from "@/lib/agentContext";
 import { getArtifactSections, normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
 import FrameworkArtifact from "@/components/FrameworkArtifact";
 import Chat from "@/components/Chat";
@@ -278,6 +278,24 @@ export default function FrameworkPage(props) {
                 </div>
               </div>
             </article>
+          </section>
+
+          <section className="panel mt next-steps">
+            <div className="i-label">Next steps</div>
+            {(() => {
+              const artifactMap = Object.fromEntries(ORDER.map(key => [key, key === id ? artifact : getArtifact(key)]));
+              const readyNow = deriveActiveAgents(artifactMap);
+              const nextUp = ORDER.filter(key => key !== id && readyNow.includes(key) && !artifactIsComplete(artifactMap[key], key));
+              return (
+                <div className="linkchips">
+                  {nextUp.slice(0, 3).map(key => (
+                    <Link key={key} className="next-chip" href={`/?select=${key}`}>{FW[key].icon} RUN {FW[key].name} ▸</Link>
+                  ))}
+                  {!nextUp.length && <span className="muted-copy">Every unlocked framework is complete — regenerate one, or load more evidence.</span>}
+                  <Link href="/" className="next-back">← BACK TO PIPELINE</Link>
+                </div>
+              );
+            })()}
           </section>
         </div>
 

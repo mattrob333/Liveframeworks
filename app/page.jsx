@@ -7,6 +7,7 @@ import { STAGES, INTAKE, FW, ORDER, SOURCES } from "@/lib/frameworks";
 import {
   getArtifact,
   getBucket,
+  getChat,
   getKey,
   getLatestRun,
   setActive,
@@ -119,6 +120,17 @@ export default function Pipeline() {
   }, []);
 
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  // Deep-link support: /?select=<frameworkId> opens the pipeline with that
+  // framework's launcher already selected (used by the workspace next-steps).
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("select");
+    if (requested && FW[requested]) {
+      setSelectedIntake(null);
+      setSelectedFramework(requested);
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 999px)");
@@ -327,6 +339,7 @@ export default function Pipeline() {
 
     const artifactMap = Object.fromEntries(ORDER.map(key => [key, getArtifact(key)]));
     const bucketMap = Object.fromEntries(INTAKE.map(item => [item.key, getBucket(item.key)]));
+    const chatMap = Object.fromEntries(ORDER.map(key => [key, getChat(key)]));
     const ready = deriveActiveAgents(artifactMap).includes(frameworkId);
     if (!ready) {
       setRunMessage(`Complete ${SOURCES[frameworkId].filter(key => !artifactIsComplete(artifactMap[key], key)).map(key => FW[key].name).join(", ")} first.`);
@@ -338,7 +351,7 @@ export default function Pipeline() {
     const revision = artifactIsComplete(existing, frameworkId) ? Number(existing.revision || 1) + 1 : 1;
     const starter = `Read the saved context, research the company, and create the ${FW[frameworkId].name}.`;
     const fullInstruction = instruction.trim() ? `${starter}\n\nAdditional direction: ${instruction.trim()}` : starter;
-    const context = buildContextSnapshot(frameworkId, bucketMap, artifactMap, fullInstruction);
+    const context = buildContextSnapshot(frameworkId, bucketMap, artifactMap, fullInstruction, chatMap);
     const record = {
       id,
       frameworkId,
