@@ -205,6 +205,7 @@ export default function Pipeline() {
   const active = useMemo(() => deriveActiveAgents(artifacts), [artifacts]);
   const source = selectedIntake ? INTAKE.find(item => item.key === selectedIntake) : null;
   const framework = selectedFramework ? FW[selectedFramework] : null;
+  const frameworkStage = framework ? STAGES.find(stage => stage.key === framework.stage) : null;
   const selectedArtifact = selectedFramework ? artifacts[selectedFramework] : null;
   const selectedLatestRun = selectedFramework ? latestRuns[selectedFramework] : null;
 
@@ -480,7 +481,7 @@ export default function Pipeline() {
       } else {
         const questions = Array.isArray(normalized.nextQuestions) ? normalized.nextQuestions.filter(Boolean) : [];
         const priorPreserved = existing && !shouldReplaceCurrent;
-        setRunMessage(`${priorPreserved ? "The prior artifact remains available. " : ""}The agent needs more input before this result can unlock downstream work.${questions.length ? ` Next: ${questions.join(" Â· ")}` : ""}`);
+        setRunMessage(`${priorPreserved ? "The prior artifact remains available. " : ""}The agent needs more input before this result can unlock downstream work.${questions.length ? ` Next: ${questions.join(" · ")}` : ""}`);
       }
     } catch (error) {
       const interrupted = error?.name === "AbortError";
@@ -520,7 +521,7 @@ export default function Pipeline() {
   return (
     <main>
       <header ref={pipelineHeaderRef} className="pipeline-header">
-        <div className="eyebrow">Fig. 01Â·B â€” Agent Roster</div>
+        <div className="eyebrow">Fig. 01·B — Agent Roster</div>
         <h1>The Frameworks Are Alive Now</h1>
         <p className="sub">Load the evidence you have, launch a ready framework, and let each validated artifact become the exact context for the agents downstream.</p>
       </header>
@@ -529,18 +530,18 @@ export default function Pipeline() {
         <div ref={pipelineContentRef}>
           <section className="stage" data-num="00">
             <div className="stage-title">Live Intake</div>
-            <div className="stage-role">Evidence buckets every agent reads â€” select one to load or update its context</div>
+            <div className="stage-role">Evidence buckets every agent reads — select one to load or update its context</div>
             <div className="chips">
               {INTAKE.map(item => {
                 const loaded = Boolean((buckets[item.key] || "").trim());
                 return (
                   <button key={item.key} className={`chip${selectedIntake === item.key ? " sel" : ""}`} onClick={() => selectIntake(item.key)} disabled={Boolean(busyFramework)}>
-                    {item.name} <span className={`st${loaded ? " loaded" : ""}`}>{loaded ? "â— LOADED" : "EMPTY"}</span>
+                    {item.name} <span className={`st${loaded ? " loaded" : ""}`}>{loaded ? "● LOADED" : "EMPTY"}</span>
                   </button>
                 );
               })}
             </div>
-            <div className="note"><b>LOAD WHAT YOU HAVE</b> â€” partial evidence is allowed. The run records missing evidence explicitly instead of inventing it.</div>
+            <div className="note"><b>LOAD WHAT YOU HAVE</b> — partial evidence is allowed. The run records missing evidence explicitly instead of inventing it.</div>
           </section>
 
           {STAGES.map(stage => (
@@ -560,16 +561,16 @@ export default function Pipeline() {
                       disabled={Boolean(busyFramework)}
                     >
                       <span className="n-top"><span className="n-icon">{FW[key].icon}</span><span className="n-name">{FW[key].name}</span></span>
-                      <span className="n-out">â†’ {FW[key].out}</span>
+                      <span className="n-out">→ {FW[key].out}</span>
                       <span className="n-status">{runStatusLabel(nodeStatus)}</span>
-                      {artifactIsComplete(artifacts[key], key) && <span className="n-done">REVISION {artifacts[key].revision || 1} Â· OPEN OR REGENERATE</span>}
+                      {artifactIsComplete(artifacts[key], key) && <span className="n-done">REVISION {artifacts[key].revision || 1} · OPEN OR REGENERATE</span>}
                     </button>
                   );
                 })}
               </div>
             </section>
           ))}
-          <div className="note pipeline-feedback">â†º FEEDBACK â€” revisions preserve history and mark dependent thinking for review</div>
+          <div className="note pipeline-feedback">↺ FEEDBACK — revisions preserve history and mark dependent thinking for review</div>
         </div>
 
         <aside
@@ -587,18 +588,57 @@ export default function Pipeline() {
               onClick={closeInspector}
               aria-label="Close pipeline inspector"
               disabled={Boolean(busyFramework)}
-            >CLOSE Ã—</button>
+            >CLOSE ×</button>
           )}
           {framework ? (
             <div>
               <div className="inspector-heading">
                 <div>
-                  <div className="i-label">Framework launcher</div>
+                  <div className="i-label">{frameworkStage ? `Stage ${frameworkStage.num} · ${frameworkStage.title}` : "Framework launcher"}</div>
                   <h2><span>{framework.icon}</span> {framework.name}</h2>
                   <p>{framework.role}</p>
                 </div>
                 <span className={`framework-state state-${selectedStatus}`}>{runStatusLabel(selectedStatus)}</span>
               </div>
+
+              <div className="i-sec">
+                <p className="voice">{framework.voice}</p>
+              </div>
+
+              <div className="i-sec">
+                <div className="i-label">Reads (inputs)</div>
+                <ul>
+                  {framework.reads.map(([input, from], index) => (
+                    <li key={index}><b>{input}</b> <span className="read-src">· {from}</span></li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="i-sec">
+                <div className="i-label">Tool calls</div>
+                <div className="toolchips">{framework.tools.map(tool => <span key={tool}>{tool}</span>)}</div>
+              </div>
+
+              <div className="i-sec">
+                <div className="i-label">Working documents</div>
+                <div className="docchips">{framework.docs.map(doc => <span key={doc}>{doc}</span>)}</div>
+              </div>
+
+              <div className="i-sec">
+                <div className="i-label">Insight produced</div>
+                <p className="i-insight">{framework.insight}</p>
+              </div>
+
+              {framework.feeds.length > 0 && (
+                <div className="i-sec">
+                  <div className="i-label">Wakes these agents</div>
+                  <div className="linkchips">
+                    {framework.feeds.map(key => (
+                      <button key={key} onClick={() => selectFramework(key)} disabled={Boolean(busyFramework)}>{FW[key].icon} {FW[key].name}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="i-sec">
                 <div className="i-label">Run instruction</div>
@@ -609,7 +649,7 @@ export default function Pipeline() {
                   className="area compact"
                   value={instruction}
                   onChange={event => setInstruction(event.target.value)}
-                  placeholder="Add a market, geography, time horizon, or decision to emphasizeâ€¦"
+                  placeholder="Add a market, geography, time horizon, or decision to emphasize…"
                   disabled={Boolean(busyFramework)}
                 />
               </div>
@@ -621,7 +661,7 @@ export default function Pipeline() {
                   <li><b>{SOURCES[selectedFramework].filter(key => artifactIsComplete(artifacts[key], key)).length}/{SOURCES[selectedFramework].length}</b> direct upstream artifacts complete</li>
                   <li><b>Full</b> direct context; no silent clipping</li>
                 </ul>
-                {unmet.length > 0 && <p className="status warning">Complete first: {unmet.map(key => FW[key].name).join(" Â· ")}</p>}
+                {unmet.length > 0 && <p className="status warning">Complete first: {unmet.map(key => FW[key].name).join(" · ")}</p>}
               </div>
 
               {busyFramework === selectedFramework ? (
@@ -632,12 +672,12 @@ export default function Pipeline() {
                 </div>
               ) : (
                 <div className="i-sec run-actions">
-                  {!getKey() && <p className="status warning">An Anthropic API key is required. <Link href="/settings">Open Settings â†’</Link></p>}
+                  {!getKey() && <p className="status warning">An Anthropic API key is required. <Link href="/settings">Open Settings →</Link></p>}
                   {artifactIsComplete(selectedArtifact, selectedFramework) && (
                     <Link className="btn" href={`/framework/${selectedFramework}`}>OPEN COMPLETED ARTIFACT</Link>
                   )}
                   <button className="btn primary" onClick={() => runFramework(selectedFramework)} disabled={!selectedReady || Boolean(busyFramework)}>
-                    {artifactIsComplete(selectedArtifact, selectedFramework) ? "RESEARCH & REGENERATE" : "RESEARCH & BUILD FRAMEWORK"} â–¸
+                    {artifactIsComplete(selectedArtifact, selectedFramework) ? "RESEARCH & REGENERATE" : "RESEARCH & BUILD FRAMEWORK"} ▸
                   </button>
                   {selectedArtifact?.status === "legacy" && <p className="status warning">This is a legacy plain-text result. Regenerate it to create a validated interactive artifact.</p>}
                 </div>
@@ -652,7 +692,7 @@ export default function Pipeline() {
                 <p className="inspector-muted">{source.from}</p>
               </div>
               <div className="i-sec">
-                <div className="i-label">How to get it â€” client interview guide</div>
+                <div className="i-label">How to get it — client interview guide</div>
                 <ul>{source.guide.map((guide, index) => <li key={index}>{guide}</li>)}</ul>
               </div>
               <div className="i-sec">
@@ -661,8 +701,8 @@ export default function Pipeline() {
                 <div className="btnrow"><button className="btn" onClick={copyTemplate}>COPY TEMPLATE</button></div>
               </div>
               <div className="i-sec">
-                <label className="i-label" htmlFor="bucket-contents">Bucket contents Â· {bucketText.trim() ? "loaded" : "empty"}</label>
-                <textarea id="bucket-contents" className="area" value={bucketText} onChange={event => setBucketText(event.target.value)} placeholder="Paste the filled template, transcripts, URLs, or raw evidence hereâ€¦" />
+                <label className="i-label" htmlFor="bucket-contents">Bucket contents · {bucketText.trim() ? "loaded" : "empty"}</label>
+                <textarea id="bucket-contents" className="area" value={bucketText} onChange={event => setBucketText(event.target.value)} placeholder="Paste the filled template, transcripts, URLs, or raw evidence here…" />
                 <div className="btnrow">
                   <button className="btn primary" onClick={saveBucket}>SAVE TO BUCKET</button>
                   <label>UPLOAD .TXT / .MD<input type="file" aria-label={`Upload files to ${source.name}`} accept=".txt,.md,.csv,.json" multiple onChange={onFiles} /></label>

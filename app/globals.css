@@ -30,7 +30,9 @@ h1{font-size:clamp(22px,4vw,36px);font-weight:600;margin:12px 0 10px;line-height
 .stage{margin:0 0 32px;position:relative;padding-left:34px}
 .stage::before{content:attr(data-num);position:absolute;left:0;top:2px;width:22px;height:22px;
   border:1px solid var(--amber);color:var(--amber);background:var(--bg);font-size:10px;
-  display:flex;align-items:center;justify-content:center}
+  display:flex;align-items:center;justify-content:center;z-index:1}
+.stage::after{content:"";position:absolute;left:11px;top:30px;bottom:-32px;border-left:1px dashed rgba(255,176,32,.45)}
+.stage:last-of-type::after{bottom:0}
 .stage-title{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:2px}
 .stage-role{font-size:11px;color:var(--dim);margin-bottom:12px}
 .nodes{display:flex;flex-wrap:wrap;gap:12px}
@@ -64,6 +66,7 @@ h1{font-size:clamp(22px,4vw,36px);font-weight:600;margin:12px 0 10px;line-height
 .i-sec ul{list-style:none}
 .i-sec li{font-size:12px;padding:2px 0 2px 16px;position:relative}
 .i-sec li::before{content:"—";position:absolute;left:0;color:var(--dim)}
+.i-sec .read-src{color:var(--dim)}
 .i-insight{font-size:12.5px;border-left:2px solid var(--amber);padding:8px 0 8px 12px;background:var(--amber-dim)}
 .voice{margin:0 0 4px;border-left:2px solid var(--amber);background:var(--amber-dim);padding:10px 12px;font-size:12.5px;font-style:italic}
 .voice::before{content:"\201C"}.voice::after{content:"\201D"}
