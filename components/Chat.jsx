@@ -11,7 +11,7 @@ import {
   readEngagementState,
 } from "@/lib/agentContext";
 import LoadingState from "@/components/LoadingState";
-import { buildProviderHistory, trimChatLog } from "@/lib/chatProtocol";
+import { buildAssistantLogMessage, buildProviderHistory, trimChatLog } from "@/lib/chatProtocol";
 
 function agentSources(key) {
   return INTAKE.filter(source => source.readers.includes(key));
@@ -79,6 +79,16 @@ function citationKey(citation, index) {
   return citation.url || `${citation.title || "source"}-${index}`;
 }
 
+function findPendingContinuation(log) {
+  for (let index = log.length - 1; index >= 0; index -= 1) {
+    const message = log[index];
+    if (message?.incomplete && message?.resumable && Array.isArray(message.providerTurns) && message.providerTurns.length) {
+      return index;
+    }
+  }
+  return -1;
+}
+
 export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocusConsumed }) {
   const framework = FW[fwKey];
   const [log, setLog] = useState([]);
@@ -86,6 +96,7 @@ export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocus
   const [busy, setBusy] = useState(false);
   const [startedAt, setStartedAt] = useState(null);
   const messagesRef = useRef(null);
+  const pendingContinuationIndex = findPendingContinuation(log);
 
   useEffect(() => {
     let saved = getChat(fwKey);
@@ -106,26 +117,25 @@ export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocus
     if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   }, [log, busy]);
 
-  async function send() {
-    const text = input.trim();
-    if (!text || busy) return;
+  async function requestAgent(history, baseLog, replaceIndex = -1, previous = null) {
     const apiKey = getKey();
     if (!apiKey) {
-      const next = trimChatLog([...log, { role: "assistant", content: "Add your Anthropic API key in Settings before starting a live agent request." }]);
-      setLog(next);
-      setChat(fwKey, next);
+      const reply = buildAssistantLogMessage({
+        error: "Add your Anthropic API key in Settings before starting a live agent request.",
+        resumable: Boolean(previous?.resumable),
+      }, { ok: false, previous });
+      const updated = [...baseLog];
+      if (replaceIndex >= 0) updated[replaceIndex] = reply;
+      else updated.push(reply);
+      const bounded = trimChatLog(updated);
+      setLog(bounded);
+      setChat(fwKey, bounded);
       return;
     }
-
-    setInput("");
-    const next = trimChatLog([...log, { role: "user", content: text }]);
-    setLog(next);
-    setChat(fwKey, next);
     setBusy(true);
     setStartedAt(Date.now());
 
     try {
-      const history = buildProviderHistory(next);
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -140,37 +150,44 @@ export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocus
       let data;
       try { data = JSON.parse(raw); } catch { data = { error: `The agent returned an unreadable response (${response.status}).` }; }
 
-      const updated = [...next];
-      if (!response.ok || data.error) {
-        const requestSuffix = data.requestId ? ` Request ${data.requestId}.` : "";
-        updated.push({
-          role: "assistant",
-          content: `(${data.error || "Agent request failed."}${requestSuffix})`,
-          providerTurns: Array.isArray(data.providerTurns) && data.providerTurns.length ? data.providerTurns : null,
-          citations: Array.isArray(data.citations) ? data.citations : [],
-          incomplete: true,
-        });
-      } else {
-        updated.push({
-          role: "assistant",
-          content: data.text || "(No response was returned.)",
-          providerContent: Array.isArray(data.content) ? data.content : null,
-          providerTurns: Array.isArray(data.providerTurns) ? data.providerTurns : null,
-          citations: Array.isArray(data.citations) ? data.citations : [],
-          model: data.model,
-        });
-      }
+      const reply = buildAssistantLogMessage(data, { ok: response.ok && !data.error, previous });
+      const updated = [...baseLog];
+      if (replaceIndex >= 0) updated[replaceIndex] = reply;
+      else updated.push(reply);
       const bounded = trimChatLog(updated);
       setLog(bounded);
       setChat(fwKey, bounded);
     } catch (error) {
-      const updated = trimChatLog([...next, { role: "assistant", content: `(Connection issue: ${error?.message || "try again in a moment"})` }]);
-      setLog(updated);
-      setChat(fwKey, updated);
+      const reply = buildAssistantLogMessage({
+        error: `Connection issue: ${error?.message || "try again in a moment"}`,
+        resumable: Boolean(previous?.resumable),
+      }, { ok: false, previous });
+      const updated = [...baseLog];
+      if (replaceIndex >= 0) updated[replaceIndex] = reply;
+      else updated.push(reply);
+      const bounded = trimChatLog(updated);
+      setLog(bounded);
+      setChat(fwKey, bounded);
     } finally {
       setBusy(false);
       setStartedAt(null);
     }
+  }
+
+  async function send() {
+    const text = input.trim();
+    if (!text || busy || pendingContinuationIndex >= 0) return;
+    setInput("");
+    const next = trimChatLog([...log, { role: "user", content: text }]);
+    setLog(next);
+    setChat(fwKey, next);
+    await requestAgent(buildProviderHistory(next), next);
+  }
+
+  async function continueResearch() {
+    if (busy || pendingContinuationIndex < 0) return;
+    const previous = log[pendingContinuationIndex];
+    await requestAgent(buildProviderHistory(log), log, pendingContinuationIndex, previous);
   }
 
   return (
@@ -209,10 +226,14 @@ export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocus
           onChange={event => setInput(event.target.value)}
           onKeyDown={event => event.key === "Enter" && send()}
           placeholder={`Discuss ${framework.name}…`}
-          disabled={busy}
+          disabled={busy || pendingContinuationIndex >= 0}
           aria-label={`Message ${framework.role}`}
         />
+        {pendingContinuationIndex >= 0 ? (
+          <button onClick={continueResearch} disabled={busy}>CONTINUE</button>
+        ) : (
         <button onClick={send} disabled={busy || !input.trim()}>SEND ▸</button>
+        )}
       </div>
     </div>
   );

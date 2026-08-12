@@ -13,14 +13,14 @@ function providerResponse(content, stopReason, requestId) {
   });
 }
 
-function chatRequest() {
+function chatRequest(messages = [{ role: "user", content: "Research this." }]) {
   return new Request("http://localhost/api/chat", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       apiKey: "test-key",
       system: "Answer against the locked artifact.",
-      messages: [{ role: "user", content: "Research this." }],
+      messages,
       web: true,
     }),
   });
@@ -78,6 +78,50 @@ test("continuation-limit errors return resumable raw provider turns", { concurre
 
   assert.equal(response.status, 504);
   assert.equal(body.providerTurns.length, 8);
+  assert.match(body.partialText, /Partial 1\./);
+  assert.match(body.partialText, /Partial 8\./);
+  assert.equal(body.resumable, true);
+  assert.equal(body.stopReason, "pause_turn");
   assert.equal(body.requestId, "request-8");
   assert.equal(call, 8);
+});
+
+test("chat route accepts more than eighty bounded history messages", { concurrency: false }, async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  let providerMessageCount = 0;
+  globalThis.fetch = async (_url, options) => {
+    providerMessageCount = JSON.parse(options.body).messages.length;
+    return providerResponse([{ type: "text", text: "History accepted." }], "end_turn", "request-long");
+  };
+  const messages = Array.from({ length: 100 }, (_, index) => ({
+    role: index % 2 === 0 ? "user" : "assistant",
+    content: `message ${index}`,
+  }));
+
+  const response = await POST(chatRequest(messages));
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.text, "History accepted.");
+  assert.equal(providerMessageCount, 100);
+});
+
+test("an assistant-ending recovery request remains resumable if its provider call times out", { concurrency: false }, async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  globalThis.fetch = async () => {
+    const error = new Error("provider unavailable");
+    error.name = "ProviderTimeoutError";
+    throw error;
+  };
+
+  const response = await POST(chatRequest([
+    { role: "user", content: "Research this." },
+    { role: "assistant", content: [{ type: "text", text: "Paused partial." }] },
+  ]));
+  const body = await response.json();
+
+  assert.equal(response.status, 504);
+  assert.equal(body.resumable, true);
 });

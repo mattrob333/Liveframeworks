@@ -69,14 +69,19 @@ export async function POST(request) {
   const providerTurns = [];
   let webUsed = false;
   let lastRequestId = "";
+  let lastStopReason = "";
+  let continuationPending = false;
   const continuationState = () => {
     const aggregate = aggregateProviderTurns(providerTurns);
     return {
+      partialText: aggregate.text,
       providerTurns,
       citations: aggregate.citations,
       warnings: aggregate.warnings,
       webUsed: webUsed || aggregate.webUsed,
       requestId: lastRequestId,
+      stopReason: lastStopReason || null,
+      resumable: continuationPending,
     };
   };
 
@@ -97,6 +102,7 @@ export async function POST(request) {
       role: message.role === "assistant" ? "assistant" : "user",
       content: message.content,
     }));
+    continuationPending = conversation.at(-1)?.role === "assistant";
     const deadline = Date.now() + 270_000;
 
     for (let attempt = 0; attempt < MAX_CONTINUATIONS && Date.now() < deadline; attempt += 1) {
@@ -118,6 +124,8 @@ export async function POST(request) {
 
       webUsed = webUsed || hasWebActivity(data.content);
       providerTurns.push(data.content);
+      lastStopReason = data.stop_reason || "";
+      continuationPending = data.stop_reason === "pause_turn";
       if (data.stop_reason === "refusal") {
         return jsonError("The model declined this request. Rephrase it and try again.", 422, continuationState());
       }
@@ -147,7 +155,7 @@ export async function POST(request) {
       });
     }
 
-    return jsonError("Web research did not complete within the available run window. Retry to continue.", 504, continuationState());
+    return jsonError("Web research did not complete within the available run window. Continue the paused research to resume it.", 504, continuationState());
   } catch (error) {
     if (error?.name === "AbortError") return jsonError("The request was cancelled.", 408, continuationState());
     if (error?.name === "ProviderTimeoutError") return jsonError(error.message, 504, continuationState());

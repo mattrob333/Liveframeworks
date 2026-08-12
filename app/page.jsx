@@ -24,6 +24,7 @@ import {
 } from "@/lib/agentContext";
 import { normalizeFrameworkArtifact, validateFrameworkArtifact } from "@/lib/frameworkArtifacts";
 import { saveGenerationRecord, updateGenerationRecord } from "@/lib/generationStore";
+import { getModalFocusableElements, trapModalTabKey } from "@/lib/modalFocus";
 import LoadingState from "@/components/LoadingState";
 
 const RUN_PHASES = [
@@ -166,46 +167,18 @@ export default function Pipeline() {
       node.setAttribute("aria-hidden", "true");
     });
 
-    const focusableSelector = [
-      "a[href]:not([tabindex='-1'])",
-      "button:not([disabled]):not([tabindex='-1'])",
-      "textarea:not([disabled]):not([tabindex='-1'])",
-      "input:not([disabled]):not([tabindex='-1'])",
-      "select:not([disabled]):not([tabindex='-1'])",
-      "[tabindex]:not([tabindex='-1'])",
-    ].join(",");
-    const focusable = () => Array.from(dialog.querySelectorAll(focusableSelector))
-      .filter(node => !node.closest("[inert]") && node.getClientRects().length > 0);
-
     if (!dialog.contains(document.activeElement)) {
-      window.requestAnimationFrame(() => focusable()[0]?.focus());
+      window.requestAnimationFrame(() => (getModalFocusableElements(dialog)[0] || dialog).focus());
     }
 
     const onKeyDown = event => {
       if (event.key === "Escape") {
-        if (!busyFramework) {
-          event.preventDefault();
-          closeInspector();
-        }
+        event.preventDefault();
+        event.stopPropagation();
+        closeInspector({ cancelBusy: Boolean(busyFramework) });
         return;
       }
-      if (event.key !== "Tab") return;
-
-      const controls = focusable();
-      if (!controls.length) {
-        event.preventDefault();
-        dialog.focus();
-        return;
-      }
-      const first = controls[0];
-      const last = controls[controls.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
+      trapModalTabKey(event, dialog);
     };
 
     document.addEventListener("keydown", onKeyDown);
@@ -263,8 +236,13 @@ export default function Pipeline() {
     setRunMessage("");
   }
 
-  function closeInspector() {
-    if (busyFramework) return;
+  function closeInspector({ cancelBusy = false } = {}) {
+    if (busyFramework && !cancelBusy) return;
+    if (busyFramework && cancelBusy) {
+      abortRef.current?.abort();
+      setBusyFramework("");
+      setStartedAt(null);
+    }
     setSelectedFramework(null);
     setSelectedIntake(null);
     setRunMessage("");
