@@ -1,0 +1,402 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import {
+  getArtifactDefinition,
+  getArtifactValue,
+  normalizeFrameworkArtifact,
+  validateFrameworkArtifact,
+} from "@/lib/frameworkArtifacts";
+
+const BMC_CLASSES = {
+  keyPartners: "bmc-kp",
+  keyActivities: "bmc-ka",
+  keyResources: "bmc-kr",
+  valuePropositions: "bmc-vp",
+  customerRelationships: "bmc-cr",
+  channels: "bmc-ch",
+  customerSegments: "bmc-cs",
+  costStructure: "bmc-cost",
+  revenueStreams: "bmc-rev",
+};
+
+const LABELS = {
+  currentAllocationPct: "Current allocation",
+  targetAllocationPct: "Target allocation",
+  currentState: "Current",
+  targetState: "Target",
+  desiredOutcome: "Outcome",
+  satisfactionImpact: "Impact",
+  expectedThroughputEffect: "Throughput effect",
+  throughputMetric: "Throughput metric",
+  severity: "Severity",
+  impact: "Impact type",
+  horizon: "Horizon",
+  rationale: "Rationale",
+  risk: "Risk",
+  quadrant: "Quadrant",
+  currentScore: "Current score",
+  proposedScore: "Proposed score",
+  competitorScore: "Competitor score",
+  customerItem: "Customer side",
+  valueItem: "Value side",
+  strength: "Fit",
+  location: "Location",
+  type: "Type",
+  baseline: "Baseline",
+  target: "Target",
+  unit: "Unit",
+  source: "Source",
+  frequency: "Frequency",
+  owner: "Owner",
+  title: "Title",
+};
+
+const textValue = value => {
+  if (value === null || value === undefined || value === "") return "-";
+  if (typeof value === "string" || typeof value === "number") return String(value);
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (Array.isArray(value)) return value.map(textValue).filter(item => item !== "-").join(" · ") || "-";
+  if (typeof value === "object") {
+    return value.text || value.name || value.title || value.statement || value.objective || value.action || value.factor || value.reason || "-";
+  }
+  return "-";
+};
+
+function Meta({ value }) {
+  if (!value || typeof value !== "object") return null;
+  const basis = value.basis;
+  const confidence = value.confidence;
+  const refs = Array.isArray(value.evidenceRefs) ? value.evidenceRefs.length : 0;
+  if (!basis && !confidence && !refs) return null;
+  return (
+    <span className="artifact-meta" role="group" aria-label="Grounding metadata">
+      {basis && <span className={`artifact-basis basis-${basis}`}>{basis}</span>}
+      {confidence && <span className={`artifact-confidence confidence-${confidence}`}>{confidence}</span>}
+      {refs > 0 && <span className="artifact-evidence-count">{refs} {refs === 1 ? "source" : "sources"}</span>}
+    </span>
+  );
+}
+
+function EmptyFinding() {
+  return <span className="artifact-empty">No supported finding yet.</span>;
+}
+
+function CompactItem({ item }) {
+  if (item === null || item === undefined || item === "") return <EmptyFinding />;
+  if (typeof item !== "object") return <span className="artifact-item-text">{String(item)}</span>;
+  if (Array.isArray(item)) {
+    if (!item.length) return <EmptyFinding />;
+    return (
+      <ul className="artifact-findings">
+        {item.slice(0, 5).map((entry, index) => <li key={entry?.id || `${textValue(entry)}-${index}`}><CompactItem item={entry} /></li>)}
+        {item.length > 5 && <li className="artifact-more">+{item.length - 5} more</li>}
+      </ul>
+    );
+  }
+
+  const primary = textValue(item);
+  const details = [
+    ["currentAllocationPct", item.currentAllocationPct === null || item.currentAllocationPct === undefined ? null : `${item.currentAllocationPct}%`],
+    ["targetAllocationPct", item.targetAllocationPct === null || item.targetAllocationPct === undefined ? null : `${item.targetAllocationPct}%`],
+    ["currentState", item.currentState],
+    ["targetState", item.targetState],
+    ["desiredOutcome", item.desiredOutcome],
+    ["satisfactionImpact", item.satisfactionImpact],
+    ["expectedThroughputEffect", item.expectedThroughputEffect],
+    ["throughputMetric", item.throughputMetric],
+    ["severity", item.severity],
+    ["impact", item.impact],
+    ["horizon", item.horizon],
+    ["rationale", item.rationale],
+    ["risk", item.risk],
+    ["quadrant", item.quadrant],
+    ["currentScore", item.currentScore],
+    ["proposedScore", item.proposedScore],
+    ["competitorScore", item.competitorScore],
+    ["customerItem", item.customerItem],
+    ["valueItem", item.valueItem],
+    ["strength", item.strength],
+    ["location", item.location],
+    ["type", item.type],
+    ["baseline", item.baseline],
+    ["target", item.target],
+    ["unit", item.unit],
+    ["source", item.source],
+    ["frequency", item.frequency],
+    ["owner", item.owner],
+    ["title", item.title],
+  ].filter(([, value]) => value !== null && value !== undefined && value !== "");
+
+  return (
+    <div className="artifact-item">
+      {primary !== "-" && <span className="artifact-item-text">{primary}</span>}
+      {item.score !== null && item.score !== undefined && <span className="artifact-score">Score {item.score}/5</span>}
+      {item.direction && item.direction !== "unknown" && <span className="artifact-direction">{item.direction}</span>}
+      {details.length > 0 && (
+        <div className="artifact-details">
+          {details.map(([key, value]) => <span key={key}><b>{LABELS[key] || key}:</b> {String(value)}</span>)}
+        </div>
+      )}
+      {Array.isArray(item.findings) && <CompactItem item={item.findings} />}
+      {Array.isArray(item.initiatives) && <CompactItem item={item.initiatives} />}
+      {Array.isArray(item.measures) && item.measures.length > 0 && <div className="artifact-nested"><b>Measures</b><CompactItem item={item.measures} /></div>}
+      {Array.isArray(item.keyResults) && item.keyResults.length > 0 && <div className="artifact-nested"><b>Key results</b><CompactItem item={item.keyResults} /></div>}
+      {Array.isArray(item.gaps) && item.gaps.length > 0 && <div className="artifact-nested"><b>Gaps</b><CompactItem item={item.gaps} /></div>}
+      {Array.isArray(item.actions) && item.actions.length > 0 && <div className="artifact-nested"><b>Actions</b><CompactItem item={item.actions} /></div>}
+      <Meta value={item} />
+    </div>
+  );
+}
+
+function sectionPayload(artifact, section) {
+  return getArtifactValue(artifact, section.path);
+}
+
+function rowSelectionId(section, row, index) {
+  const stableId = row?.id || row?.name || row?.statement || row?.objective || `row-${index}`;
+  return `${section?.id || "rows"}:${stableId}${row?.id ? "" : `:${index}`}`;
+}
+
+function SelectableSection({ artifact, section, onSelect, selectedSectionId, className = "" }) {
+  const data = sectionPayload(artifact, section);
+  const choose = () => onSelect({ ...section, frameworkId: artifact.frameworkId, data });
+  const selected = selectedSectionId === section.id;
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      className={`artifact-section panel ${selected ? "is-selected" : ""} ${className}`.trim()}
+      onClick={choose}
+      onKeyDown={event => {
+        if (event.key === "Enter" || event.key === " ") { event.preventDefault(); choose(); }
+      }}
+      aria-label={`Open ${section.label}`}
+      aria-pressed={selected}
+    >
+      <span className="artifact-section-title i-label t">{section.label}</span>
+      <div className="artifact-section-content d"><CompactItem item={data} /></div>
+    </div>
+  );
+}
+
+function CanvasView({ artifact, definition, onSelect, selectedSectionId }) {
+  return (
+    <div className="bmc-grid framework-artifact-canvas">
+      {definition.sections.map(section => (
+        <SelectableSection
+          key={section.id}
+          artifact={artifact}
+          section={section}
+          onSelect={onSelect}
+          selectedSectionId={selectedSectionId}
+          className={`bmc-cell ${BMC_CLASSES[section.id] || ""}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function SectionView({ artifact, definition, onSelect, selectedSectionId }) {
+  return (
+    <div className={`artifact-sections artifact-${definition.view} grid2`}>
+      {definition.sections.map((section, index) => (
+        <SelectableSection
+          key={section.id}
+          artifact={artifact}
+          section={section}
+          onSelect={onSelect}
+          selectedSectionId={selectedSectionId}
+          className={`artifact-section-${section.kind} artifact-section-${index + 1}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function TableView({ artifact, definition, onSelect, selectedSectionId, selectedRowId }) {
+  const rows = getArtifactValue(artifact, definition.table.path);
+  const primarySection = definition.sections.find(section => section.path === definition.table.path) || definition.sections[0];
+  const otherSections = definition.sections.filter(section => section !== primarySection);
+  return (
+    <div className="artifact-table-wrap panel">
+      <table role="grid" aria-label={primarySection.label} className={`artifact-table ${selectedSectionId === primarySection.id ? "is-selected" : ""}`.trim()}>
+        <thead>
+          <tr>
+            {definition.table.columns.map(([, label]) => <th key={label} scope="col">{label}</th>)}
+            <th scope="col">Grounding</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Array.isArray(rows) && rows.length > 0 ? rows.map((row, index) => {
+            const selectionId = rowSelectionId(primarySection, row, index);
+            const selected = { ...primarySection, frameworkId: artifact.frameworkId, rowIndex: index, selectionId, data: row };
+            return (
+              <tr
+                key={selectionId}
+                tabIndex={0}
+                className={selectedRowId === selectionId ? "is-selected" : ""}
+                aria-selected={selectedRowId === selectionId}
+                onClick={() => onSelect(selected)}
+                onKeyDown={event => {
+                  if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelect(selected); }
+                }}
+              >
+                {definition.table.columns.map(([key]) => <td key={key}>{textValue(row?.[key])}</td>)}
+                <td><Meta value={row} /></td>
+              </tr>
+            );
+          }) : (
+            <tr><td colSpan={definition.table.columns.length + 1}><EmptyFinding /></td></tr>
+          )}
+        </tbody>
+      </table>
+      {otherSections.length > 0 && (
+        <div className="artifact-table-supporting">
+          {otherSections.map(section => <SelectableSection key={section.id} artifact={artifact} section={section} onSelect={onSelect} selectedSectionId={selectedSectionId} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RaciView({ artifact, definition, onSelect, selectedSectionId, selectedRowId }) {
+  const roles = Array.isArray(artifact.payload.roles) ? artifact.payload.roles : [];
+  const workItems = Array.isArray(artifact.payload.workItems) ? artifact.payload.workItems : [];
+  const rolesSection = definition.sections.find(section => section.id === "roles");
+  const workSection = definition.sections.find(section => section.id === "workItems");
+  const supporting = definition.sections.filter(section => ["approvalGates", "attestations"].includes(section.id));
+  return (
+    <div className="artifact-raci-wrap panel">
+      {rolesSection && (
+        <div className="artifact-raci-roles">
+          <SelectableSection
+            artifact={artifact}
+            section={rolesSection}
+            onSelect={onSelect}
+            selectedSectionId={selectedSectionId}
+          />
+        </div>
+      )}
+      <table role="grid" aria-label={workSection?.label || "RACI work matrix"} className={`artifact-table artifact-raci-table ${selectedSectionId === workSection?.id ? "is-selected" : ""}`.trim()}>
+        <thead><tr><th scope="col">Work</th>{roles.map(role => <th key={role.id} scope="col">{role.name}</th>)}<th scope="col">Grounding</th></tr></thead>
+        <tbody>
+          {workItems.length > 0 ? workItems.map((item, index) => {
+            const selectionId = rowSelectionId(workSection, item, index);
+            const selected = { ...workSection, frameworkId: artifact.frameworkId, rowIndex: index, selectionId, data: item };
+            return (
+              <tr
+                key={selectionId}
+                tabIndex={0}
+                className={selectedRowId === selectionId ? "is-selected" : ""}
+                aria-selected={selectedRowId === selectionId}
+                onClick={() => onSelect(selected)}
+                onKeyDown={event => {
+                  if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelect(selected); }
+                }}
+              >
+                <th scope="row">
+                  {item.name || "Unnamed work item"}
+                  {item.capabilityEnvelope && (
+                    <span className="artifact-capability-summary">
+                      {item.capabilityEnvelope.allowedActions?.length || 0} actions · {item.capabilityEnvelope.limits?.length || 0} limits
+                    </span>
+                  )}
+                </th>
+                {roles.map(role => <td key={role.id}>{(item.assignments || []).find(assignment => assignment.roleId === role.id)?.code || "-"}</td>)}
+                <td><Meta value={item} /></td>
+              </tr>
+            );
+          }) : <tr><td colSpan={roles.length + 2}><EmptyFinding /></td></tr>}
+        </tbody>
+      </table>
+      <div className="artifact-table-supporting">
+        {supporting.map(section => <SelectableSection key={section.id} artifact={artifact} section={section} onSelect={onSelect} selectedSectionId={selectedSectionId} />)}
+      </div>
+    </div>
+  );
+}
+
+function EvidenceList({ evidence }) {
+  if (!Array.isArray(evidence) || evidence.length === 0) return null;
+  return (
+    <div className="artifact-evidence panel mt">
+      <span className="artifact-evidence-title">Evidence used</span>
+      <ul>
+        {evidence.slice(0, 8).map(item => (
+          <li key={item.id}>
+            <span className={`artifact-source-kind source-${item.kind}`}>{item.kind}</span>{" "}
+            {item.url ? <a href={item.url} target="_blank" rel="noreferrer">{item.title || item.url}</a> : <span>{item.title || item.id}</span>}
+          </li>
+        ))}
+        {evidence.length > 8 && <li>+{evidence.length - 8} more sources</li>}
+      </ul>
+    </div>
+  );
+}
+
+function SafeFallback({ normalized, frameworkId }) {
+  const content = normalized.legacyText || (normalized.rawArtifact ? JSON.stringify(normalized.rawArtifact, null, 2) : "No structured result yet.");
+  return (
+    <div className="framework-artifact artifact-fallback" data-framework={frameworkId || normalized.frameworkId || "unknown"}>
+      <div className="artifact-warning">This result is not a recognized structured artifact. Its original content is preserved below.</div>
+      <pre className="output artifact-legacy-output">{content}</pre>
+    </div>
+  );
+}
+
+export default function FrameworkArtifact({ artifact, frameworkId, selectedSectionId, onSelect = () => {} }) {
+  const normalized = normalizeFrameworkArtifact(artifact, frameworkId);
+  const definition = getArtifactDefinition(normalized.frameworkId);
+  const validation = validateFrameworkArtifact(artifact, frameworkId);
+  const emptyInput = artifact === null || artifact === undefined || artifact === "";
+  const firstSectionId = definition?.sections[0]?.id || "";
+  const controlled = selectedSectionId !== undefined;
+  const [internalSectionId, setInternalSectionId] = useState(firstSectionId);
+  const [internalRowId, setInternalRowId] = useState("");
+  const activeSectionId = (controlled ? selectedSectionId : internalSectionId) || firstSectionId;
+
+  useEffect(() => { setInternalSectionId(firstSectionId); }, [normalized.frameworkId, firstSectionId]);
+  useEffect(() => {
+    setInternalRowId(current => current.startsWith(`${activeSectionId}:`) ? current : "");
+  }, [normalized.frameworkId, activeSectionId]);
+
+  if (!definition || normalized.legacyText || normalized.rawArtifact || emptyInput) {
+    return <SafeFallback normalized={normalized} frameworkId={frameworkId} />;
+  }
+
+  const select = section => {
+    if (!controlled) setInternalSectionId(section.id);
+    setInternalRowId(section.selectionId || "");
+    onSelect(section);
+  };
+  let view;
+  if (normalized.frameworkId === "bmc") view = <CanvasView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;
+  else if (normalized.frameworkId === "raci") view = <RaciView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} selectedRowId={internalRowId} />;
+  else if (definition.view === "table" && definition.table) view = <TableView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} selectedRowId={internalRowId} />;
+  else view = <SectionView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;
+
+  return (
+    <section className={`framework-artifact framework-artifact-${definition.view}`} data-framework={normalized.frameworkId}>
+      <header className="artifact-header">
+        <div className="artifact-kicker">Structured framework · revision {normalized.revision}</div>
+        <h2 className="artifact-title">{normalized.title || definition.name}</h2>
+        {normalized.summary && <p className="artifact-summary">{normalized.summary}</p>}
+      </header>
+      {!validation.valid && (
+        <div className="artifact-warning" role="status">
+          Showing the safe normalized view. {validation.errors.length} contract {validation.errors.length === 1 ? "issue was" : "issues were"} detected.
+        </div>
+      )}
+      {view}
+      <EvidenceList evidence={normalized.evidence} />
+      {(normalized.gaps.length > 0 || normalized.assumptions.length > 0 || normalized.nextQuestions.length > 0) && (
+        <div className="artifact-notes panel mt">
+          {normalized.gaps.length > 0 && <div><span className="artifact-note-title">Gaps</span><CompactItem item={normalized.gaps} /></div>}
+          {normalized.assumptions.length > 0 && <div><span className="artifact-note-title">Assumptions</span><CompactItem item={normalized.assumptions} /></div>}
+          {normalized.nextQuestions.length > 0 && <div><span className="artifact-note-title">Next questions</span><CompactItem item={normalized.nextQuestions} /></div>}
+        </div>
+      )}
+    </section>
+  );
+}

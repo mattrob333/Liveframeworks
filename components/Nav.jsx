@@ -7,9 +7,14 @@ import { getKey } from "@/lib/store";
 export default function Nav() {
   const path = usePathname();
   const [hasKey, setHasKey] = useState(false);
-  useEffect(() => { setHasKey(!!getKey()); }, [path]);
+  useEffect(() => {
+    const refresh = () => setHasKey(Boolean(getKey()));
+    refresh();
+    window.addEventListener("lf:storage", refresh);
+    return () => window.removeEventListener("lf:storage", refresh);
+  }, [path]);
   return (
-    <nav className="topnav">
+    <nav className="topnav" aria-label="Primary navigation">
       <Link className="brand" href="/">LIVEFRAMEWORKS</Link>
       <Link href="/" className={path === "/" ? "on" : ""}>Pipeline</Link>
       <Link href="/export" className={path === "/export" ? "on" : ""}>Export</Link>

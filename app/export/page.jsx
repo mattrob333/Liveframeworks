@@ -1,79 +1,91 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { INTAKE, FW, ORDER, STAGES } from "@/lib/frameworks";
-import { getBucket, getOutput } from "@/lib/store";
+import { getArtifact, getBucket, getRuns } from "@/lib/store";
+import { artifactIsComplete } from "@/lib/agentContext";
 
 function buildSnapshot() {
-  const d = new Date().toISOString().slice(0, 10);
-  let md = `# LIVEFRAMEWORKS — ENGAGEMENT SNAPSHOT\nGenerated ${d} · liveframeworks pipeline · evidence-grounded first-pass outputs\n\n`;
+  const generatedAt = new Date().toISOString();
+  let markdown = `# LIVEFRAMEWORKS — ENGAGEMENT SNAPSHOT\nGenerated ${generatedAt} · structured, evidence-grounded framework artifacts\n\n`;
 
-  md += `## 1. EVIDENCE LOADED\n\n`;
-  let anyE = false;
-  INTAKE.forEach(s => {
-    const v = (getBucket(s.key) || "").trim();
-    if (v) { anyE = true; md += `### ${s.name}\n\n\u0060\u0060\u0060\n${v}\n\u0060\u0060\u0060\n\n`; }
+  markdown += "## 1. EVIDENCE LOADED\n\n";
+  let evidenceFound = false;
+  INTAKE.forEach(source => {
+    const value = getBucket(source.key).trim();
+    if (!value) return;
+    evidenceFound = true;
+    markdown += `### ${source.name}\n\n\`\`\`text\n${value}\n\`\`\`\n\n`;
   });
-  if (!anyE) md += `_No intake buckets loaded._\n\n`;
+  if (!evidenceFound) markdown += "_No intake buckets loaded._\n\n";
 
-  md += `## 2. FRAMEWORK OUTPUTS\n\n`;
-  let anyO = false;
-  STAGES.forEach(st => {
-    const done = ORDER.filter(k => FW[k].stage === st.key && (getOutput(k) || "").trim());
-    if (!done.length) return;
-    anyO = true;
-    md += `### STAGE ${st.num} — ${st.title}\n\n`;
-    done.forEach(k => {
-      md += `#### ${FW[k].name} (${FW[k].role}) — ${FW[k].out}\n\n${getOutput(k).trim()}\n\n---\n\n`;
+  markdown += "## 2. FRAMEWORK ARTIFACTS\n\n";
+  let artifactFound = false;
+  STAGES.forEach(stage => {
+    const available = ORDER.filter(key => FW[key].stage === stage.key && getArtifact(key));
+    if (!available.length) return;
+    artifactFound = true;
+    markdown += `### STAGE ${stage.num} — ${stage.title}\n\n`;
+    available.forEach(key => {
+      const artifact = getArtifact(key);
+      const runs = getRuns(key);
+      markdown += `#### ${FW[key].name} (${FW[key].role})\n\n`;
+      markdown += `Status: ${artifact.status} · Revision: ${artifact.revision || 0} · Runs retained: ${runs.length}\n\n`;
+      markdown += `${artifact.summary || "No summary returned."}\n\n`;
+      markdown += `\`\`\`json\n${JSON.stringify(artifact, null, 2)}\n\`\`\`\n\n---\n\n`;
     });
   });
-  if (!anyO) md += `_No framework outputs locked yet. Satisfy the Business Model Canvas first._\n\n`;
+  if (!artifactFound) markdown += "_No framework artifacts have been generated._\n\n";
 
-  const notRun = ORDER.filter(k => !(getOutput(k) || "").trim());
-  md += `## 3. COVERAGE\n\nLocked: ${ORDER.length - notRun.length} of ${ORDER.length} frameworks.\n`;
-  if (notRun.length) md += `Not yet run: ${notRun.map(k => FW[k].name).join(", ")}.\n`;
-  md += `\n_All outputs are first-pass, generated against the evidence above. Claims outside that evidence were required to be labeled as inference by each agent's grounding rules._\n`;
-  return md;
+  const complete = ORDER.filter(key => artifactIsComplete(getArtifact(key), key));
+  const pending = ORDER.filter(key => !artifactIsComplete(getArtifact(key), key));
+  markdown += `## 3. COVERAGE\n\nValidated complete: ${complete.length} of ${ORDER.length} frameworks.\n`;
+  if (pending.length) markdown += `Not complete: ${pending.map(key => FW[key].name).join(", ")}.\n`;
+  markdown += "\nEvery structured claim retains its Known / Inferred / Assumed / Missing basis, confidence, and evidence references where supplied.\n";
+  return markdown;
 }
 
 export default function ExportPage() {
-  const [counts, setCounts] = useState({ e: 0, o: 0 });
+  const [counts, setCounts] = useState({ evidence: 0, artifacts: 0 });
   const [preview, setPreview] = useState("");
 
   useEffect(() => {
-    const e = INTAKE.filter(s => (getBucket(s.key) || "").trim()).length;
-    const o = ORDER.filter(k => (getOutput(k) || "").trim()).length;
-    setCounts({ e, o });
+    setCounts({
+      evidence: INTAKE.filter(source => getBucket(source.key).trim()).length,
+      artifacts: ORDER.filter(key => artifactIsComplete(getArtifact(key), key)).length,
+    });
     setPreview(buildSnapshot());
   }, []);
 
   function download() {
-    const blob = new Blob([buildSnapshot()], { type: "text/markdown" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "liveframeworks-snapshot-" + new Date().toISOString().slice(0, 10) + ".md";
-    a.click();
+    const url = URL.createObjectURL(new Blob([buildSnapshot()], { type: "text/markdown" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `liveframeworks-snapshot-${new Date().toISOString().slice(0, 10)}.md`;
+    anchor.click();
+    URL.revokeObjectURL(url);
   }
 
   return (
     <main>
-      <header style={{ padding: "40px 0 8px" }}>
+      <header className="pipeline-header">
         <div className="eyebrow">Deliverable</div>
         <h1>Engagement Snapshot</h1>
-        <p className="sub">Everything the pipeline knows, compiled: loaded evidence, every locked framework output organized by stage, and a coverage report. One file you can hand to the company.</p>
+        <p className="sub">Loaded evidence, complete structured framework artifacts, provenance, gaps, assumptions, and run coverage in one portable file.</p>
       </header>
 
-      <div className="panel mt" style={{ maxWidth: 720 }}>
+      <div className="panel mt export-summary">
         <div className="i-label">Current state</div>
-        <p style={{ fontSize: 12.5 }}>{counts.e} of {INTAKE.length} evidence buckets loaded · {counts.o} of {ORDER.length} framework outputs locked</p>
+        <p>{counts.evidence} of {INTAKE.length} evidence buckets loaded · {counts.artifacts} of {ORDER.length} framework artifacts complete</p>
         <div className="btnrow">
-          <button className="btn primary" onClick={download}>▸ DOWNLOAD SNAPSHOT (.MD)</button>
-          <button className="btn" onClick={() => window.print()}>⎙ PRINT / PDF</button>
+          <button className="btn primary" onClick={download}>DOWNLOAD SNAPSHOT (.MD)</button>
+          <button className="btn" onClick={() => window.print()}>PRINT / PDF</button>
         </div>
       </div>
 
       <div className="panel mt">
         <div className="i-label">Preview</div>
-        <div className="output" style={{ maxHeight: "60vh", overflowY: "auto" }}>{preview}</div>
+        <div className="output export-preview">{preview}</div>
       </div>
     </main>
   );

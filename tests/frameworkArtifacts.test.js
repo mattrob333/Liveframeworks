@@ -1,0 +1,269 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { INTAKE, ORDER } from "../lib/frameworks.js";
+import {
+  ARTIFACT_SCHEMA_VERSION,
+  createFrameworkArtifact,
+  getArtifactDefinition,
+  getArtifactJsonSchema,
+  getArtifactSections,
+  validateFrameworkArtifact,
+} from "../lib/frameworkArtifacts.js";
+import {
+  artifactIsComplete,
+  buildContextSnapshot,
+  deriveActiveAgents,
+  getAffectedFrameworks,
+  getBucketAffectedFrameworks,
+  shouldReplaceCurrentArtifact,
+} from "../lib/agentContext.js";
+import FrameworkArtifact from "../components/FrameworkArtifact.jsx";
+
+const claim = text => ({ text, basis: "known", confidence: "high", evidenceRefs: ["E1"] });
+const evidence = {
+  id: "E1",
+  kind: "intake",
+  title: "Business description",
+  sourceKey: "biz",
+  artifactRevision: null,
+  messageId: null,
+  url: null,
+  retrievedAt: null,
+};
+
+function sampleFromSchema(schema) {
+  if (schema.const !== undefined) return schema.const;
+  if (schema.enum) return schema.enum[0];
+  const type = Array.isArray(schema.type) ? schema.type.find(value => value !== "null") : schema.type;
+  if (type === "object") {
+    return Object.fromEntries(Object.entries(schema.properties || {}).map(([key, value]) => [key, sampleFromSchema(value)]));
+  }
+  if (type === "array") return [sampleFromSchema(schema.items)];
+  if (type === "number") return schema.minimum ?? 1;
+  if (type === "string") return "x";
+  return null;
+}
+
+function completeArtifact(frameworkId) {
+  const artifact = { ...sampleFromSchema(getArtifactJsonSchema(frameworkId)), status: "complete" };
+  if (frameworkId === "raci") {
+    artifact.payload.roles = [
+      { id: "owner", name: "Owner", title: "Executive owner", type: "human" },
+      { id: "worker", name: "Worker", title: "Delivery lead", type: "human" },
+    ];
+    artifact.payload.workItems[0].assignments = [
+      { roleId: "owner", code: "A" },
+      { roleId: "worker", code: "R" },
+    ];
+  }
+  return artifact;
+}
+
+function completeBmcArtifact() {
+  return createFrameworkArtifact("bmc", {
+    status: "complete",
+    title: "Example BMC",
+    summary: "A grounded nine-box business model.",
+    generatedAt: "2026-08-11T00:00:00.000Z",
+    evidence: [evidence],
+    payload: {
+      boxes: {
+        keyPartners: [claim("Cloud infrastructure partners")],
+        keyActivities: [claim("Build and operate the product")],
+        keyResources: [claim("Engineering team and platform")],
+        valuePropositions: [claim("Reduce compliance overhead")],
+        customerRelationships: [claim("High-touch onboarding")],
+        channels: [claim("Direct sales and marketplaces")],
+        customerSegments: [claim("Mid-market regulated teams")],
+        costStructure: [claim("Engineering and cloud compute")],
+        revenueStreams: [claim("Subscription and implementation fees")],
+      },
+    },
+  });
+}
+
+test("all 15 frameworks expose a schema and canonical renderer definition", () => {
+  assert.equal(ORDER.length, 15);
+  for (const frameworkId of ORDER) {
+    const definition = getArtifactDefinition(frameworkId);
+    const schema = getArtifactJsonSchema(frameworkId);
+    assert.ok(definition, `${frameworkId} definition missing`);
+    assert.ok(definition.sections.length > 0, `${frameworkId} sections missing`);
+    assert.equal(schema.type, "object");
+    assert.equal(schema.properties.frameworkId.const, frameworkId);
+    assert.equal(schema.properties.schemaVersion.const, ARTIFACT_SCHEMA_VERSION);
+    const structural = validateFrameworkArtifact(createFrameworkArtifact(frameworkId), frameworkId, { requireContent: false });
+    assert.equal(structural.valid, true, `${frameworkId}: ${structural.errors.join("; ")}`);
+  }
+});
+
+test("the validated dependency DAG unlocks the exact eight waterfall waves", () => {
+  const expectedWaves = [
+    ["bmc"],
+    ["fiveforces", "pestle", "vrio", "jtbd", "sevens"],
+    ["swot", "blueocean", "vpc"],
+    ["ansoff", "kano"],
+    ["threehorizons"],
+    ["bsc"],
+    ["toc"],
+    ["raci"],
+  ];
+  const artifacts = {};
+  const previouslyReady = new Set();
+
+  for (const expected of expectedWaves) {
+    const ready = deriveActiveAgents(artifacts);
+    const newlyReady = ready.filter(key => !previouslyReady.has(key));
+    assert.deepEqual(newlyReady, expected);
+    newlyReady.forEach(key => {
+      previouslyReady.add(key);
+      artifacts[key] = completeArtifact(key);
+    });
+  }
+
+  assert.deepEqual(deriveActiveAgents(artifacts), ORDER);
+});
+
+test("Business Model Canvas validates only when every canonical box has supported content", () => {
+  const artifact = completeBmcArtifact();
+  const result = validateFrameworkArtifact(artifact, "bmc", { requireContent: true });
+  assert.equal(result.valid, true, result.errors.join("\n"));
+  assert.equal(getArtifactSections("bmc", artifact).length, 9);
+
+  artifact.payload.boxes.channels = [];
+  const incomplete = validateFrameworkArtifact(artifact, "bmc", { requireContent: true });
+  assert.equal(incomplete.valid, false);
+  assert.ok(incomplete.errors.some(error => error.includes("Channels")));
+});
+
+test("needs_input and malformed artifacts never unlock downstream agents", () => {
+  const artifacts = { bmc: { frameworkId: "bmc", status: "needs_input" } };
+  assert.deepEqual(deriveActiveAgents(artifacts), ["bmc"]);
+
+  artifacts.bmc = completeArtifact("bmc");
+  assert.deepEqual(deriveActiveAgents(artifacts), ["bmc", "fiveforces", "pestle", "vrio", "jtbd", "sevens"]);
+
+  artifacts.fiveforces = completeArtifact("fiveforces");
+  artifacts.pestle = completeArtifact("pestle");
+  artifacts.vrio = completeArtifact("vrio");
+  artifacts.jtbd = completeArtifact("jtbd");
+  artifacts.sevens = completeArtifact("sevens");
+  assert.deepEqual(deriveActiveAgents(artifacts), [
+    "bmc", "fiveforces", "pestle", "swot", "vrio", "blueocean", "jtbd", "vpc", "sevens",
+  ]);
+});
+
+test("validated readiness is bound to the framework-map slot", () => {
+  const misplaced = completeArtifact("fiveforces");
+  assert.equal(artifactIsComplete(misplaced, "bmc"), false);
+  assert.deepEqual(deriveActiveAgents({ bmc: misplaced }), ["bmc"]);
+});
+
+test("every bucket mutation invalidates all agents that receive shared context", () => {
+  for (const source of INTAKE) {
+    assert.deepEqual(getBucketAffectedFrameworks(source.key), ORDER, source.key);
+  }
+  assert.deepEqual(getBucketAffectedFrameworks("unknown"), []);
+});
+
+test("needs_input preserves complete, stale, and legacy current artifacts", () => {
+  const complete = completeBmcArtifact();
+  const stale = { ...complete, status: "stale" };
+  const legacy = {
+    frameworkId: "bmc",
+    status: "legacy",
+    payload: { legacyText: "Original plain-text canvas" },
+  };
+
+  assert.equal(shouldReplaceCurrentArtifact(complete, "needs_input", "bmc"), false);
+  assert.equal(shouldReplaceCurrentArtifact(stale, "needs_input", "bmc"), false);
+  assert.equal(shouldReplaceCurrentArtifact(legacy, "needs_input", "bmc"), false);
+  assert.equal(shouldReplaceCurrentArtifact({ ...legacy, frameworkId: "fiveforces" }, "needs_input", "bmc"), true);
+  assert.equal(shouldReplaceCurrentArtifact(null, "needs_input", "bmc"), true);
+  assert.equal(shouldReplaceCurrentArtifact({ frameworkId: "bmc", status: "needs_input" }, "needs_input", "bmc"), true);
+  assert.equal(shouldReplaceCurrentArtifact(legacy, "complete", "bmc"), true);
+});
+
+test("context snapshots preserve full evidence and exact direct upstream revisions", () => {
+  const longEvidence = "x".repeat(12_000);
+  const upstream = { ...completeArtifact("bmc"), revision: 3, summary: "Current business model" };
+  upstream.payload.boxes.valuePropositions = [{ ...claim("Grounded offer"), evidenceRefs: ["x"] }];
+  const snapshot = buildContextSnapshot(
+    "fiveforces",
+    { biz: longEvidence, market: "Competitor A" },
+    { bmc: upstream },
+    "Create Five Forces",
+  );
+
+  assert.equal(snapshot.buckets.find(item => item.key === "biz").content.length, 12_000);
+  assert.equal(snapshot.manifest.truncationApplied, false);
+  assert.deepEqual(snapshot.manifest.omissions, []);
+  assert.equal(snapshot.directArtifacts.length, 1);
+  assert.equal(snapshot.directArtifacts[0].revision, 3);
+  assert.match(snapshot.trustBoundary, /untrusted evidence/i);
+});
+
+test("stale propagation reaches every transitive descendant and snapshots preserve legacy text", () => {
+  assert.deepEqual(getAffectedFrameworks(["bmc"], false), ORDER.filter(key => key !== "bmc"));
+  assert.deepEqual(getAffectedFrameworks(["jtbd"], false), ["vpc", "kano", "bsc", "toc", "raci"]);
+
+  const snapshot = buildContextSnapshot("bmc", {}, {
+    bmc: {
+      frameworkId: "bmc",
+      status: "legacy",
+      title: "Legacy output",
+      summary: "The complete original plain-text canvas",
+      payload: { legacyText: "The complete original plain-text canvas" },
+    },
+  });
+  assert.equal(snapshot.manifest.legacyArtifactCount, 1);
+  assert.equal(snapshot.legacyArtifacts[0].content, "The complete original plain-text canvas");
+});
+
+test("top-level grounded claims resolve evidence and duplicate evidence ids are rejected", () => {
+  const artifact = completeBmcArtifact();
+  artifact.assumptions = [{ ...claim("Assumed procurement window"), evidenceRefs: ["MISSING-ASSUMPTION"] }];
+  artifact.gaps = [{ ...claim("Unknown renewal terms"), evidenceRefs: ["MISSING-GAP"] }];
+
+  const unresolved = validateFrameworkArtifact(artifact, "bmc", { requireContent: true });
+  assert.equal(unresolved.valid, false);
+  assert.ok(unresolved.errors.some(error => error.includes("MISSING-ASSUMPTION")));
+  assert.ok(unresolved.errors.some(error => error.includes("MISSING-GAP")));
+
+  artifact.assumptions = [claim("Assumed procurement window")];
+  artifact.gaps = [claim("Unknown renewal terms")];
+  artifact.evidence = [evidence, { ...evidence, title: "Duplicate evidence entry" }];
+  const duplicate = validateFrameworkArtifact(artifact, "bmc", { requireContent: true });
+  assert.equal(duplicate.valid, false);
+  assert.ok(duplicate.errors.some(error => error.includes("Evidence id E1 is duplicated")));
+});
+
+test("RACI renders its canonical Roles section as the default selectable region", () => {
+  const artifact = completeArtifact("raci");
+  artifact.payload.roles[0].name = "Morgan";
+  artifact.payload.workItems.push({
+    ...structuredClone(artifact.payload.workItems[0]),
+    id: "work-2",
+    name: "Second governed work item",
+  });
+  const html = renderToStaticMarkup(
+    React.createElement(FrameworkArtifact, { artifact, frameworkId: "raci", onSelect: () => {} }),
+  );
+  assert.match(html, /aria-label="Open Roles"/);
+  assert.match(html, /aria-pressed="true"/);
+  assert.ok(html.includes("Morgan"));
+
+  const workMatrixHtml = renderToStaticMarkup(
+    React.createElement(FrameworkArtifact, {
+      artifact,
+      frameworkId: "raci",
+      selectedSectionId: "workItems",
+      onSelect: () => {},
+    }),
+  );
+  assert.doesNotMatch(workMatrixHtml, /<tr[^>]*role="button"/);
+  assert.equal((workMatrixHtml.match(/aria-selected="true"/g) || []).length, 0);
+  assert.equal((workMatrixHtml.match(/aria-selected="false"/g) || []).length, 2);
+});
