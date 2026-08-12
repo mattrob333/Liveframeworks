@@ -3,7 +3,7 @@ import { FW, ORDER } from "@/lib/frameworks";
 
 export const metadata = {
   title: "LiveFrameworks — The Frameworks Are Alive Now",
-  description: "Sixteen classic strategy frameworks, run as live research agents. Paste a company URL, launch the pipeline, and get evidence-cited strategic artifacts that build on each other.",
+  description: "It's like hiring a strategy team for the price of a coffee. Paste your website link — AI agents research your company, your market, and your competitors, then build the strategy maps big consulting firms charge thousands for.",
 };
 
 export default function Landing() {
@@ -11,11 +11,10 @@ export default function Landing() {
     <main className="landing">
       <header className="landing-hero">
         <div className="eyebrow">Fig. 01·A — Field Manual</div>
-        <h1>The Frameworks Are Alive Now</h1>
+        <h1>It&apos;s like hiring a strategy team for the price of a coffee.</h1>
         <p className="landing-sub">
-          Business Model Canvas. Porter&apos;s Five Forces. SWOT. The frameworks every strategist knows —
-          run as <b>live AI agents</b> that research a real company with live web search and build
-          evidence-cited artifacts, each one becoming the exact context for the next.
+          Paste your website link. <b>AI agents</b> research your company, your market, and your
+          competitors — then build the same strategy maps the big consulting firms charge thousands for.
         </p>
         <div className="landing-cta">
           <Link className="btn primary landing-open" href="/pipeline">OPEN THE PIPELINE ▸</Link>

@@ -145,7 +145,7 @@ footer b{color:var(--amber)}
 /* Landing */
 .landing{max-width:880px;margin:0 auto}
 .landing-hero{padding:76px 0 30px;text-align:left}
-.landing-hero h1{font-size:clamp(30px,6vw,52px);margin:14px 0 18px}
+.landing-hero h1{font-size:clamp(27px,4.6vw,44px);margin:14px 0 18px;max-width:22ch}
 .landing-sub{color:var(--dim);font-size:15px;line-height:1.75;max-width:64ch}
 .landing-sub b{color:var(--amber);font-weight:600}
 .landing-cta{margin-top:30px}
