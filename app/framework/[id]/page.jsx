@@ -159,7 +159,7 @@ export default function FrameworkPage(props) {
   const myBuckets = useMemo(() => INTAKE.filter(source => source.readers.includes(id)), [id]);
 
   if (!framework) {
-    return <main className="page-message"><h1>Unknown framework</h1><p><Link href="/">← Back to the pipeline</Link></p></main>;
+    return <main className="page-message"><h1>Unknown framework</h1><p><Link href="/pipeline">← Back to the pipeline</Link></p></main>;
   }
   if (!hydrated) {
     return <main className="page-loading"><LoadingState label="Opening framework" variant="Drive" /></main>;
@@ -190,7 +190,7 @@ export default function FrameworkPage(props) {
   return (
     <main className="framework-page">
       <div className="workspace-toolbar">
-        <Link className="workspace-close" href="/">← CLOSE · BACK TO PIPELINE</Link>
+        <Link className="workspace-close" href="/pipeline">← CLOSE · BACK TO PIPELINE</Link>
         <div className="workspace-meta">
           <span>{complete ? `REVISION ${artifact.revision || 1}` : stale ? `REVISION ${artifact.revision || 1} · STALE` : legacy ? "LEGACY OUTPUT" : "NO ARTIFACT"}</span>
           <span>{artifact?.model || latestRun?.model || "claude-sonnet-5"}</span>
@@ -244,7 +244,7 @@ export default function FrameworkPage(props) {
               {legacy
                 ? <><p>Your previous plain-text result is preserved below, but it cannot populate the interactive framework safely. Regenerate this framework from the pipeline.</p><div className="output legacy-output">{getOutput(id)}</div></>
                 : <p>Return to the pipeline, select this framework, and run “Research & build framework.” The completed structured template will open here automatically.</p>}
-              <Link className="btn primary" href="/">OPEN PIPELINE</Link>
+              <Link className="btn primary" href="/pipeline">OPEN PIPELINE</Link>
             </section>
           )}
 
@@ -254,7 +254,7 @@ export default function FrameworkPage(props) {
               <div className="linkchips">
                 {myBuckets.map(source => {
                   const loaded = Boolean(getBucket(source.key).trim());
-                  return <Link key={source.key} href="/" className={loaded ? "" : "off"}>{source.name} · {loaded ? "loaded" : "empty"}</Link>;
+                  return <Link key={source.key} href="/pipeline" className={loaded ? "" : "off"}>{source.name} · {loaded ? "loaded" : "empty"}</Link>;
                 })}
               </div>
               <div className="i-sec">
@@ -289,10 +289,10 @@ export default function FrameworkPage(props) {
               return (
                 <div className="linkchips">
                   {nextUp.slice(0, 3).map(key => (
-                    <Link key={key} className="next-chip" href={`/?select=${key}`}>{FW[key].icon} RUN {FW[key].name} ▸</Link>
+                    <Link key={key} className="next-chip" href={`/pipeline?select=${key}`}>{FW[key].icon} RUN {FW[key].name} ▸</Link>
                   ))}
                   {!nextUp.length && <span className="muted-copy">Every unlocked framework is complete — regenerate one, or load more evidence.</span>}
-                  <Link href="/" className="next-back">← BACK TO PIPELINE</Link>
+                  <Link href="/pipeline" className="next-back">← BACK TO PIPELINE</Link>
                 </div>
               );
             })()}

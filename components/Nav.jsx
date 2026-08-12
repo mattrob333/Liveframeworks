@@ -16,7 +16,7 @@ export default function Nav() {
   return (
     <nav className="topnav" aria-label="Primary navigation">
       <Link className="brand" href="/">LIVEFRAMEWORKS</Link>
-      <Link href="/" className={path === "/" ? "on" : ""}>Pipeline</Link>
+      <Link href="/pipeline" className={path === "/pipeline" ? "on" : ""}>Pipeline</Link>
       <Link href="/export" className={path === "/export" ? "on" : ""}>Export</Link>
       <Link href="/settings" className={path === "/settings" ? "on" : ""}>
         <span className={"keydot" + (hasKey ? " ok" : "")}></span>API Key
