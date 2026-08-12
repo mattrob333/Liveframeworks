@@ -185,6 +185,7 @@ footer b{color:var(--amber)}
 .run-actions{display:flex;flex-wrap:wrap;gap:8px}
 .run-actions .status{width:100%;margin:0 0 4px}
 .run-cancel{margin-top:10px}
+.run-detail{margin-top:10px;border-left:2px solid var(--amber);background:var(--amber-dim);padding:8px 11px;color:var(--amber);font-size:11.5px;line-height:1.5;min-height:34px;overflow-wrap:anywhere}
 .btn.danger{border-color:#D36B6B;color:#F28A8A}
 .btn:disabled,.chat-input button:disabled{opacity:.45;cursor:not-allowed}
 .run-error{margin-top:14px;border:1px solid #8C4B4B;border-left:2px solid #F28A8A;padding:10px 12px;color:#F2B2B2;font-size:11.5px;background:rgba(140,75,75,.1)}

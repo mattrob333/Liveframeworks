@@ -74,6 +74,7 @@ export default function Pipeline() {
   const [instruction, setInstruction] = useState("");
   const [busyFramework, setBusyFramework] = useState("");
   const [phase, setPhase] = useState(0);
+  const [runDetail, setRunDetail] = useState("");
   const [startedAt, setStartedAt] = useState(null);
   const [hydrated, setHydrated] = useState(false);
   const [buckets, setBuckets] = useState({});
@@ -133,15 +134,7 @@ export default function Pipeline() {
     setBucketStatus("");
   }, [selectedIntake]);
 
-  useEffect(() => {
-    if (!busyFramework) return undefined;
-    const timers = [
-      window.setTimeout(() => setPhase(1), 1600),
-      window.setTimeout(() => setPhase(2), 13000),
-      window.setTimeout(() => setPhase(3), 30000),
-    ];
-    return () => timers.forEach(timer => window.clearTimeout(timer));
-  }, [busyFramework]);
+  // Phases are driven by real progress events streamed from the server run.
 
   const mobileDialogOpen = isMobileInspector && Boolean(selectedFramework || selectedIntake);
 
@@ -378,6 +371,7 @@ export default function Pipeline() {
     abortRef.current = controller;
     setBusyFramework(frameworkId);
     setPhase(0);
+    setRunDetail("Snapshotting evidence and opening the run…");
     setStartedAt(Date.now());
     setRunMessage("");
     refresh();
@@ -397,13 +391,63 @@ export default function Pipeline() {
           revision,
         }),
       });
-      const raw = await response.text();
-      let data;
-      try { data = JSON.parse(raw); } catch { data = { error: `The generation service returned an unreadable response (${response.status}).` }; }
+
+      let data = null;
+      const contentType = response.headers.get("content-type") || "";
+      if (response.ok && contentType.includes("ndjson") && response.body) {
+        let searchCount = 0;
+        const handleEvent = event => {
+          if (event.type === "phase") {
+            if (event.phase === "research") { setPhase(1); setRunDetail("Reading the company and planning searches…"); }
+            else if (event.phase === "synthesis") { setPhase(2); setRunDetail("Structuring the framework artifact…"); }
+            else if (event.phase === "repair") { setPhase(3); setRunDetail("Tightening the artifact to fit the schema…"); }
+            else if (event.phase === "validating") { setPhase(3); setRunDetail("Validating the artifact against its schema…"); }
+          } else if (event.type === "search_query" && event.query) {
+            searchCount += 1;
+            setPhase(1);
+            setRunDetail(`Search ${searchCount}: “${event.query}”`);
+          } else if (event.type === "search_results") {
+            setRunDetail(`Reading ${event.count} search result${event.count === 1 ? "" : "s"}…`);
+          } else if (event.type === "writing") {
+            if (event.phase === "research") setRunDetail("Compiling the evidence brief…");
+            else setRunDetail(`Writing the artifact… ~${Math.max(1, Math.round(event.chars / 4))} tokens`);
+          } else if (event.type === "research_complete") {
+            setPhase(2);
+            setRunDetail(`Research done — ${event.searches} searches, ${event.sources} sources.`);
+          } else if (event.type === "result") {
+            data = event;
+          } else if (event.type === "error") {
+            data = { error: event.error };
+          }
+        };
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        const consumeLine = line => {
+          if (!line.trim()) return;
+          try { handleEvent(JSON.parse(line)); } catch { /* skip malformed line */ }
+        };
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop();
+          lines.forEach(consumeLine);
+        }
+        consumeLine(buffer);
+        if (!data) throw new Error("The run stream ended without a result. Retry the run.");
+      } else {
+        const raw = await response.text();
+        try { data = JSON.parse(raw); } catch { data = { error: `The generation service returned an unreadable response (${response.status}).` }; }
+      }
+
       if (!response.ok || data.error) {
         const message = typeof data.error === "string" ? data.error : data.error?.message;
         throw new Error(message || "Framework generation failed.");
       }
+      setRunDetail("Saving the validated artifact…");
 
       const generationStatus = data.status || data.artifact?.status || "complete";
 
@@ -507,6 +551,7 @@ export default function Pipeline() {
       abortRef.current = null;
       setBusyFramework("");
       setStartedAt(null);
+      setRunDetail("");
     }
   }
 
@@ -604,7 +649,8 @@ export default function Pipeline() {
               {busyFramework === selectedFramework ? (
                 <div className="i-sec">
                   <LoadingState label={`${framework.role} is building`} variant={phase >= 3 ? "Orbit" : "Drive"} phases={RUN_PHASES} phase={phase} startedAt={startedAt} />
-                  <p className="status run-progress-note">Phases are estimated while the research request is active. Deep research can take a few minutes; the run has a five-minute server limit and can be cancelled anytime.</p>
+                  {runDetail && <p className="run-detail" aria-live="polite">▸ {runDetail}</p>}
+                  <p className="status run-progress-note">Live progress streams from the run. Deep research can take a few minutes; the run has a five-minute server limit and can be cancelled anytime.</p>
                   <button className="btn danger run-cancel" onClick={() => abortRef.current?.abort()}>CANCEL RUN</button>
                 </div>
               ) : (
