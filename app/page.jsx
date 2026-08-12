@@ -520,14 +520,14 @@ export default function Pipeline() {
 
   return (
     <main>
-      <header ref={pipelineHeaderRef} className="pipeline-header">
-        <div className="eyebrow">Fig. 01·B — Agent Roster</div>
-        <h1>The Frameworks Are Alive Now</h1>
-        <p className="sub">Load the evidence you have, launch a ready framework, and let each validated artifact become the exact context for the agents downstream.</p>
-      </header>
-
       <div className="pipeline-grid">
         <div ref={pipelineContentRef}>
+          <header ref={pipelineHeaderRef} className="pipeline-header">
+            <div className="eyebrow">Fig. 01·B — Agent Roster</div>
+            <h1>The Frameworks Are Alive Now</h1>
+            <p className="sub">Load the evidence you have, launch a ready framework, and let each validated artifact become the exact context for the agents downstream.</p>
+          </header>
+
           <section className="stage" data-num="00">
             <div className="stage-title">Live Intake</div>
             <div className="stage-role">Evidence buckets every agent reads — select one to load or update its context</div>
