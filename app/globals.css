@@ -339,8 +339,24 @@ body:has(.framework-page) footer{display:none}
   .pipeline-grid,.framework-workspace{grid-template-columns:1fr}
   .pipeline-inspector{position:static;max-height:none}
   .pipeline-inspector:not(.is-open){display:none}
-  .pipeline-inspector.is-open{position:fixed;inset:12px;z-index:60;max-height:calc(100vh - 24px);overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.72)}
-  .mobile-inspector-close{position:sticky;top:-20px;z-index:3;display:block;width:100%;margin:-8px 0 14px;padding:9px 10px;border:1px solid var(--faint);background:var(--panel2);color:var(--amber);font-size:10px;letter-spacing:.12em;text-align:right;cursor:pointer}
+  /* Full-bleed inspector: no frame, no page peeking through, content gets the room. */
+  .pipeline-inspector.is-open{position:fixed;inset:0;z-index:60;margin:0;max-height:100dvh;overflow-y:auto;border:0;box-shadow:none;padding:16px 18px calc(20px + env(safe-area-inset-bottom))}
+  .mobile-inspector-close{position:sticky;top:-16px;z-index:3;display:block;width:calc(100% + 36px);margin:-16px -18px 14px;padding:13px 16px;border:0;border-bottom:1px solid var(--faint);background:var(--panel2);color:var(--amber);font-size:12px;letter-spacing:.12em;text-align:right;cursor:pointer}
+  .run-progress-note{display:none}
+  /* A touch more type size on small screens — same density, easier on the eyes. */
+  .i-label{font-size:11px}
+  .i-sec li,.i-fold li{font-size:13px}
+  .i-sec .read-src,.i-fold .read-src{font-size:12.5px}
+  .voice,.i-insight{font-size:13.5px}
+  .toolchips span,.docchips span{font-size:11.5px}
+  .linkchips a,.linkchips button{font-size:12.5px}
+  .chip{font-size:12px}
+  .note,.status,.stage-role{font-size:11.5px}
+  .node .n-out{font-size:11px}
+  .run-detail{font-size:12.5px}
+  .inspector-heading p,.inspector-muted,.inspector-empty p{font-size:12.5px}
+  .msg{font-size:13.5px}
+  .tmpl{font-size:12px}
   body:has(.pipeline-inspector.is-open){overflow:hidden}
   .chat-rail{position:static;height:min(720px,85vh);margin-top:10px}
   .framework-provenance{grid-template-columns:1fr}
