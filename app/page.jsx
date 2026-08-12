@@ -601,86 +601,77 @@ export default function Pipeline() {
                 <span className={`framework-state state-${selectedStatus}`}>{runStatusLabel(selectedStatus)}</span>
               </div>
 
-              <div className="i-sec">
-                <p className="voice">{framework.voice}</p>
-              </div>
-
-              <div className="i-sec">
-                <div className="i-label">Reads (inputs)</div>
-                <ul>
-                  {framework.reads.map(([input, from], index) => (
-                    <li key={index}><b>{input}</b> <span className="read-src">· {from}</span></li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="i-sec">
-                <div className="i-label">Tool calls</div>
-                <div className="toolchips">{framework.tools.map(tool => <span key={tool}>{tool}</span>)}</div>
-              </div>
-
-              <div className="i-sec">
-                <div className="i-label">Working documents</div>
-                <div className="docchips">{framework.docs.map(doc => <span key={doc}>{doc}</span>)}</div>
-              </div>
-
-              <div className="i-sec">
-                <div className="i-label">Insight produced</div>
-                <p className="i-insight">{framework.insight}</p>
-              </div>
-
-              {framework.feeds.length > 0 && (
-                <div className="i-sec">
-                  <div className="i-label">Wakes these agents</div>
-                  <div className="linkchips">
-                    {framework.feeds.map(key => (
-                      <button key={key} onClick={() => selectFramework(key)} disabled={Boolean(busyFramework)}>{FW[key].icon} {FW[key].name}</button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="i-sec">
-                <div className="i-label">Run instruction</div>
-                <div className="starter-prompt">Read the saved context, research the company, and create the {framework.name}.</div>
-                <label className="field-label" htmlFor="run-direction">Optional additional direction</label>
-                <textarea
-                  id="run-direction"
-                  className="area compact"
-                  value={instruction}
-                  onChange={event => setInstruction(event.target.value)}
-                  placeholder="Add a market, geography, time horizon, or decision to emphasize…"
-                  disabled={Boolean(busyFramework)}
-                />
-              </div>
-
-              <div className="i-sec">
-                <div className="i-label">Context readiness</div>
-                <ul className="readiness-list">
-                  <li><b>{Object.values(buckets).filter(value => value.trim()).length}</b> saved evidence buckets</li>
-                  <li><b>{SOURCES[selectedFramework].filter(key => artifactIsComplete(artifacts[key], key)).length}/{SOURCES[selectedFramework].length}</b> direct upstream artifacts complete</li>
-                  <li><b>Full</b> direct context; no silent clipping</li>
-                </ul>
-                {unmet.length > 0 && <p className="status warning">Complete first: {unmet.map(key => FW[key].name).join(" · ")}</p>}
-              </div>
-
               {busyFramework === selectedFramework ? (
                 <div className="i-sec">
                   <LoadingState label={`${framework.role} is building`} variant={phase >= 3 ? "Orbit" : "Drive"} phases={RUN_PHASES} phase={phase} startedAt={startedAt} />
-                  <p className="status run-progress-note">Phases are estimated while the research request is active. The run has a three-minute server limit and can be cancelled anytime.</p>
+                  <p className="status run-progress-note">Phases are estimated while the research request is active. Deep research can take a few minutes; the run has a five-minute server limit and can be cancelled anytime.</p>
                   <button className="btn danger run-cancel" onClick={() => abortRef.current?.abort()}>CANCEL RUN</button>
                 </div>
               ) : (
-                <div className="i-sec run-actions">
-                  {!getKey() && <p className="status warning">An Anthropic API key is required. <Link href="/settings">Open Settings →</Link></p>}
-                  {artifactIsComplete(selectedArtifact, selectedFramework) && (
-                    <Link className="btn" href={`/framework/${selectedFramework}`}>OPEN COMPLETED ARTIFACT</Link>
+                <>
+                  <div className="i-sec">
+                    <p className="voice">{framework.voice}</p>
+                  </div>
+
+                  <details className="i-fold">
+                    <summary><span className="i-label">Reads (inputs)</span></summary>
+                    <ul>
+                      {framework.reads.map(([input, from], index) => (
+                        <li key={index}><b>{input}</b> <span className="read-src">· {from}</span></li>
+                      ))}
+                    </ul>
+                  </details>
+
+                  <details className="i-fold">
+                    <summary><span className="i-label">Tool calls</span></summary>
+                    <div className="toolchips">{framework.tools.map(tool => <span key={tool}>{tool}</span>)}</div>
+                  </details>
+
+                  <details className="i-fold">
+                    <summary><span className="i-label">Working documents</span></summary>
+                    <div className="docchips">{framework.docs.map(doc => <span key={doc}>{doc}</span>)}</div>
+                  </details>
+
+                  <div className="i-sec">
+                    <div className="i-label">Insight produced</div>
+                    <p className="i-insight">{framework.insight}</p>
+                  </div>
+
+                  {framework.feeds.length > 0 && (
+                    <div className="i-sec">
+                      <div className="i-label">Wakes these agents</div>
+                      <div className="linkchips">
+                        {framework.feeds.map(key => (
+                          <button key={key} onClick={() => selectFramework(key)}>{FW[key].icon} {FW[key].name}</button>
+                        ))}
+                      </div>
+                    </div>
                   )}
-                  <button className="btn primary" onClick={() => runFramework(selectedFramework)} disabled={!selectedReady || Boolean(busyFramework)}>
-                    {artifactIsComplete(selectedArtifact, selectedFramework) ? "RESEARCH & REGENERATE" : "RESEARCH & BUILD FRAMEWORK"} ▸
-                  </button>
-                  {selectedArtifact?.status === "legacy" && <p className="status warning">This is a legacy plain-text result. Regenerate it to create a validated interactive artifact.</p>}
-                </div>
+
+                  <details className="i-fold" open={Boolean(instruction.trim())}>
+                    <summary><span className="i-label">Optional run direction</span></summary>
+                    <textarea
+                      id="run-direction"
+                      className="area compact"
+                      aria-label="Optional additional direction"
+                      value={instruction}
+                      onChange={event => setInstruction(event.target.value)}
+                      placeholder="Add a market, geography, time horizon, or decision to emphasize…"
+                    />
+                  </details>
+
+                  <div className="i-sec run-actions">
+                    {unmet.length > 0 && <p className="status warning">Complete first: {unmet.map(key => FW[key].name).join(" · ")}</p>}
+                    {!getKey() && <p className="status warning">An Anthropic API key is required. <Link href="/settings">Open Settings →</Link></p>}
+                    {artifactIsComplete(selectedArtifact, selectedFramework) && (
+                      <Link className="btn" href={`/framework/${selectedFramework}`}>OPEN COMPLETED ARTIFACT</Link>
+                    )}
+                    <button className="btn primary" onClick={() => runFramework(selectedFramework)} disabled={!selectedReady}>
+                      {artifactIsComplete(selectedArtifact, selectedFramework) ? "RESEARCH & REGENERATE" : "RESEARCH & BUILD FRAMEWORK"} ▸
+                    </button>
+                    {selectedArtifact?.status === "legacy" && <p className="status warning">This is a legacy plain-text result. Regenerate it to create a validated interactive artifact.</p>}
+                  </div>
+                </>
               )}
               {runMessage && <div className="run-error" role="alert">{runMessage}</div>}
             </div>

@@ -149,6 +149,24 @@ function CompactItem({ item }) {
   );
 }
 
+// Canvas cells stay a fixed shape: a few plain bullets, no metadata badges or
+// nested detail. The full readout lives in the detail region below on click.
+function DigestItem({ item }) {
+  if (item === null || item === undefined || item === "") return <EmptyFinding />;
+  const entries = Array.isArray(item) ? item : [item];
+  if (!entries.length) return <EmptyFinding />;
+  const shown = entries.slice(0, 3);
+  return (
+    <ul className="artifact-findings artifact-digest">
+      {shown.map((entry, index) => {
+        const text = textValue(entry);
+        return <li key={entry?.id || `${text}-${index}`}>{text === "-" ? <EmptyFinding /> : text}</li>;
+      })}
+      {entries.length > 3 && <li className="artifact-more">+{entries.length - 3} more — open for the full readout</li>}
+    </ul>
+  );
+}
+
 function sectionPayload(artifact, section) {
   return getArtifactValue(artifact, section.path);
 }
@@ -158,7 +176,7 @@ function rowSelectionId(section, row, index) {
   return `${section?.id || "rows"}:${stableId}${row?.id ? "" : `:${index}`}`;
 }
 
-function SelectableSection({ artifact, section, onSelect, selectedSectionId, className = "" }) {
+function SelectableSection({ artifact, section, onSelect, selectedSectionId, className = "", digest = false }) {
   const data = sectionPayload(artifact, section);
   const choose = () => onSelect({ ...section, frameworkId: artifact.frameworkId, data });
   const selected = selectedSectionId === section.id;
@@ -175,7 +193,7 @@ function SelectableSection({ artifact, section, onSelect, selectedSectionId, cla
       aria-pressed={selected}
     >
       <span className="artifact-section-title i-label t">{section.label}</span>
-      <div className="artifact-section-content d"><CompactItem item={data} /></div>
+      <div className="artifact-section-content d">{digest ? <DigestItem item={data} /> : <CompactItem item={data} />}</div>
     </div>
   );
 }
@@ -191,6 +209,7 @@ function CanvasView({ artifact, definition, onSelect, selectedSectionId }) {
           onSelect={onSelect}
           selectedSectionId={selectedSectionId}
           className={`bmc-cell ${BMC_CLASSES[section.id] || ""}`}
+          digest
         />
       ))}
     </div>
@@ -354,6 +373,7 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
   const controlled = selectedSectionId !== undefined;
   const [internalSectionId, setInternalSectionId] = useState(firstSectionId);
   const [internalRowId, setInternalRowId] = useState("");
+  const [summaryExpanded, setSummaryExpanded] = useState(false);
   const activeSectionId = (controlled ? selectedSectionId : internalSectionId) || firstSectionId;
 
   useEffect(() => { setInternalSectionId(firstSectionId); }, [normalized.frameworkId, firstSectionId]);
@@ -381,7 +401,22 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
       <header className="artifact-header">
         <div className="artifact-kicker">Structured framework · revision {normalized.revision}</div>
         <h2 className="artifact-title">{normalized.title || definition.name}</h2>
-        {normalized.summary && <p className="artifact-summary">{normalized.summary}</p>}
+        {normalized.summary && (() => {
+          const full = normalized.summary.trim();
+          const sentences = full.match(/[^.!?]+[.!?]+["')\]]*\s*/g) || [full];
+          const short = sentences.slice(0, 2).join("").trim();
+          const truncated = short.length < full.length;
+          return (
+            <p className="artifact-summary">
+              {summaryExpanded || !truncated ? full : short}
+              {truncated && (
+                <button className="summary-toggle" onClick={() => setSummaryExpanded(value => !value)}>
+                  {summaryExpanded ? "show less" : "full summary"}
+                </button>
+              )}
+            </p>
+          );
+        })()}
       </header>
       {!validation.valid && (
         <div className="artifact-warning" role="status">
