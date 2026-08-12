@@ -361,4 +361,330 @@ export default function Pipeline() {
     };
     const persisted = upsertRun(frameworkId, record);
     if (!persisted.ok) {
-      s]u€ãhëÈÏ∂ªßq´^v‚"¬∞–¢7FGW3¢S"¿–¢6ˆFS¢'&W6V&6ÖˆñÊ6ˆ◊∆WFR"¿–¢&WG'ñ&∆S¢G'VR¿–¢“ì∞–¢––¢ñbá7F˜&V6ˆ‚”“&VÊE˜GW&‚"í∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"ÜFÜR&W6V&6ÇÜ6R7F˜VBVÊWáV7FVF«íÇG∑7F˜&V6ˆ‚«¬'VÊ∂Ê˜v‚'“íÊ¬∞–¢7FGW3¢S"¿–¢6ˆFS¢'&W6V&6ÖˆñÊ6ˆ◊∆WFR"¿–¢&WG'ñ&∆S¢G'VR¿–¢“ì∞–¢––¢'&V≥∞–¢––†–¢ñbá7F˜&V6ˆ‚””“'W6U˜GW&‚"í∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"Ç%vV"&W6V&6ÇFñBÊ˜BfñÊó6ÇgFW"FÜR6ˆÁFñÁVFñˆ‚∆ñ÷óB‚"¬∞–¢7FGW3¢SB¿–¢6ˆFS¢'&W6V&6Öˆ6ˆÁFñÁVFñˆÂˆ∆ñ÷óB"¿–¢&WG'ñ&∆S¢G'VR¿–¢“ì∞–¢––†–¢6ˆÁ7BFWFñ«2“6ˆ∆∆V7E&W6V&6ÑFWFñ«2á&˜fñFW%GW&Á2ì∞–¢6ˆÁ7BFWáB“&˜fñFW%GW&Á2Ê÷áGW&‚”‚FWáDg&ˆ‘6ˆÁFVÁBáGW&‚Ê6ˆÁFVÁBííÊfñ«FW"Ñ&ˆˆ∆V‚íÊ¶ˆñ‚Ç%∆Â∆‚"íÁG&ñ“Çì∞–¢ñbÇFWáBí∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"Ç%FÜR&W6V&6ÇÜ6R6ˆ◊∆WFVBvóFÜ˜WBW6&∆RWfñFVÊ6R'&ñVb‚"¬∞–¢7FGW3¢S"¿–¢6ˆFS¢&V◊Gï˜&W6V&6Ç"¿–¢&WG'ñ&∆S¢G'VR¿–¢“ì∞–¢––†–¢ñbÇFWFñ«2Á6˜W&6W2Ê∆VÊwFÇbbFWFñ«2ÁFˆˆƒW'&˜'2Ê∆VÊwFÇí∞–¢6ˆÁ7B&FT∆ñ÷óFVB“FWFñ«2ÁFˆˆƒW'&˜'2Á6ˆ÷RÜW'&˜"”‚W'&˜"Ê6ˆFR””“'Fˆıˆ÷Áï˜&WVW7G2"ì∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"Ç%vV"&W6V&6Çv2VÊfñ∆&∆RÊB&ˆGV6VBÊÚ6˜W&6W2‚"¬∞–¢7FGW3¢&FT∆ñ÷óFVBÚC#í¢S"¿–¢6ˆFS¢&FT∆ñ÷óFVBÚ'vV%˜6V&6Ö˜&FUˆ∆ñ÷óFVB"¢'vV%˜6V&6Öˆfñ∆VB"¿–¢&WG'ñ&∆S¢G'VR¿–¢FWFñ«3¢≤FˆˆƒW'&˜'3¢FWFñ«2ÁFˆˆƒW'&˜'2“¿–¢“ì∞–¢––†–¢&WGW&‚∞–¢&˜fñFW%GW&Á2¿–¢&˜fñFW%&WVW7DñG2¿–¢7F˜&V6ˆ‚¿–¢FWáB¿–¢‚‚ÊFWFñ«2¿–¢W6vR¿–¢”∞–ß––†–¶gVÊ7Fñˆ‚6˜W&6U&Vvó7G'íá&W6V&6Çí∞–¢ñbÇ&W6V&6ÇÁ6˜W&6W2Ê∆VÊwFÇí&WGW&‚$ÊÚvV"6˜W&6W2vW&R&WGW&ÊVB‚G&VBWáFW&Ê¬6∆ñ◊22ñÊfW&VÊ6R‚#∞–¢&WGW&‚&W6V&6ÇÁ6˜W&6W2Ê÷á6˜W&6R”‚∞–¢6ˆÁ7BWÜ6W'G2“&W6V&6ÇÊ6óFFñˆÁ0–¢Êfñ«FW"Ü6óFFñˆ‚”‚6óFFñˆ‚Á6˜W&6TñB””“6˜W&6RÁ6˜W&6TñBbb6óFFñˆ‚Ê6óFVEFWáBê–¢Ê÷Ü6óFFñˆ‚”‚6óFFñˆ‚Ê6óFVEFWáBê–¢Á6∆ñ6RÉ¬2ì∞–¢&WGW&‚≤G∑6˜W&6RÁ6˜W&6TñG’“G∑6˜W&6RÁFóF∆W’∆ÂU$√¢G∑6˜W&6RÁW&«“G∂WÜ6W'G2Ê∆VÊwFÇÚ∆‰6óFVBWÜ6W'G3•∆‚G∂WÜ6W'G2Ê÷áFWáB”‚“G∑FWáG÷íÊ¶ˆñ‚Ç%∆‚"ó÷¢"'÷∞–¢“íÊ¶ˆñ‚Ç%∆Â∆‚"ì∞–ß––†–¶gVÊ7Fñˆ‚'Fñf7E66ÜV÷Üg&÷Wv˜&¥ñBí∞–¢6ˆÁ7B66ÜV÷“vWD'Fñf7Dß6ˆÂ66ÜV÷Üg&÷Wv˜&¥ñBì∞–¢ñbÇ66ÜV÷«¬66ÜV÷ÁGóR”“&ˆ&¶V7B"«¬66ÜV÷Á&˜W'FñW2í∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"Ç$ÊÚ7G'V7GW&VB˜WGWB66ÜV÷ó2fñ∆&∆Rf˜"FÜó2g&÷Wv˜&≤‚"¬∞–¢7FGW3¢S¿–¢6ˆFS¢&'Fñf7E˜66ÜV÷ˆ÷ó76ñÊr"¿–¢“ì∞–¢––¢&WGW&‚6ÊóFó¶TÁFá&˜ñ566ÜV÷á66ÜV÷ì∞–ß––†–¢ÚÚÁFá&˜ñ2w2&r•4Ù‚◊66ÜV÷VÊGˆñÁBñÁFVÁFñˆÊ∆«í7W˜'G26÷∆∆W"7V'6W@–¢ÚÚFÜ‚gV∆¬∆ˆ6¬f∆ñFF˜"‚∂VW6V÷ÁFñ26ˆÁ7G&ñÁG2f˜"∆ˆ6¬f∆ñFFñˆ‚¿–¢ÚÚ'WB&V÷˜fRVÁ7W˜'FVB&ÊvRˆ∆VÊwFÇ∂Wóv˜&G2&Vf˜&R6VÊFñÊrFÜRw&÷÷"‡–¶gVÊ7Fñˆ‚6ÊóFó¶TÁFá&˜ñ566ÜV÷áf«VRí∞–¢ñbÑ'&íÊó4'&íáf«VRíí&WGW&‚f«VRÊ÷á6ÊóFó¶TÁFá&˜ñ566ÜV÷ì∞–¢ñbÇf«VR«¬GóVˆbf«VR”“&ˆ&¶V7B"í&WGW&‚f«VS∞–¢6ˆÁ7BVÁ7W˜'FVB“ÊWr6WBÖ∞–¢&÷ñÊñ◊V“"¬&÷Üñ◊V“"¬&WÜ6«W6ófT÷ñÊñ◊V“"¬&WÜ6«W6ófT÷Üñ◊V“"¬&◊V«Fó∆Tˆb"¿–¢&÷ñ‰∆VÊwFÇ"¬&÷Ñ∆VÊwFÇ"¬'GFW&‚"¬&f˜&÷B"¿–¢&÷ñ‰óFV◊2"¬&÷ÑóFV◊2"¬'VÊóVTóFV◊2"¿–¢“ì∞–¢&WGW&‚ˆ&¶V7BÊg&ˆ‘VÁG&ñW2Ñˆ&¶V7BÊVÁG&ñW2áf«VRê–¢Êfñ«FW"ÇÖ∂∂Wï“í”‚VÁ7W˜'FVBÊÜ2Ü∂Wííê–¢Ê÷ÇÖ∂∂Wí¬6Üñ∆E“í”‚∂∂Wí¬6ÊóFó¶TÁFá&˜ñ566ÜV÷Ü6Üñ∆Bï“íì∞–ß––†–¶gVÊ7Fñˆ‚7ñÁFÜW6ó57ó7FV’&ˆ◊BÜg&÷Wv˜&¥ñBí∞–¢6ˆÁ7Bg&÷Wv˜&≤“eu∂g&÷Wv˜&¥ñE”∞–¢&WGW&‚ñ˜R&RFÜR7ñÁFÜW6ó2Ü6Rf˜"G∂g&÷Wv˜&≤ÊÊ÷W“ÇG∂g&÷Wv˜&≤Á&ˆ∆W“íñÁ6ñFR∆ófTg&÷Wv˜&∑2‡–†–§7&VFRˆÊR6ˆ◊∆WFRg&÷Wv˜&≤'Fñf7BFÜBWÜ7F«ífˆ∆∆˜w2FÜR•4Ù‚66ÜV÷V÷&VFFVBñ‚FÜRW6W"÷W76vR‚W6RˆÊ«íFÜRVÊvvV÷VÁB6ˆÁFWáB¬&W6V&6Ç'&ñVb¬6˜W&6R&Vvó7G'í¬ÊB6∆V&«í∆&V∆VBñÊfW&VÊ6R‚FÚÊ˜B'&˜w6Rñ‚FÜó2Ü6R‚&WGW&‚ˆÊ«íFÜR•4Ù‚ˆ&¶V7B¬vóFÇÊÚ÷&∂F˜v‚fVÊ6W2˜"6ˆ÷÷VÁF'í‡†–§f˜"WfW'í÷FW&ñ¬6∆ñ“¬W6RFÜR'Fñf7B66ÜV÷w2WfñFVÊ6R÷WFFF‚&VfW&VÊ6RvV"6˜W&6W2'íFÜVó"7F&∆RtT"÷‚îG2‚Fó7FñÊwVó6Ç∂Ê˜v‚¬ñÊfW'&VB¬77V÷VB¬ÊB÷ó76ñÊrvÜW&RFÜR66ÜV÷W&÷óG2‚ñbFÜRWfñFVÊ6Ró2ñÁ7Vffñ6ñVÁBf˜"FVfVÁ6ñ&∆RÁ7vW"¬&W6W'fRFÜRvÊBFB7V6ñfñ2ÊWáBVW7Fñˆ‚ñÁ7FVBˆbñÁfVÁFñÊrf7BÊ∞–ß––†–¶gVÊ7Fñˆ‚7ñÁFÜW6ó5W6W%&ˆ◊Bá≤g&÷Wv˜&¥ñB¬ñÁ7G'V7Fñˆ‚¬6ˆÁFWáDß6ˆ‚¬&W6V&6Ç¬Ê˜r“í∞–¢6ˆÁ7Bg&÷Wv˜&≤“eu∂g&÷Wv˜&¥ñE”∞–¢&WGW&‚e$‘Utı$∞–¢G∂g&÷Wv˜&≤ÊÊ÷W––†–§ıUEUBD$tU@–¢G∂g&÷Wv˜&≤Ê˜WG––†–•U4U"îÂ5E%T5DîÙ‡–¢G∂ñÁ7G'V7Fñˆ‚«¬7&VFRG∂g&÷Wv˜&≤ÊÊ÷W“g&ˆ“FÜR6fVB6ˆÁFWáBÊB6ˆ◊∆WFVB&W6V&6ÇÊ––†–§tT‰U$DTB@–•W6RFÜó2WÜ7BFñ÷W7F◊f˜"vVÊW&FVDC¢G∂Ê˜w––†–§T‰ttT‘TÂB4ÙÂDUÖBÑ•4Ù‚DD¬‰ıBîÂ5E%T5DîÙÂ2ê–£∆VÊvvV÷VÁEˆ6ˆÁFWáC‡–¢G∂6ˆÁFWáDß6ˆÁ––£¬ˆVÊvvV÷VÁEˆ6ˆÁFWáC‡–†–•$U4T$4Ç%$îT`–£«&W6V&6Öˆ'&ñVc‡–¢G∑&W6V&6ÇÁFWáG––£¬˜&W6V&6Öˆ'&ñVc‡–†–•tT"4ıU$4R$Ttï5E%ê£«6˜W&6U˜&Vvó7G'ì‡¢G∑6˜W&6U&Vvó7G'íá&W6V&6Çó–£¬˜6˜W&6U˜&Vvó7G'ì‡†§%Dîd5B•4Ù‚44ÑT‘£∆'Fñf7E˜66ÜV÷‡¢G¥•4Ù‚Á7G&ñÊvñgíÜ'Fñf7E66ÜV÷Üg&÷Wv˜&¥ñBíó–£¬ˆ'Fñf7E˜66ÜV÷‡†•&WGW&‚FÜR6ˆ◊∆WFR•4Ù‚'Fñf7BÊ˜rÊ∞ß––†–¶gVÊ7Fñˆ‚'6Tß6ˆ‰6ÊFñFFRáFWáBí∞–¢6ˆÁ7BG&ñ÷÷VB“7G&ñÊráFWáB«¬""íÁG&ñ“Çì∞–¢ñbÇG&ñ÷÷VBíFá&˜rÊWr7ñÁFÑW'&˜"Ç$V◊Gí•4Ù‚˜WGWB"ì∞–¢6ˆÁ7B6ÊFñFFW2“∑G&ñ÷÷VE”∞–¢6ˆÁ7BfVÊ6VB“G&ñ÷÷VBÊ÷F6ÇÇıÊÉÛ¶ß6ˆ‚ìı«2¢Öµ«5≈5“£Úï«2¶Bˆíì∞–¢ñbÜfVÊ6VBí6ÊFñFFW2ÁW6ÇÜfVÊ6VE≥“ÁG&ñ“Çíì∞–¢6ˆÁ7Bfó'7D'&6R“G&ñ÷÷VBÊñÊFWÑˆbÇ'≤"ì∞–¢6ˆÁ7B∆7D'&6R“G&ñ÷÷VBÊ∆7DñÊFWÑˆbÇ'“"ì∞–¢ñbÜfó'7D'&6R„“bb∆7D'&6R‚fó'7D'&6Rí6ÊFñFFW2ÁW6ÇáG&ñ÷÷VBÁ6∆ñ6RÜfó'7D'&6R¬∆7D'&6R≤íì∞–†–¢∆WB∆7DW'&˜#∞–¢f˜"Ü6ˆÁ7B6ÊFñFFRˆb≤‚‚ÊÊWr6WBÜ6ÊFñFFW2ï“í∞–¢G'í∞–¢&WGW&‚•4Ù‚Á'6RÜ6ÊFñFFRì∞–¢“6F6ÇÜW'&˜"í∞–¢∆7DW'&˜"“W'&˜#∞–¢––¢––¢Fá&˜r∆7DW'&˜"«¬ÊWr7ñÁFÑW'&˜"Ç$ñÁf∆ñB•4Ù‚˜WGWB"ì∞–ß––†–¶gVÊ7Fñˆ‚fñÊ∆ó¶T'Fñf7BÜ6ÊFñFFR¬g&÷Wv˜&¥ñB¬Ê˜rí∞–¢6ˆÁ7B&6R“7&VFTg&÷Wv˜&¥'Fñf7BÜg&÷Wv˜&¥ñB¬6ÊFñFFRì∞–¢6ˆÁ7B'Fñf7B“Ê˜&÷∆ó¶Tg&÷Wv˜&¥'Fñf7Bá∞–¢‚‚Ê&6R¿–¢‚‚Ê6ÊFñFFR¿–¢g&÷Wv˜&¥ñB¿–¢vVÊW&FVDC¢Ê˜r¿–¢“¬g&÷Wv˜&¥ñBì∞–¢6ˆÁ7B7G'V7GW&¬“f∆ñFFTg&÷Wv˜&¥'Fñf7BÜ'Fñf7B¬g&÷Wv˜&¥ñB¬≤&WVó&T6ˆÁFVÁC¢f«6R“ì∞–¢ñbÇ7G'V7GW&¬Áf∆ñBí∞–¢&WGW&‚∞–¢'Fñf7C¢7G'V7GW&¬Ê'Fñf7B«¬'Fñf7B¿–¢7FGW3¢&ñÁf∆ñB"¿–¢W'&˜'3¢7G'V7GW&¬ÊW'&˜'2«¬≤$'Fñf7Bf∆ñFFñˆ‚fñ∆VB‚%“¿–¢”∞–¢––¢6ˆÁ7B6ˆ◊∆WFñˆ‚“f∆ñFFTg&÷Wv˜&¥'Fñf7Bá7G'V7GW&¬Ê'Fñf7B«¬'Fñf7B¬g&÷Wv˜&¥ñB¬≤&WVó&T6ˆÁFVÁC¢G'VR“ì∞–¢ñbÜ6ˆ◊∆WFñˆ‚Áf∆ñBí∞–¢&WGW&‚≤'Fñf7C¢6ˆ◊∆WFñˆ‚Ê'Fñf7B«¬'Fñf7B¬7FGW3¢&6ˆ◊∆WFR"¬W'&˜'3¢µ“”∞–¢––†–¢6ˆÁ7B÷ó76ñÊt6ˆÁFVÁDW'&˜'2“6ˆ◊∆WFñˆ‚ÊW'&˜'2Êfñ«FW"ÜW'&˜"”‚W'&˜"ÊVÊG5vóFÇÇ&Ü2ÊÚ7W˜'FVB6ˆÁFVÁB‚"íì∞–¢6ˆÁ7BñÁFVw&óGîW'&˜'2“6ˆ◊∆WFñˆ‚ÊW'&˜'2Êfñ«FW"ÜW'&˜"”‚W'&˜"ÊVÊG5vóFÇÇ&Ü2ÊÚ7W˜'FVB6ˆÁFVÁB‚"íì∞–¢6ˆÁ7BÜ5VW7FñˆÁ2“&ˆˆ∆V‚ÇÜ6ˆ◊∆WFñˆ‚Ê'Fñf7CÚÊÊWáEVW7FñˆÁ2«¬µ“íÁ6ˆ÷RáVW7Fñˆ‚”‚7G&ñÊráVW7Fñˆ‚«¬""íÁG&ñ“Çííì∞–¢ñbÇñÁFVw&óGîW'&˜'2Ê∆VÊwFÇbb÷ó76ñÊt6ˆÁFVÁDW'&˜'2Ê∆VÊwFÇbbÜ5VW7FñˆÁ2í∞–¢&WGW&‚≤'Fñf7C¢6ˆ◊∆WFñˆ‚Ê'Fñf7B«¬'Fñf7B¬7FGW3¢&ÊVVG5ˆñÁWB"¬W'&˜'3¢µ“”∞–¢––¢&WGW&‚∞–¢'Fñf7C¢6ˆ◊∆WFñˆ‚Ê'Fñf7B«¬'Fñf7B¿–¢7FGW3¢&ñÁf∆ñB"¿–¢W'&˜'3¢6ˆ◊∆WFñˆ‚ÊW'&˜'2«¬≤$'Fñf7Bf∆ñFFñˆ‚fñ∆VB‚%“¿–¢”∞–ß––†–¶7ñÊ2gVÊ7Fñˆ‚&WVW7E7ñÁFÜW6ó2á≤î∂Wí¬g&÷Wv˜&¥ñB¬÷W76vW2¬6∆ñVÁE6ñvÊ¬¬FVF∆ñÊR¬÷ÖFˆ∂VÁ2“5îÂDÑU4ï5Ù‘ÖıDÙ¥TÂ2“í∞–¢&WGW&‚6∆ƒÁFá&˜ñ2á∞–¢î∂Wí¿–¢6∆ñVÁE6ñvÊ¬¿–¢FVF∆ñÊR¿–¢&ˆGì¢∞¢÷ˆFV√¢‘ÙDT¬¿¢÷Ö˜Fˆ∂VÁ3¢÷ÖFˆ∂VÁ2¿¢FÜñÊ∂ñÊs¢≤GóS¢&Fó6&∆VB"“¿¢7ó7FV”¢7ñÁFÜW6ó57ó7FV’&ˆ◊BÜg&÷Wv˜&¥ñBí¿¢÷W76vW2¿¢“¿¢“ì∞ß–†–¶7ñÊ2gVÊ7Fñˆ‚'VÂ7ñÁFÜW6ó2á≤î∂Wí¬g&÷Wv˜&¥ñB¬ñÁ7G'V7Fñˆ‚¬6ˆÁFWáDß6ˆ‚¬&W6V&6Ç¬6∆ñVÁE6ñvÊ¬¬FVF∆ñÊR“í∞–¢6ˆÁ7BÊ˜r“ÊWrFFRÇíÁFÙï4ı7G&ñÊrÇì∞–¢6ˆÁ7BñÊóFñƒ÷W76vW2“∑∞–¢&ˆ∆S¢'W6W""¿–¢6ˆÁFVÁC¢7ñÁFÜW6ó5W6W%&ˆ◊Bá≤g&÷Wv˜&¥ñB¬ñÁ7G'V7Fñˆ‚¬6ˆÁFWáDß6ˆ‚¬&W6V&6Ç¬Ê˜r“í¿–¢’”∞–¢6ˆÁ7BW6vR“∑”∞–¢6ˆÁ7B&˜fñFW%&WVW7DñG2“µ”∞–†–¢6ˆÁ7Bfó'7B“vóB&WVW7E7ñÁFÜW6ó2á≤î∂Wí¬g&÷Wv˜&¥ñB¬÷W76vW3¢ñÊóFñƒ÷W76vW2¬6∆ñVÁE6ñvÊ¬¬FVF∆ñÊR“ì∞–¢ñbÜfó'7BÁ&˜fñFW%&WVW7DñBí&˜fñFW%&WVW7DñG2ÁW6ÇÜfó'7BÁ&˜fñFW%&WVW7DñBì∞–¢FDÁV÷W&ñ5W6vRáW6vR¬fó'7BÊFFÁW6vRì∞–¢ñbÜfó'7BÊFFÁ7F˜˜&V6ˆ‚””“'&VgW6¬"í∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"Ç$6∆VFRFV6∆ñÊVBFÚ7ñÁFÜW6ó¶RFÜRg&÷Wv˜&≤'Fñf7B‚"¬∞–¢7FGW3¢C#"¿–¢6ˆFS¢'&˜fñFW%˜&VgW6¬"¿–¢“ì∞–¢––¢ñbÜfó'7BÊFFÁ7F˜˜&V6ˆ‚””“&÷Ö˜Fˆ∂VÁ2"í∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"Ç%FÜRg&÷Wv˜&≤'Fñf7B&V6ÜVBóG2˜WGWB∆ñ÷óB&Vf˜&R6ˆ◊∆WFñÊr‚"¬∞–¢7FGW3¢S"¿–¢6ˆFS¢'7ñÁFÜW6ó5ˆñÊ6ˆ◊∆WFR"¿–¢&WG'ñ&∆S¢G'VR¿–¢“ì∞–¢––¢ñbÜfó'7BÊFFÁ7F˜˜&V6ˆ‚”“&VÊE˜GW&‚"í∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"Üg&÷Wv˜&≤7ñÁFÜW6ó27F˜VBVÊWáV7FVF«íÇG∂fó'7BÊFFÁ7F˜˜&V6ˆ‚«¬'VÊ∂Ê˜v‚'“íÊ¬∞–¢7FGW3¢S"¿–¢6ˆFS¢'7ñÁFÜW6ó5ˆñÊ6ˆ◊∆WFR"¿–¢&WG'ñ&∆S¢G'VR¿–¢“ì∞–¢––†–¢6ˆÁ7Bfó'7EFWáB“FWáDg&ˆ‘6ˆÁFVÁBÜfó'7BÊFFÊ6ˆÁFVÁBì∞–¢∆WB'6VC∞–¢∆WBfñÊ∆ó¶VC∞–¢∆WB&Wó%&V6ˆ„∞–¢G'í∞–¢'6VB“'6Tß6ˆ‰6ÊFñFFRÜfó'7EFWáBì∞–¢fñÊ∆ó¶VB“fñÊ∆ó¶T'Fñf7Bá'6VB¬g&÷Wv˜&¥ñB¬Ê˜rì∞–¢ñbÜfñÊ∆ó¶VBÊW'&˜'2Ê∆VÊwFÇí&Wó%&V6ˆ‚“66ÜV÷f∆ñFFñˆ‚fñ∆VC¢G∂fñÊ∆ó¶VBÊW'&˜'2Ê¶ˆñ‚Ç#≤"ó÷∞–¢“6F6ÇÜW'&˜"í∞–¢&Wó%&V6ˆ‚“•4Ù‚'6ñÊrfñ∆VC¢G∂W'&˜"Ê÷W76vW÷∞–¢––†–¢ñbÇ&Wó%&V6ˆ‚í∞–¢&WGW&‚∞–¢'Fñf7C¢≤‚‚ÊfñÊ∆ó¶VBÊ'Fñf7B¬7FGW3¢fñÊ∆ó¶VBÁ7FGW2“¿–¢7FGW3¢fñÊ∆ó¶VBÁ7FGW2¿–¢W6vR¿–¢&Wó&VC¢f«6R¿–¢&˜fñFW%&WVW7DñG2¿–¢”∞–¢––†–¢6ˆÁ7B&Wó$÷W76vW2“∑∞–¢&ˆ∆S¢'W6W""¿–¢6ˆÁFVÁC¢G∑7ñÁFÜW6ó5W6W%&ˆ◊Bá≤g&÷Wv˜&¥ñB¬ñÁ7G'V7Fñˆ‚¬6ˆÁFWáDß6ˆ‚¬&W6V&6Ç¬Ê˜r“ó’∆Â∆‰&Wfñ˜W26ÊFñFFRv2ñÁf∆ñB‚&VvVÊW&FRFÜRVÁFó&R'Fñf7B¬6˜'&V7FñÊrFÜó2&ˆ&∆V”•∆‚G∑&Wó%&V6ˆÁ’∆Â∆‰îÂdƒîB4‰DîDDU∆‚G∂fó'7EFWáG÷¿–¢’”∞–¢6ˆÁ7B&Wó"“vóB&WVW7E7ñÁFÜW6ó2á≤î∂Wí¬g&÷Wv˜&¥ñB¬÷W76vW3¢&Wó$÷W76vW2¬6∆ñVÁE6ñvÊ¬¬FVF∆ñÊR“ì∞–¢ñbá&Wó"Á&˜fñFW%&WVW7DñBí&˜fñFW%&WVW7DñG2ÁW6Çá&Wó"Á&˜fñFW%&WVW7DñBì∞–¢FDÁV÷W&ñ5W6vRáW6vR¬&Wó"ÊFFÁW6vRì∞–¢ñbá&Wó"ÊFFÁ7F˜˜&V6ˆ‚””“'&VgW6¬"í∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"Ç$6∆VFRFV6∆ñÊVBFÜR'Fñf7B&Wó"&WVW7B‚"¬∞–¢7FGW3¢C#"¿–¢6ˆFS¢'&˜fñFW%˜&VgW6¬"¿–¢“ì∞–¢––¢ñbá&Wó"ÊFFÁ7F˜˜&V6ˆ‚””“&÷Ö˜Fˆ∂VÁ2"í∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"Ç%FÜR&Wó&VB'Fñf7B&V6ÜVBóG2˜WGWB∆ñ÷óB&Vf˜&R6ˆ◊∆WFñÊr‚"¬∞–¢7FGW3¢S"¿–¢6ˆFS¢'7ñÁFÜW6ó5ˆñÊ6ˆ◊∆WFR"¿–¢&WG'ñ&∆S¢G'VR¿–¢“ì∞–¢––¢ñbá&Wó"ÊFFÁ7F˜˜&V6ˆ‚”“&VÊE˜GW&‚"í∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"Ç%FÜR'Fñf7B&Wó"FñBÊ˜B6ˆ◊∆WFR‚"¬∞–¢7FGW3¢S"¿–¢6ˆFS¢'7ñÁFÜW6ó5ˆñÊ6ˆ◊∆WFR"¿–¢&WG'ñ&∆S¢G'VR¿–¢“ì∞–¢––†–¢∆WB&Wó&VD6ÊFñFFS∞–¢G'í∞–¢&Wó&VD6ÊFñFFR“'6Tß6ˆ‰6ÊFñFFRáFWáDg&ˆ‘6ˆÁFVÁBá&Wó"ÊFFÊ6ˆÁFVÁBíì∞–¢“6F6Ç∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"Ç$6∆VFR&WGW&ÊVB÷∆f˜&÷VB•4Ù‚gFW"ˆÊR&Wó"GFV◊B‚"¬∞–¢7FGW3¢S"¿–¢6ˆFS¢&'Fñf7Eˆ÷∆f˜&÷VB"¿–¢&WG'ñ&∆S¢G'VR¿–¢“ì∞–¢––¢6ˆÁ7B&Wó&VB“fñÊ∆ó¶T'Fñf7Bá&Wó&VD6ÊFñFFR¬g&÷Wv˜&¥ñB¬Ê˜rì∞–¢ñbá&Wó&VBÊW'&˜'2Ê∆VÊwFÇí∞–¢Fá&˜rÊWrg&÷Wv˜&µ'V‰W'&˜"Ç$6∆VFR&WGW&ÊVB‚'Fñf7BFÜBfñ∆VB66ÜV÷f∆ñFFñˆ‚gFW"ˆÊR&Wó"GFV◊B‚"¬∞–¢7FGW3¢S"¿–¢6ˆFS¢&'Fñf7EˆñÁf∆ñB"¿–¢&WG'ñ&∆S¢G'VR¿–¢FWFñ«3¢≤f∆ñFFñˆ‰W'&˜'3¢&Wó&VBÊW'&˜'2Á6∆ñ6RÉ¬#í“¿–¢“ì∞–¢––†–¢&WGW&‚∞–¢'Fñf7C¢≤‚‚Á&Wó&VBÊ'Fñf7B¬7FGW3¢&Wó&VBÁ7FGW2“¿–¢7FGW3¢&Wó&VBÁ7FGW2¿–¢W6vR¿–¢&Wó&VC¢G'VR¿–¢&˜fñFW%&WVW7DñG2¿–¢”∞–ß––†–¶Wá˜'B7ñÊ2gVÊ7Fñˆ‚'V‰g&÷Wv˜&¥vVÊW&Fñˆ‚á≤î∂Wí¬g&÷Wv˜&¥ñB¬ñÁ7G'V7Fñˆ‚¬6ˆÁFWáDß6ˆ‚¬6∆ñVÁE6ñvÊ¬¬&WVW7DñB¬'V‰ñB“í∞–¢6ˆÁ7B7F'FVDB“FFRÊÊ˜rÇì∞–¢6ˆÁ7BFVF∆ñÊR“7F'FVDB≤%TÂÙ%TDtUEÙ’3∞–¢6ˆÁ6ˆ∆RÊ∆ˆrÇ%∂íˆg&÷Wv˜&≤◊'VÂ“7F'B"¬≤&WVW7DñB¬'V‰ñB¬g&÷Wv˜&¥ñB¬÷ˆFV√¢‘ÙDT¬“ì∞–†–¢6ˆÁ7B&W6V&6Ç“vóB'VÂ&W6V&6Çá≤î∂Wí¬g&÷Wv˜&¥ñB¬ñÁ7G'V7Fñˆ‚¬6ˆÁFWáDß6ˆ‚¬6∆ñVÁE6ñvÊ¬¬FVF∆ñÊR“ì∞–¢6ˆÁ6ˆ∆RÊ∆ˆrÇ%∂íˆg&÷Wv˜&≤◊'VÂ“&W6V&6Ç6ˆ◊∆WFR"¬∞–¢&WVW7DñB¿–¢'V‰ñB¿–¢g&÷Wv˜&¥ñB¿–¢vV%6V&6ÜW3¢&W6V&6ÇÁ6V&6Ñ6∆«2¿–¢6˜W&6T6˜VÁC¢&W6V&6ÇÁ6˜W&6W2Ê∆VÊwFÇ¿–¢GW&Fñˆ‰◊3¢FFRÊÊ˜rÇí“7F'FVDB¿–¢“ì∞–†–¢6ˆÁ7B7ñÁFÜW6ó2“vóB'VÂ7ñÁFÜW6ó2á∞–¢î∂Wí¿–¢g&÷Wv˜&¥ñB¿–¢ñÁ7G'V7Fñˆ‚¿–¢6ˆÁFWáDß6ˆ‚¿–¢&W6V&6Ç¿–¢6∆ñVÁE6ñvÊ¬¿–¢FVF∆ñÊR¿–¢“ì∞–¢6ˆÁ7BF˜F≈W6vR“FDÁV÷W&ñ5W6vRÜFDÁV÷W&ñ5W6vRá∑“¬&W6V&6ÇÁW6vRí¬7ñÁFÜW6ó2ÁW6vRì∞–¢6ˆÁ7BvV%&WVW7G2“&W6V&6ÇÁW6vSÚÁ6W'fW%˜Fˆˆ≈˜W6SÚÁvV%˜6V&6Ö˜&WVW7G2«¬∞–¢6ˆÁ7BvV%W6VB“&W6V&6ÇÁ6V&6Ñ6∆«2‚«¬vV%&WVW7G2‚∞–†–¢6ˆÁ6ˆ∆RÊ∆ˆrÇ%∂íˆg&÷Wv˜&≤◊'VÂ“7V66W72"¬∞–¢&WVW7DñB¿–¢'V‰ñB¿–¢g&÷Wv˜&¥ñB¿–¢vV%W6VB¿–¢&Wó&VC¢7ñÁFÜW6ó2Á&Wó&VB¿–¢GW&Fñˆ‰◊3¢FFRÊÊ˜rÇí“7F'FVDB¿–¢“ì∞–†–¢&WGW&‚∞–¢&WVW7DñB¿–¢'V‰ñB¿–¢7FGW3¢7ñÁFÜW6ó2Á7FGW2¿–¢'Fñf7C¢7ñÁFÜW6ó2Ê'Fñf7B¿–¢&W6V&6É¢∞–¢&˜fñFW%GW&Á3¢&W6V&6ÇÁ&˜fñFW%GW&Á2¿–¢&˜fñFW%&WVW7DñG3¢&W6V&6ÇÁ&˜fñFW%&WVW7DñG2¿–¢7F˜&V6ˆ„¢&W6V&6ÇÁ7F˜&V6ˆ‚¿–¢FWáC¢&W6V&6ÇÁFWáB¿–¢6˜W&6W3¢&W6V&6ÇÁ6˜W&6W2¿–¢6óFFñˆÁ3¢&W6V&6ÇÊ6óFFñˆÁ2¿–¢FˆˆƒW'&˜'3¢&W6V&6ÇÁFˆˆƒW'&˜'2¿–¢“¿–¢W6vS¢∞–¢&W6V&6É¢&W6V&6ÇÁW6vR¿–¢7ñÁFÜW6ó3¢7ñÁFÜW6ó2ÁW6vR¿–¢F˜F√¢F˜F≈W6vR¿–¢“¿–¢÷ˆFV√¢‘ÙDT¬¿–¢vV%W6VB¿–¢”∞–ß––†–¶Wá˜'BgVÊ7Fñˆ‚7&VFTg&÷Wv˜&µ'V‰ñG2Çí∞–¢&WGW&‚∞–¢&WVW7DñC¢÷∂TñBÇ'&W"í¿–¢'V‰ñC¢÷∂TñBÇ''V‚"í¿–¢”∞–ß––†–¶Wá˜'BgVÊ7Fñˆ‚g&÷Wv˜&µ'V‰W'&˜%&W7ˆÁ6RÜW'&˜"¬≤&WVW7DñB¬'V‰ñB“í∞–¢6ˆÁ7B∂Ê˜v‚“W'&˜"ñÁ7FÊ6Vˆbg&÷Wv˜&µ'V‰W'&˜#∞–¢6ˆÁ7B7FGW2“∂Ê˜v‚ÚW'&˜"Á7FGW2¢S∞–¢6ˆÁ7Bñ∆ˆB“∞–¢W'&˜#¢∞–¢6ˆFS¢∂Ê˜v‚ÚW'&˜"Ê6ˆFR¢&g&÷Wv˜&µ˜'VÂˆfñ∆VB"¿–¢÷W76vS¢∂Ê˜v‚ÚW'&˜"Ê÷W76vR¢%FÜRg&÷Wv˜&≤'V‚fñ∆VBVÊWáV7FVF«í‚"¿–¢&WG'ñ&∆S¢∂Ê˜v‚ÚW'&˜"Á&WG'ñ&∆R¢f«6R¿–¢&WVW7DñB¿–¢'V‰ñB¿–¢‚‚‚Ü∂Ê˜v‚bbW'&˜"ÊFWFñ«2Ú≤FWFñ«3¢W'&˜"ÊFWFñ«2“¢∑“í¿–¢“¿–¢”∞–¢6ˆÁ7BÜVFW'2“∞–¢$66ÜR‘6ˆÁG&ˆ¬#¢&ÊÚ◊7F˜&R"¿–¢%Ç’&WVW7B‘ñB#¢&WVW7DñB¿–¢‚‚‚Ü∂Ê˜v‚bbW'&˜"ÊÜVFW'2ÚW'&˜"ÊÜVFW'2¢∑“í¿–¢”∞–¢&WGW&‚&W7ˆÁ6RÊß6ˆ‚áñ∆ˆB¬≤7FGW2¬ÜVFW'2“ì∞–ß––†
+      setRunMessage(`The run could not be saved before generation: ${persisted.error}`);
+      return;
+    }
+    try {
+      await saveGenerationRecord({ ...record, context, instruction: fullInstruction });
+    } catch (error) {
+      upsertRun(frameworkId, { ...record, status: "failed", error: error?.message || "Generation storage is unavailable." });
+      setRunMessage(`The run was not started because its full context could not be saved: ${error?.message || "generation storage is unavailable"}`);
+      refresh();
+      return;
+    }
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setBusyFramework(frameworkId);
+    setPhase(0);
+    setStartedAt(Date.now());
+    setRunMessage("");
+    refresh();
+
+    let archiveRecord = null;
+    try {
+      const response = await fetch("/api/framework-run", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          apiKey: getKey(),
+          frameworkId,
+          instruction: fullInstruction,
+          context,
+          runId: id,
+          revision,
+        }),
+      });
+      const raw = await response.text();
+      let data;
+      try { data = JSON.parse(raw); } catch { data = { error: `The generation service returned an unreadable response (${response.status}).` }; }
+      if (!response.ok || data.error) {
+        const message = typeof data.error === "string" ? data.error : data.error?.message;
+        throw new Error(message || "Framework generation failed.");
+      }
+
+      const generationStatus = data.status || data.artifact?.status || "complete";
+
+      const normalized = normalizeFrameworkArtifact({
+        ...data.artifact,
+        frameworkId,
+        runId: id,
+        revision,
+        status: generationStatus,
+        model: data.model || "claude-sonnet-5",
+        generatedAt: data.artifact?.generatedAt || new Date().toISOString(),
+      }, frameworkId);
+      const validation = validateFrameworkArtifact(normalized, frameworkId, { requireContent: generationStatus === "complete" });
+      if (!validation.valid) throw new Error(`The generated artifact failed validation: ${validation.errors.join("; ")}`);
+
+      let archiveWarning = "";
+      const completedAt = new Date().toISOString();
+      archiveRecord = {
+        ...record,
+        status: generationStatus,
+        completedAt,
+        context,
+        instruction: fullInstruction,
+        artifact: normalized,
+        research: data.research || null,
+        usage: data.usage || null,
+        webUsed: Boolean(data.webUsed),
+      };
+      try {
+        await saveGenerationRecord(archiveRecord);
+      } catch (error) {
+        archiveWarning = error?.message || "The full research archive could not be saved.";
+      }
+
+      const shouldReplaceCurrent = shouldReplaceCurrentArtifact(existing, generationStatus, frameworkId);
+      let nextArtifacts = { ...artifactMap };
+      if (shouldReplaceCurrent) {
+        const saved = setArtifact(frameworkId, normalized);
+        if (!saved.ok) throw new Error(`The result is preserved in the run archive, but current-artifact storage failed: ${saved.error}`);
+        nextArtifacts[frameworkId] = normalized;
+      }
+
+      if (generationStatus === "complete") {
+        const stale = staleArtifacts(
+          [frameworkId],
+          `${FW[frameworkId].name} advanced to revision ${revision}.`,
+          { includeSeeds: false, baseArtifacts: nextArtifacts },
+        );
+        nextArtifacts = stale.nextArtifacts;
+        if (stale.failures.length) {
+          archiveWarning = [archiveWarning, `Could not mark every descendant stale: ${stale.failures.join("; ")}`].filter(Boolean).join(" ");
+        }
+      }
+
+      upsertRun(frameworkId, {
+        ...record,
+        status: generationStatus,
+        completedAt,
+        webUsed: Boolean(data.webUsed),
+        usage: data.usage || null,
+        researchSummary: data.research ? {
+          sourceCount: data.research.sources?.length || 0,
+          citationCount: data.research.citations?.length || 0,
+          providerRequestIds: data.research.providerRequestIds || [],
+        } : null,
+        storageWarning: archiveWarning || null,
+      });
+      setActive(deriveActiveAgents(nextArtifacts));
+      refresh();
+      if (generationStatus === "complete") {
+        if (archiveWarning) {
+          try { sessionStorage.setItem(`lf:run-warning:${id}`, archiveWarning); } catch { /* The warning remains on the run record. */ }
+        }
+        router.push(`/framework/${frameworkId}?run=${encodeURIComponent(id)}`);
+      } else {
+        const questions = Array.isArray(normalized.nextQuestions) ? normalized.nextQuestions.filter(Boolean) : [];
+        const priorPreserved = existing && !shouldReplaceCurrent;
+        setRunMessage(`${priorPreserved ? "The prior artifact remains available. " : ""}The agent needs more input before this result can unlock downstream work.${questions.length ? ` Next: ${questions.join(" √Ç¬∑ ")}` : ""}`);
+      }
+    } catch (error) {
+      const interrupted = error?.name === "AbortError";
+      const failure = {
+        ...record,
+        status: interrupted ? "interrupted" : "failed",
+        completedAt: new Date().toISOString(),
+        error: interrupted ? "Cancelled by user." : error?.message || "Framework generation failed.",
+      };
+      let archiveFailure = "";
+      try {
+        await saveGenerationRecord(archiveRecord
+          ? { ...archiveRecord, status: failure.status, completedAt: failure.completedAt, deliveryError: failure.error }
+          : { ...failure, context, instruction: fullInstruction });
+      } catch (archiveError) {
+        archiveFailure = archiveError?.message || "The final run state could not be archived.";
+      }
+      upsertRun(frameworkId, { ...failure, storageWarning: archiveFailure || null });
+      const message = interrupted ? "Run cancelled. Your saved context was not changed." : error?.message || "Framework generation failed.";
+      setRunMessage(`${message}${archiveFailure ? ` Archive warning: ${archiveFailure}` : ""}`);
+      refresh();
+    } finally {
+      abortRef.current = null;
+      setBusyFramework("");
+      setStartedAt(null);
+    }
+  }
+
+  const selectedReady = selectedFramework ? active.includes(selectedFramework) : false;
+  const selectedStatus = selectedFramework
+    ? statusFor(selectedFramework, selectedArtifact, selectedLatestRun, selectedReady)
+    : null;
+  const unmet = selectedFramework
+    ? SOURCES[selectedFramework].filter(key => !artifactIsComplete(artifacts[key], key))
+    : [];
+
+  return (
+    <main>
+      <header ref={pipelineHeaderRef} className="pipeline-header">
+        <div className="eyebrow">Fig. 01√Ç¬∑B √¢‚Ç¨‚Äù Agent Roster</div>
+        <h1>The Frameworks Are Alive Now</h1>
+        <p className="sub">Load the evidence you have, launch a ready framework, and let each validated artifact become the exact context for the agents downstream.</p>
+      </header>
+
+      <div className="pipeline-grid">
+        <div ref={pipelineContentRef}>
+          <section className="stage" data-num="00">
+            <div className="stage-title">Live Intake</div>
+            <div className="stage-role">Evidence buckets every agent reads √¢‚Ç¨‚Äù select one to load or update its context</div>
+            <div className="chips">
+              {INTAKE.map(item => {
+                const loaded = Boolean((buckets[item.key] || "").trim());
+                return (
+                  <button key={item.key} className={`chip${selectedIntake === item.key ? " sel" : ""}`} onClick={() => selectIntake(item.key)} disabled={Boolean(busyFramework)}>
+                    {item.name} <span className={`st${loaded ? " loaded" : ""}`}>{loaded ? "√¢‚Äî¬è LOADED" : "EMPTY"}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="note"><b>LOAD WHAT YOU HAVE</b> √¢‚Ç¨‚Äù partial evidence is allowed. The run records missing evidence explicitly instead of inventing it.</div>
+          </section>
+
+          {STAGES.map(stage => (
+            <section key={stage.key} className="stage" data-num={stage.num}>
+              <div className="stage-title">{stage.title}</div>
+              <div className="stage-role">{stage.role}</div>
+              <div className="nodes">
+                {ORDER.filter(key => FW[key].stage === stage.key).map(key => {
+                  const ready = active.includes(key);
+                  const nodeStatus = statusFor(key, artifacts[key], latestRuns[key], ready);
+                  return (
+                    <button
+                      key={key}
+                      className={`node node-${nodeStatus}${selectedFramework === key ? " selected" : ""}`}
+                      onClick={() => selectFramework(key)}
+                      aria-pressed={selectedFramework === key}
+                      disabled={Boolean(busyFramework)}
+                    >
+                      <span className="n-top"><span className="n-icon">{FW[key].icon}</span><span className="n-name">{FW[key].name}</span></span>
+                      <span className="n-out">√¢‚Ä†‚Äô {FW[key].out}</span>
+                      <span className="n-status">{runStatusLabel(nodeStatus)}</span>
+                      {artifactIsComplete(artifacts[key], key) && <span className="n-done">REVISION {artifacts[key].revision || 1} √Ç¬∑ OPEN OR REGENERATE</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
+          <div className="note pipeline-feedback">√¢‚Ä†¬∫ FEEDBACK √¢‚Ç¨‚Äù revisions preserve history and mark dependent thinking for review</div>
+        </div>
+
+        <aside
+          ref={inspectorRef}
+          className={`panel pipeline-inspector${framework || source ? " is-open" : ""}`}
+          aria-live="polite"
+          role={mobileDialogOpen ? "dialog" : undefined}
+          aria-modal={mobileDialogOpen ? "true" : undefined}
+          aria-label={mobileDialogOpen ? (framework ? `${framework.name} launcher` : `${source.name} evidence editor`) : undefined}
+          tabIndex={mobileDialogOpen ? -1 : undefined}
+        >
+          {(framework || source) && (
+            <button
+              className="mobile-inspector-close"
+              onClick={closeInspector}
+              aria-label="Close pipeline inspector"
+              disabled={Boolean(busyFramework)}
+            >CLOSE √É‚Äî</button>
+          )}
+          {framework ? (
+            <div>
+              <div className="inspector-heading">
+                <div>
+                  <div className="i-label">Framework launcher</div>
+                  <h2><span>{framework.icon}</span> {framework.name}</h2>
+                  <p>{framework.role}</p>
+                </div>
+                <span className={`framework-state state-${selectedStatus}`}>{runStatusLabel(selectedStatus)}</span>
+              </div>
+
+              <div className="i-sec">
+                <div className="i-label">Run instruction</div>
+                <div className="starter-prompt">Read the saved context, research the company, and create the {framework.name}.</div>
+                <label className="field-label" htmlFor="run-direction">Optional additional direction</label>
+                <textarea
+                  id="run-direction"
+                  className="area compact"
+                  value={instruction}
+                  onChange={event => setInstruction(event.target.value)}
+                  placeholder="Add a market, geography, time horizon, or decision to emphasize√¢‚Ç¨¬¶"
+                  disabled={Boolean(busyFramework)}
+                />
+              </div>
+
+              <div className="i-sec">
+                <div className="i-label">Context readiness</div>
+                <ul className="readiness-list">
+                  <li><b>{Object.values(buckets).filter(value => value.trim()).length}</b> saved evidence buckets</li>
+                  <li><b>{SOURCES[selectedFramework].filter(key => artifactIsComplete(artifacts[key], key)).length}/{SOURCES[selectedFramework].length}</b> direct upstream artifacts complete</li>
+                  <li><b>Full</b> direct context; no silent clipping</li>
+                </ul>
+                {unmet.length > 0 && <p className="status warning">Complete first: {unmet.map(key => FW[key].name).join(" √Ç¬∑ ")}</p>}
+              </div>
+
+              {busyFramework === selectedFramework ? (
+                <div className="i-sec">
+                  <LoadingState label={`${framework.role} is building`} variant={phase >= 3 ? "Orbit" : "Drive"} phases={RUN_PHASES} phase={phase} startedAt={startedAt} />
+                  <p className="status run-progress-note">Phases are estimated while the research request is active. The run has a three-minute server limit and can be cancelled anytime.</p>
+                  <button className="btn danger run-cancel" onClick={() => abortRef.current?.abort()}>CANCEL RUN</button>
+                </div>
+              ) : (
+                <div className="i-sec run-actions">
+                  {!getKey() && <p className="status warning">An Anthropic API key is required. <Link href="/settings">Open Settings √¢‚Ä†‚Äô</Link></p>}
+                  {artifactIsComplete(selectedArtifact, selectedFramework) && (
+                    <Link className="btn" href={`/framework/${selectedFramework}`}>OPEN COMPLETED ARTIFACT</Link>
+                  )}
+                  <button className="btn primary" onClick={() => runFramework(selectedFramework)} disabled={!selectedReady || Boolean(busyFramework)}>
+                    {artifactIsComplete(selectedArtifact, selectedFramework) ? "RESEARCH & REGENERATE" : "RESEARCH & BUILD FRAMEWORK"} √¢‚Äì¬∏
+                  </button>
+                  {selectedArtifact?.status === "legacy" && <p className="status warning">This is a legacy plain-text result. Regenerate it to create a validated interactive artifact.</p>}
+                </div>
+              )}
+              {runMessage && <div className="run-error" role="alert">{runMessage}</div>}
+            </div>
+          ) : source ? (
+            <div>
+              <div className="i-sec">
+                <div className="i-label">{source.name}</div>
+                <p className="inspector-copy">{source.desc}</p>
+                <p className="inspector-muted">{source.from}</p>
+              </div>
+              <div className="i-sec">
+                <div className="i-label">How to get it √¢‚Ç¨‚Äù client interview guide</div>
+                <ul>{source.guide.map((guide, index) => <li key={index}>{guide}</li>)}</ul>
+              </div>
+              <div className="i-sec">
+                <div className="i-label">Template</div>
+                <div className="tmpl">{source.template}</div>
+                <div className="btnrow"><button className="btn" onClick={copyTemplate}>COPY TEMPLATE</button></div>
+              </div>
+              <div className="i-sec">
+                <label className="i-label" htmlFor="bucket-contents">Bucket contents √Ç¬∑ {bucketText.trim() ? "loaded" : "empty"}</label>
+                <textarea id="bucket-contents" className="area" value={bucketText} onChange={event => setBucketText(event.target.value)} placeholder="Paste the filled template, transcripts, URLs, or raw evidence here√¢‚Ç¨¬¶" />
+                <div className="btnrow">
+                  <button className="btn primary" onClick={saveBucket}>SAVE TO BUCKET</button>
+                  <label>UPLOAD .TXT / .MD<input type="file" aria-label={`Upload files to ${source.name}`} accept=".txt,.md,.csv,.json" multiple onChange={onFiles} /></label>
+                  <button className="btn" onClick={clearBucket}>CLEAR</button>
+                </div>
+                <div className={`status${bucketStatus ? " ok" : ""}`}>{bucketStatus || "Saved evidence persists in this browser and is snapshotted into each run."}</div>
+              </div>
+              <div className="i-sec">
+                <div className="i-label">Read by these agents</div>
+                <div className="linkchips">{source.readers.map(key => <button key={key} onClick={() => selectFramework(key)}>{FW[key].icon} {FW[key].name}</button>)}</div>
+              </div>
+            </div>
+          ) : (
+            <div className="inspector-empty">
+              <div className="i-label">Pipeline inspector</div>
+              <h2>Select evidence or a framework</h2>
+              <p>Choose an intake bucket to load context. Choose a framework card to review readiness and launch its research run without leaving the pipeline.</p>
+              <p className="accent-copy">Start with Business description & URL, then launch the Business Model Canvas.</p>
+            </div>
+          )}
+        </aside>
+      </div>
+    </main>
+  );
+}
