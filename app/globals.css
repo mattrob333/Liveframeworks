@@ -317,6 +317,7 @@ body:has(.framework-page) footer{display:none}
   .wrap{width:min(calc(100% - 28px),1720px)}
   .pipeline-grid,.framework-workspace{grid-template-columns:1fr}
   .pipeline-inspector{position:static;max-height:none}
+  .pipeline-inspector:not(.is-open){display:none}
   .pipeline-inspector.is-open{position:fixed;inset:12px;z-index:60;max-height:calc(100vh - 24px);overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.72)}
   .mobile-inspector-close{position:sticky;top:-20px;z-index:3;display:block;width:100%;margin:-8px 0 14px;padding:9px 10px;border:1px solid var(--faint);background:var(--panel2);color:var(--amber);font-size:10px;letter-spacing:.12em;text-align:right;cursor:pointer}
   body:has(.pipeline-inspector.is-open){overflow:hidden}
@@ -335,7 +336,14 @@ body:has(.framework-page) footer{display:none}
   .artifact-panel-label{display:grid}
   .analysis-deck{grid-template-columns:1fr}
   .deck-questions{grid-column:auto}
-  .bmc-grid{grid-template-columns:repeat(2,minmax(210px,1fr));overflow-x:auto}
+  .bmc-grid{grid-template-columns:1fr;overflow-x:visible}
+  .framework-artifact-canvas .bmc-cell{min-height:0;max-height:none}
   .framework-provenance{grid-template-columns:1fr}
   .artifact-sections,.artifact-force-map,.artifact-timeline,.artifact-scorecard,.artifact-paired-canvas,.artifact-table-supporting,.artifact-notes{grid-template-columns:1fr}
+  /* Phone ergonomics: bigger touch targets; 16px inputs stop iOS focus zoom. */
+  .chip,.btn,.btnrow label{padding:11px 15px}
+  .linkchips a,.linkchips button{padding:8px 12px}
+  .node{width:100%;min-width:0}
+  .chat-input input,.area,.key-input,input[type=password],input[type=text]{font-size:16px}
+  .chat-input button{padding:0 24px}
 }
