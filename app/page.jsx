@@ -541,7 +541,7 @@ export default function Pipeline() {
                 );
               })}
             </div>
-            <div className="note"><b>LOAD WHAT YOU HAVE</b> — partial evidence is allowed. The run records missing evidence explicitly instead of inventing it.</div>
+            <div className="note"><b>ONLY THE URL & DESCRIPTION ARE REQUIRED</b> — the agents research market and competitor signals themselves. Interviews, transcripts, and the org chart deepen the read; every run records what is missing instead of inventing it.</div>
           </section>
 
           {STAGES.map(stage => (
