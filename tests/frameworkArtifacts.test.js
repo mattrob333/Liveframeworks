@@ -84,8 +84,8 @@ function completeBmcArtifact() {
   });
 }
 
-test("all 15 frameworks expose a schema and canonical renderer definition", () => {
-  assert.equal(ORDER.length, 15);
+test("all 16 frameworks expose a schema and canonical renderer definition", () => {
+  assert.equal(ORDER.length, 16);
   for (const frameworkId of ORDER) {
     const definition = getArtifactDefinition(frameworkId);
     const schema = getArtifactJsonSchema(frameworkId);
@@ -99,11 +99,12 @@ test("all 15 frameworks expose a schema and canonical renderer definition", () =
   }
 });
 
-test("the validated dependency DAG unlocks the exact eight waterfall waves", () => {
+test("the validated dependency DAG unlocks the exact nine waterfall waves", () => {
   const expectedWaves = [
     ["bmc"],
-    ["fiveforces", "pestle", "vrio", "jtbd", "sevens"],
-    ["swot", "blueocean", "vpc"],
+    ["industrymap", "jtbd", "sevens"],
+    ["fiveforces", "pestle", "vrio", "vpc"],
+    ["swot", "blueocean"],
     ["ansoff", "kano"],
     ["threehorizons"],
     ["bsc"],
@@ -143,15 +144,16 @@ test("needs_input and malformed artifacts never unlock downstream agents", () =>
   assert.deepEqual(deriveActiveAgents(artifacts), ["bmc"]);
 
   artifacts.bmc = completeArtifact("bmc");
-  assert.deepEqual(deriveActiveAgents(artifacts), ["bmc", "fiveforces", "pestle", "vrio", "jtbd", "sevens"]);
+  assert.deepEqual(deriveActiveAgents(artifacts), ["bmc", "industrymap", "jtbd", "sevens"]);
 
+  artifacts.industrymap = completeArtifact("industrymap");
   artifacts.fiveforces = completeArtifact("fiveforces");
   artifacts.pestle = completeArtifact("pestle");
   artifacts.vrio = completeArtifact("vrio");
   artifacts.jtbd = completeArtifact("jtbd");
   artifacts.sevens = completeArtifact("sevens");
   assert.deepEqual(deriveActiveAgents(artifacts), [
-    "bmc", "fiveforces", "pestle", "swot", "vrio", "blueocean", "jtbd", "vpc", "sevens",
+    "bmc", "industrymap", "fiveforces", "pestle", "swot", "vrio", "blueocean", "jtbd", "vpc", "sevens",
   ]);
 });
 
