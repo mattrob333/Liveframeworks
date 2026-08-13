@@ -2,13 +2,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getKey } from "@/lib/store";
+import { hasApiKey } from "@/lib/store";
 
 export default function Nav() {
   const path = usePathname();
   const [hasKey, setHasKey] = useState(false);
   useEffect(() => {
-    const refresh = () => setHasKey(Boolean(getKey()));
+    const refresh = () => setHasKey(hasApiKey());
     refresh();
     window.addEventListener("lf:storage", refresh);
     return () => window.removeEventListener("lf:storage", refresh);

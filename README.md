@@ -4,10 +4,10 @@
 
 ## How it works
 
-1. **Load evidence** into the nine intake buckets (paste text, upload .txt/.md/.csv/.json, or copy the interview template and fill it in). Partial evidence is fine.
-2. **Satisfy the Cartographer.** The Business Model Canvas agent starts online. Chat with it — it reads your buckets, researches the company URL on the live web, interviews you for missing boxes, then delivers a nine-box first pass and declares `[SATISFIED]`.
-3. **The roster wakes up.** Satisfaction activates the downstream agents, with the canvas as shared state. Each agent runs the same loop: read evidence + upstream outputs, ask for what's missing, deliver a first pass, wake its dependents.
-4. **Every framework has a dedicated page** — template graphic, tools, working documents, its locked output, and its own chat. Standby agents will still talk to you; they'll tell you what to finish first.
+1. **Paste a company URL and one paragraph** on the home page. That is first-run — not the 16-agent roster.
+2. **The app draws the Business Model Canvas.** The Cartographer researches the company and fills the nine boxes. Chat is for arguing with that map; it does not gate seeing it, and there is no `[SATISFIED]` wall.
+3. **The expert pipeline is still here.** Open Pipeline to load extra intake buckets, launch downstream agents, and manage the full roster. Each validated artifact unlocks the next frameworks.
+4. **Every framework has a dedicated page** — template graphic, tools, working documents, its locked output, and its own chat.
 5. **Export** compiles evidence + all locked outputs into one markdown snapshot for the company.
 
 ## Grounding

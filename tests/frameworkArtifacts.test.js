@@ -19,6 +19,7 @@ import {
   getBucketAffectedFrameworks,
   shouldReplaceCurrentArtifact,
 } from "../lib/agentContext.js";
+import { formatBizIntake } from "../lib/intake.js";
 import FrameworkArtifact from "../components/FrameworkArtifact.jsx";
 
 const claim = text => ({ text, basis: "known", confidence: "high", evidenceRefs: ["E1"] });
@@ -32,6 +33,12 @@ const evidence = {
   url: null,
   retrievedAt: null,
 };
+
+const READY_BIZ = formatBizIntake({
+  url: "https://example.com",
+  paragraph: "We sell compliance software to mid-market operations teams.",
+});
+const readyBuckets = { biz: READY_BIZ };
 
 function sampleFromSchema(schema) {
   if (schema.const !== undefined) return schema.const;
@@ -115,7 +122,7 @@ test("the validated dependency DAG unlocks the exact nine waterfall waves", () =
   const previouslyReady = new Set();
 
   for (const expected of expectedWaves) {
-    const ready = deriveActiveAgents(artifacts);
+    const ready = deriveActiveAgents(artifacts, readyBuckets);
     const newlyReady = ready.filter(key => !previouslyReady.has(key));
     assert.deepEqual(newlyReady, expected);
     newlyReady.forEach(key => {
@@ -124,7 +131,7 @@ test("the validated dependency DAG unlocks the exact nine waterfall waves", () =
     });
   }
 
-  assert.deepEqual(deriveActiveAgents(artifacts), ORDER);
+  assert.deepEqual(deriveActiveAgents(artifacts, readyBuckets), ORDER);
 });
 
 test("Business Model Canvas validates only when every canonical box has supported content", () => {
@@ -141,10 +148,10 @@ test("Business Model Canvas validates only when every canonical box has supporte
 
 test("needs_input and malformed artifacts never unlock downstream agents", () => {
   const artifacts = { bmc: { frameworkId: "bmc", status: "needs_input" } };
-  assert.deepEqual(deriveActiveAgents(artifacts), ["bmc"]);
+  assert.deepEqual(deriveActiveAgents(artifacts, readyBuckets), ["bmc"]);
 
   artifacts.bmc = completeArtifact("bmc");
-  assert.deepEqual(deriveActiveAgents(artifacts), ["bmc", "industrymap", "jtbd", "sevens"]);
+  assert.deepEqual(deriveActiveAgents(artifacts, readyBuckets), ["bmc", "industrymap", "jtbd", "sevens"]);
 
   artifacts.industrymap = completeArtifact("industrymap");
   artifacts.fiveforces = completeArtifact("fiveforces");
@@ -152,7 +159,7 @@ test("needs_input and malformed artifacts never unlock downstream agents", () =>
   artifacts.vrio = completeArtifact("vrio");
   artifacts.jtbd = completeArtifact("jtbd");
   artifacts.sevens = completeArtifact("sevens");
-  assert.deepEqual(deriveActiveAgents(artifacts), [
+  assert.deepEqual(deriveActiveAgents(artifacts, readyBuckets), [
     "bmc", "industrymap", "fiveforces", "pestle", "swot", "vrio", "blueocean", "jtbd", "vpc", "sevens",
   ]);
 });
@@ -160,7 +167,13 @@ test("needs_input and malformed artifacts never unlock downstream agents", () =>
 test("validated readiness is bound to the framework-map slot", () => {
   const misplaced = completeArtifact("fiveforces");
   assert.equal(artifactIsComplete(misplaced, "bmc"), false);
-  assert.deepEqual(deriveActiveAgents({ bmc: misplaced }), ["bmc"]);
+  assert.deepEqual(deriveActiveAgents({ bmc: misplaced }, readyBuckets), ["bmc"]);
+});
+
+test("Business Model Canvas stays locked until the required URL + paragraph bucket is loaded", () => {
+  assert.deepEqual(deriveActiveAgents({}, {}), []);
+  assert.deepEqual(deriveActiveAgents({}, { biz: "just a sentence with no url" }), []);
+  assert.deepEqual(deriveActiveAgents({}, readyBuckets), ["bmc"]);
 });
 
 test("every bucket mutation invalidates all agents that receive shared context", () => {

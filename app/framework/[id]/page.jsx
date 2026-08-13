@@ -13,6 +13,12 @@ import {
 } from "@/lib/store";
 import { artifactIsComplete, deriveActiveAgents } from "@/lib/agentContext";
 import { getArtifactSections, normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
+import {
+  executeFrameworkRun,
+  hasApiKey,
+  interruptInFlightRuns,
+  RUN_PHASES,
+} from "@/lib/frameworkRunClient";
 import FrameworkArtifact from "@/components/FrameworkArtifact";
 import Chat from "@/components/Chat";
 import LoadingState from "@/components/LoadingState";
@@ -140,10 +146,18 @@ export default function FrameworkPage(props) {
   const [selectedSectionId, setSelectedSectionId] = useState("");
   const [chatPrompt, setChatPrompt] = useState("");
   const [hydrated, setHydrated] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [phase, setPhase] = useState(0);
+  const [runDetail, setRunDetail] = useState("");
+  const [startedAt, setStartedAt] = useState(null);
+  const [runMessage, setRunMessage] = useState("");
   const chatRailRef = useRef(null);
+  const abortRef = useRef(null);
+  const autorunStartedRef = useRef(false);
 
   useEffect(() => {
     if (!id) return;
+    interruptInFlightRuns();
     const saved = getArtifact(id);
     const normalized = saved ? normalizeFrameworkArtifact(saved, id) : null;
     setArtifactState(normalized);
@@ -156,7 +170,63 @@ export default function FrameworkPage(props) {
     setHydrated(true);
   }, [id]);
 
+  useEffect(() => {
+    if (!hydrated || !id) return;
+    const onStorage = () => {
+      const saved = getArtifact(id);
+      setArtifactState(saved ? normalizeFrameworkArtifact(saved, id) : null);
+      setLatestRun(getLatestRun(id));
+    };
+    window.addEventListener("lf:storage", onStorage);
+    return () => window.removeEventListener("lf:storage", onStorage);
+  }, [hydrated, id]);
+
+  useEffect(() => () => abortRef.current?.abort(), []);
+
   const myBuckets = useMemo(() => INTAKE.filter(source => source.readers.includes(id)), [id]);
+
+  useEffect(() => {
+    if (!hydrated || id !== "bmc" || !FW[id]) return;
+    const autorun = new URLSearchParams(window.location.search).get("autorun");
+    if (autorun !== "1" || autorunStartedRef.current) return;
+    autorunStartedRef.current = true;
+    const nextUrl = `/framework/${id}`;
+    if (`${window.location.pathname}${window.location.search}` !== nextUrl) {
+      window.history.replaceState(null, "", nextUrl);
+    }
+    if (artifactIsComplete(getArtifact("bmc"), "bmc")) return;
+    void startCanvasRun();
+  }, [hydrated, id]);
+
+  async function startCanvasRun() {
+    if (busy || abortRef.current) return;
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setRunMessage("");
+    const result = await executeFrameworkRun({
+      frameworkId: id,
+      signal: controller.signal,
+      onStart() {
+        setBusy(true);
+        setPhase(0);
+        setRunDetail("Snapshotting evidence and opening the run…");
+        setStartedAt(Date.now());
+      },
+      onProgress({ phase, detail }) {
+        if (phase != null) setPhase(phase);
+        if (detail) setRunDetail(detail);
+      },
+    });
+    abortRef.current = null;
+    setBusy(false);
+    setStartedAt(null);
+    setRunDetail("");
+    const saved = getArtifact(id);
+    setArtifactState(saved ? normalizeFrameworkArtifact(saved, id) : null);
+    setLatestRun(getLatestRun(id));
+    if (!result.ok) setRunMessage(result.error);
+    else if (result.message) setRunMessage(result.message);
+  }
 
   if (!framework) {
     return <main className="page-message"><h1>Unknown framework</h1><p><Link href="/pipeline">← Back to the pipeline</Link></p></main>;
@@ -185,7 +255,7 @@ export default function FrameworkPage(props) {
   const legacy = artifact?.status === "legacy";
   const stale = artifact?.status === "stale";
   const viewable = complete || stale;
-  const running = latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status);
+  const running = busy || (latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status));
 
   return (
     <main className="framework-page">
@@ -209,14 +279,19 @@ export default function FrameworkPage(props) {
           </header>
 
           {running && (
-            <LoadingState
-              label={`${framework.role} is still working`}
-              variant="Drive"
-              phases={["Reading context", "Researching external signals", "Structuring the framework", "Validating the artifact"]}
-              phase={1}
-              startedAt={latestRun?.startedAt ? new Date(latestRun.startedAt) : undefined}
-            />
+            <div className="i-sec">
+              <LoadingState
+                label={`${framework.role} is building`}
+                variant={phase >= 3 ? "Orbit" : "Drive"}
+                phases={RUN_PHASES}
+                phase={phase}
+                startedAt={startedAt || (latestRun?.startedAt ? new Date(latestRun.startedAt) : undefined)}
+              />
+              {runDetail && <p className="run-detail" aria-live="polite">▸ {runDetail}</p>}
+              {busy && <button className="btn danger run-cancel" onClick={() => abortRef.current?.abort()}>CANCEL RUN</button>}
+            </div>
           )}
+          {runMessage && <div className="run-error" role="alert">{runMessage}</div>}
 
           {viewable ? (
             <>
@@ -243,8 +318,11 @@ export default function FrameworkPage(props) {
               <div className="i-label">Structured artifact unavailable</div>
               {legacy
                 ? <><p>Your previous plain-text result is preserved below, but it cannot populate the interactive framework safely. Regenerate this framework from the pipeline.</p><div className="output legacy-output">{getOutput(id)}</div></>
-                : <p>Return to the pipeline, select this framework, and run “Research & build framework.” The completed structured template will open here automatically.</p>}
-              <Link className="btn primary" href="/pipeline">OPEN PIPELINE</Link>
+                : <p>Return home, paste a company URL and one paragraph, and the canvas will draw itself. Or open the expert pipeline to launch this framework from the roster.</p>}
+              <div className="btnrow">
+                {id === "bmc" && <Link className="btn primary" href="/">DRAW FROM HOME</Link>}
+                <Link className={id === "bmc" ? "btn" : "btn primary"} href="/pipeline">OPEN PIPELINE</Link>
+              </div>
             </section>
           )}
 
@@ -284,7 +362,8 @@ export default function FrameworkPage(props) {
             <div className="i-label">Next steps</div>
             {(() => {
               const artifactMap = Object.fromEntries(ORDER.map(key => [key, key === id ? artifact : getArtifact(key)]));
-              const readyNow = deriveActiveAgents(artifactMap);
+              const bucketMap = Object.fromEntries(INTAKE.map(source => [source.key, getBucket(source.key)]));
+              const readyNow = deriveActiveAgents(artifactMap, bucketMap);
               const nextUp = ORDER.filter(key => key !== id && readyNow.includes(key) && !artifactIsComplete(artifactMap[key], key));
               return (
                 <div className="linkchips">

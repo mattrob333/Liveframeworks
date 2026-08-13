@@ -7,38 +7,31 @@ import { STAGES, INTAKE, FW, ORDER, SOURCES } from "@/lib/frameworks";
 import {
   getArtifact,
   getBucket,
-  getChat,
-  getKey,
   getLatestRun,
-  setActive,
-  setArtifact,
   setBucket,
-  upsertRun,
 } from "@/lib/store";
 import {
   artifactIsComplete,
-  buildContextSnapshot,
   deriveActiveAgents,
-  getAffectedFrameworks,
   getBucketAffectedFrameworks,
-  shouldReplaceCurrentArtifact,
 } from "@/lib/agentContext";
-import { normalizeFrameworkArtifact, validateFrameworkArtifact } from "@/lib/frameworkArtifacts";
-import { saveGenerationRecord, updateGenerationRecord } from "@/lib/generationStore";
 import { getModalFocusableElements, trapModalTabKey } from "@/lib/modalFocus";
+import {
+  executeFrameworkRun,
+  hasApiKey,
+  interruptInFlightRuns,
+  markDependentArtifactsStale,
+  RUN_PHASES,
+} from "@/lib/frameworkRunClient";
+import {
+  formatBizIntake,
+  parseBizIntake,
+  resolvePipelineSelect,
+  validateBizIntake,
+  validateBucketSave,
+} from "@/lib/intake";
+import BizIntakeFields from "@/components/BizIntakeFields";
 import LoadingState from "@/components/LoadingState";
-
-const RUN_PHASES = [
-  "Reading saved context",
-  "Researching the company and market",
-  "Structuring the framework",
-  "Finishing research and validating the artifact",
-];
-
-function runId() {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
-  return `run_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
-}
 
 function statusFor(frameworkId, artifact, latestRun, ready) {
   if (latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status)) return "running";
@@ -82,36 +75,19 @@ export default function Pipeline() {
   const [artifacts, setArtifacts] = useState({});
   const [latestRuns, setLatestRuns] = useState({});
   const [isMobileInspector, setIsMobileInspector] = useState(false);
+  const [hasKey, setHasKey] = useState(false);
+  const [bizUrl, setBizUrl] = useState("");
+  const [bizParagraph, setBizParagraph] = useState("");
 
   function refresh() {
     setBuckets(Object.fromEntries(INTAKE.map(source => [source.key, getBucket(source.key)])));
     setArtifacts(Object.fromEntries(ORDER.map(key => [key, getArtifact(key)])));
     setLatestRuns(Object.fromEntries(ORDER.map(key => [key, getLatestRun(key)])));
+    setHasKey(hasApiKey());
   }
 
   useEffect(() => {
-    ORDER.forEach(key => {
-      const latest = getLatestRun(key);
-      if (latest && ["queued", "researching", "generating", "validating"].includes(latest.status)) {
-        const interrupted = {
-          ...latest,
-          status: "interrupted",
-          completedAt: new Date().toISOString(),
-          error: "The page reloaded before this browser received the completed response. Retry with the same saved context.",
-        };
-        upsertRun(key, interrupted);
-        void updateGenerationRecord(latest.id, {
-          status: interrupted.status,
-          completedAt: interrupted.completedAt,
-          error: interrupted.error,
-        }).catch(error => {
-          upsertRun(key, {
-            ...interrupted,
-            storageWarning: error?.message || "The interrupted archive record could not be reconciled.",
-          });
-        });
-      }
-    });
+    interruptInFlightRuns();
     refresh();
     setHydrated(true);
     const onStorage = () => refresh();
@@ -121,14 +97,17 @@ export default function Pipeline() {
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
-  // Deep-link support: /?select=<frameworkId> opens the pipeline with that
-  // framework's launcher already selected (used by the workspace next-steps).
+  // Deep-link support: /pipeline?select=<frameworkId> keeps the selected
+  // launcher in the URL. Unknown slugs stay visible as "unknown".
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("select");
-    if (requested && FW[requested]) {
+    const resolved = resolvePipelineSelect(requested);
+    if (resolved.kind === "framework") {
       setSelectedIntake(null);
-      setSelectedFramework(requested);
-      window.history.replaceState(null, "", window.location.pathname);
+      setSelectedFramework(resolved.id);
+    } else if (resolved.kind === "unknown") {
+      setSelectedIntake(null);
+      setSelectedFramework(resolved.slug);
     }
   }, []);
 
@@ -142,7 +121,13 @@ export default function Pipeline() {
 
   useEffect(() => {
     if (!selectedIntake) return;
-    setBucketText(getBucket(selectedIntake));
+    const text = getBucket(selectedIntake);
+    setBucketText(text);
+    if (selectedIntake === "biz") {
+      const parsed = parseBizIntake(text);
+      setBizUrl(parsed.url);
+      setBizParagraph(parsed.paragraph);
+    }
     setBucketStatus("");
   }, [selectedIntake]);
 
@@ -207,9 +192,11 @@ export default function Pipeline() {
     mobileDialogWasOpenRef.current = mobileDialogOpen;
   }, [mobileDialogOpen]);
 
-  const active = useMemo(() => deriveActiveAgents(artifacts), [artifacts]);
+  const active = useMemo(() => deriveActiveAgents(artifacts, buckets), [artifacts, buckets]);
   const source = selectedIntake ? INTAKE.find(item => item.key === selectedIntake) : null;
-  const framework = selectedFramework ? FW[selectedFramework] : null;
+  const selectResolution = resolvePipelineSelect(selectedFramework);
+  const unknownSelect = selectResolution.kind === "unknown" ? selectResolution.slug : null;
+  const framework = selectResolution.kind === "framework" ? FW[selectResolution.id] : null;
   const frameworkStage = framework ? STAGES.find(stage => stage.key === framework.stage) : null;
   const selectedArtifact = selectedFramework ? artifacts[selectedFramework] : null;
   const selectedLatestRun = selectedFramework ? latestRuns[selectedFramework] : null;
@@ -228,6 +215,7 @@ export default function Pipeline() {
     setInstruction("");
     setRunMessage("");
     setSelectedIntake(current => current === key ? null : key);
+    syncSelectToUrl(null);
   }
 
   function selectFramework(key) {
@@ -240,6 +228,7 @@ export default function Pipeline() {
     setSelectedFramework(key);
     setInstruction("");
     setRunMessage("");
+    syncSelectToUrl(key);
   }
 
   function closeInspector({ cancelBusy = false } = {}) {
@@ -252,41 +241,43 @@ export default function Pipeline() {
     setSelectedFramework(null);
     setSelectedIntake(null);
     setRunMessage("");
+    syncSelectToUrl(null);
+  }
+
+  function syncSelectToUrl(key) {
+    const next = key ? `/pipeline?select=${encodeURIComponent(key)}` : "/pipeline";
+    if (`${window.location.pathname}${window.location.search}` !== next) {
+      router.replace(next, { scroll: false });
+    }
   }
 
   function staleArtifacts(seedIds, reason, { includeSeeds = true, baseArtifacts } = {}) {
-    const nextArtifacts = { ...(baseArtifacts || Object.fromEntries(ORDER.map(key => [key, getArtifact(key)]))) };
-    const staled = [];
-    const failures = [];
-    getAffectedFrameworks(seedIds, includeSeeds).forEach(key => {
-      const current = nextArtifacts[key];
-      if (!artifactIsComplete(current, key)) return;
-      const stale = {
-        ...current,
-        status: "stale",
-        staleAt: new Date().toISOString(),
-        staleReason: reason,
-      };
-      const result = setArtifact(key, stale);
-      if (!result.ok) {
-        failures.push(`${FW[key].name}: ${result.error}`);
-        return;
-      }
-      nextArtifacts[key] = stale;
-      staled.push(key);
-    });
-    setActive(deriveActiveAgents(nextArtifacts));
-    return { nextArtifacts, staled, failures };
+    return markDependentArtifactsStale(seedIds, reason, { includeSeeds, baseArtifacts });
   }
 
   function saveBucket() {
+    const nextValue = selectedIntake === "biz"
+      ? formatBizIntake({ url: bizUrl, paragraph: bizParagraph })
+      : bucketText;
+    const validation = selectedIntake === "biz"
+      ? validateBizIntake({ url: bizUrl, paragraph: bizParagraph })
+      : validateBucketSave(selectedIntake, nextValue);
+    if (!validation.ok) {
+      setBucketStatus(validation.error);
+      return;
+    }
     const previous = getBucket(selectedIntake);
-    const result = setBucket(selectedIntake, bucketText);
+    const result = setBucket(selectedIntake, selectedIntake === "biz" ? formatBizIntake(validation) : nextValue);
     if (!result.ok) {
       setBucketStatus(`Could not save: ${result.error}`);
       return;
     }
-    const stale = previous !== bucketText
+    if (selectedIntake === "biz") {
+      setBizUrl(validation.url);
+      setBizParagraph(validation.paragraph);
+      setBucketText(formatBizIntake(validation));
+    }
+    const stale = previous !== (selectedIntake === "biz" ? formatBizIntake(validation) : nextValue)
       ? staleArtifacts(getBucketAffectedFrameworks(selectedIntake), `${source.name} changed.`)
       : { staled: [], failures: [] };
     setBucketStatus(`Saved. Every agent will receive this as engagement context; ${source.readers.map(reader => FW[reader].role).join(", ")} treat it as a primary input.${stale.staled.length ? ` ${stale.staled.length} artifact(s) marked stale.` : ""}${stale.failures.length ? ` Could not mark stale: ${stale.failures.join("; ")}` : ""}`);
@@ -295,12 +286,36 @@ export default function Pipeline() {
 
   async function onFiles(event) {
     const previous = getBucket(selectedIntake);
-    let value = bucketText;
+    let value = selectedIntake === "biz" ? bizParagraph : bucketText;
     for (const file of [...event.target.files]) {
       const text = await file.text();
       value += (value.trim() ? "\n\n" : "") + `=== FILE: ${file.name} ===\n${text}`;
     }
+    if (selectedIntake === "biz") {
+      setBizParagraph(value);
+      const validation = validateBizIntake({ url: bizUrl, paragraph: value });
+      if (!validation.ok) {
+        setBucketStatus(validation.error);
+        return;
+      }
+      const formatted = formatBizIntake(validation);
+      const result = setBucket(selectedIntake, formatted);
+      if (result.ok && previous !== formatted) {
+        const stale = staleArtifacts(getBucketAffectedFrameworks(selectedIntake), `${source.name} changed.`);
+        setBucketStatus(`${event.target.files.length} file(s) loaded and saved.${stale.staled.length ? ` ${stale.staled.length} dependent artifact(s) marked stale.` : ""}${stale.failures.length ? ` Could not mark stale: ${stale.failures.join("; ")}` : ""}`);
+      } else {
+        setBucketStatus(result.ok ? `${event.target.files.length} file(s) loaded and saved.` : `Could not save: ${result.error}`);
+      }
+      setBucketText(formatted);
+      refresh();
+      return;
+    }
     setBucketText(value);
+    const validation = validateBucketSave(selectedIntake, value);
+    if (!validation.ok) {
+      setBucketStatus(validation.error);
+      return;
+    }
     const result = setBucket(selectedIntake, value);
     if (result.ok && previous !== value) {
       const stale = staleArtifacts(getBucketAffectedFrameworks(selectedIntake), `${source.name} changed.`);
@@ -314,6 +329,8 @@ export default function Pipeline() {
   function clearBucket() {
     const previous = getBucket(selectedIntake);
     setBucketText("");
+    setBizUrl("");
+    setBizParagraph("");
     const result = setBucket(selectedIntake, "");
     if (!result.ok) {
       setBucketStatus(`Could not clear: ${result.error}`);
@@ -332,249 +349,47 @@ export default function Pipeline() {
 
   async function runFramework(frameworkId) {
     if (busyFramework) return;
-    if (!getKey()) {
-      setRunMessage("Add your Anthropic API key in Settings before starting research.");
-      return;
-    }
-
-    const artifactMap = Object.fromEntries(ORDER.map(key => [key, getArtifact(key)]));
-    const bucketMap = Object.fromEntries(INTAKE.map(item => [item.key, getBucket(item.key)]));
-    const chatMap = Object.fromEntries(ORDER.map(key => [key, getChat(key)]));
-    const ready = deriveActiveAgents(artifactMap).includes(frameworkId);
-    if (!ready) {
-      setRunMessage(`Complete ${SOURCES[frameworkId].filter(key => !artifactIsComplete(artifactMap[key], key)).map(key => FW[key].name).join(", ")} first.`);
-      return;
-    }
-
-    const id = runId();
-    const existing = artifactMap[frameworkId];
-    const revision = artifactIsComplete(existing, frameworkId) ? Number(existing.revision || 1) + 1 : 1;
-    const starter = `Read the saved context, research the company, and create the ${FW[frameworkId].name}.`;
-    const fullInstruction = instruction.trim() ? `${starter}\n\nAdditional direction: ${instruction.trim()}` : starter;
-    const context = buildContextSnapshot(frameworkId, bucketMap, artifactMap, fullInstruction, chatMap);
-    const record = {
-      id,
-      frameworkId,
-      mode: artifactIsComplete(existing, frameworkId) ? "regenerate" : "initial",
-      status: "researching",
-      startedAt: new Date().toISOString(),
-      completedAt: null,
-      contextSnapshotId: context.id,
-      inputFingerprint: context.inputFingerprint,
-      artifactRevision: revision,
-      model: "claude-sonnet-5",
-      webUsed: false,
-      error: null,
-    };
-    const persisted = upsertRun(frameworkId, record);
-    if (!persisted.ok) {
-      setRunMessage(`The run could not be saved before generation: ${persisted.error}`);
-      return;
-    }
-    try {
-      await saveGenerationRecord({ ...record, context, instruction: fullInstruction });
-    } catch (error) {
-      upsertRun(frameworkId, { ...record, status: "failed", error: error?.message || "Generation storage is unavailable." });
-      setRunMessage(`The run was not started because its full context could not be saved: ${error?.message || "generation storage is unavailable"}`);
-      refresh();
-      return;
-    }
-
     const controller = new AbortController();
     abortRef.current = controller;
-    setBusyFramework(frameworkId);
-    setPhase(0);
-    setRunDetail("Snapshotting evidence and opening the run…");
-    setStartedAt(Date.now());
     setRunMessage("");
+    const result = await executeFrameworkRun({
+      frameworkId,
+      instruction,
+      signal: controller.signal,
+      onStart() {
+        setBusyFramework(frameworkId);
+        setPhase(0);
+        setRunDetail("Snapshotting evidence and opening the run…");
+        setStartedAt(Date.now());
+        refresh();
+      },
+      onProgress({ phase, detail }) {
+        if (phase != null) setPhase(phase);
+        if (detail) setRunDetail(detail);
+      },
+    });
+    abortRef.current = null;
+    setBusyFramework("");
+    setStartedAt(null);
+    setRunDetail("");
     refresh();
-
-    let archiveRecord = null;
-    try {
-      const response = await fetch("/api/framework-run", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        signal: controller.signal,
-        body: JSON.stringify({
-          apiKey: getKey(),
-          frameworkId,
-          instruction: fullInstruction,
-          context,
-          runId: id,
-          revision,
-        }),
-      });
-
-      let data = null;
-      const contentType = response.headers.get("content-type") || "";
-      if (response.ok && contentType.includes("ndjson") && response.body) {
-        let searchCount = 0;
-        const handleEvent = event => {
-          if (event.type === "phase") {
-            if (event.phase === "research") { setPhase(1); setRunDetail("Reading the company and planning searches…"); }
-            else if (event.phase === "synthesis") { setPhase(2); setRunDetail("Structuring the framework artifact…"); }
-            else if (event.phase === "repair") { setPhase(3); setRunDetail("Tightening the artifact to fit the schema…"); }
-            else if (event.phase === "validating") { setPhase(3); setRunDetail("Validating the artifact against its schema…"); }
-          } else if (event.type === "search_query" && event.query) {
-            searchCount += 1;
-            setPhase(1);
-            setRunDetail(`Search ${searchCount}: “${event.query}”`);
-          } else if (event.type === "search_results") {
-            setRunDetail(`Reading ${event.count} search result${event.count === 1 ? "" : "s"}…`);
-          } else if (event.type === "writing") {
-            if (event.phase === "research") setRunDetail("Compiling the evidence brief…");
-            else setRunDetail(`Writing the artifact… ~${Math.max(1, Math.round(event.chars / 4))} tokens`);
-          } else if (event.type === "research_complete") {
-            setPhase(2);
-            setRunDetail(`Research done — ${event.searches} searches, ${event.sources} sources.`);
-          } else if (event.type === "result") {
-            data = event;
-          } else if (event.type === "error") {
-            data = { error: event.error };
-          }
-        };
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-        const consumeLine = line => {
-          if (!line.trim()) return;
-          try { handleEvent(JSON.parse(line)); } catch { /* skip malformed line */ }
-        };
-        for (;;) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          buffer = lines.pop();
-          lines.forEach(consumeLine);
-        }
-        consumeLine(buffer);
-        if (!data) throw new Error("The run stream ended without a result. Retry the run.");
-      } else {
-        const raw = await response.text();
-        try { data = JSON.parse(raw); } catch { data = { error: `The generation service returned an unreadable response (${response.status}).` }; }
-      }
-
-      if (!response.ok || data.error) {
-        const message = typeof data.error === "string" ? data.error : data.error?.message;
-        throw new Error(message || "Framework generation failed.");
-      }
-      setRunDetail("Saving the validated artifact…");
-
-      const generationStatus = data.status || data.artifact?.status || "complete";
-
-      const normalized = normalizeFrameworkArtifact({
-        ...data.artifact,
-        frameworkId,
-        runId: id,
-        revision,
-        status: generationStatus,
-        model: data.model || "claude-sonnet-5",
-        generatedAt: data.artifact?.generatedAt || new Date().toISOString(),
-      }, frameworkId);
-      const validation = validateFrameworkArtifact(normalized, frameworkId, { requireContent: generationStatus === "complete" });
-      if (!validation.valid) throw new Error(`The generated artifact failed validation: ${validation.errors.join("; ")}`);
-
-      let archiveWarning = "";
-      const completedAt = new Date().toISOString();
-      archiveRecord = {
-        ...record,
-        status: generationStatus,
-        completedAt,
-        context,
-        instruction: fullInstruction,
-        artifact: normalized,
-        research: data.research || null,
-        usage: data.usage || null,
-        webUsed: Boolean(data.webUsed),
-      };
-      try {
-        await saveGenerationRecord(archiveRecord);
-      } catch (error) {
-        archiveWarning = error?.message || "The full research archive could not be saved.";
-      }
-
-      const shouldReplaceCurrent = shouldReplaceCurrentArtifact(existing, generationStatus, frameworkId);
-      let nextArtifacts = { ...artifactMap };
-      if (shouldReplaceCurrent) {
-        const saved = setArtifact(frameworkId, normalized);
-        if (!saved.ok) throw new Error(`The result is preserved in the run archive, but current-artifact storage failed: ${saved.error}`);
-        nextArtifacts[frameworkId] = normalized;
-      }
-
-      if (generationStatus === "complete") {
-        const stale = staleArtifacts(
-          [frameworkId],
-          `${FW[frameworkId].name} advanced to revision ${revision}.`,
-          { includeSeeds: false, baseArtifacts: nextArtifacts },
-        );
-        nextArtifacts = stale.nextArtifacts;
-        if (stale.failures.length) {
-          archiveWarning = [archiveWarning, `Could not mark every descendant stale: ${stale.failures.join("; ")}`].filter(Boolean).join(" ");
-        }
-      }
-
-      upsertRun(frameworkId, {
-        ...record,
-        status: generationStatus,
-        completedAt,
-        webUsed: Boolean(data.webUsed),
-        usage: data.usage || null,
-        researchSummary: data.research ? {
-          sourceCount: data.research.sources?.length || 0,
-          citationCount: data.research.citations?.length || 0,
-          providerRequestIds: data.research.providerRequestIds || [],
-        } : null,
-        storageWarning: archiveWarning || null,
-      });
-      setActive(deriveActiveAgents(nextArtifacts));
-      refresh();
-      if (generationStatus === "complete") {
-        if (archiveWarning) {
-          try { sessionStorage.setItem(`lf:run-warning:${id}`, archiveWarning); } catch { /* The warning remains on the run record. */ }
-        }
-        router.push(`/framework/${frameworkId}?run=${encodeURIComponent(id)}`);
-      } else {
-        const questions = Array.isArray(normalized.nextQuestions) ? normalized.nextQuestions.filter(Boolean) : [];
-        const priorPreserved = existing && !shouldReplaceCurrent;
-        setRunMessage(`${priorPreserved ? "The prior artifact remains available. " : ""}The agent needs more input before this result can unlock downstream work.${questions.length ? ` Next: ${questions.join(" · ")}` : ""}`);
-      }
-    } catch (error) {
-      const interrupted = error?.name === "AbortError";
-      const failure = {
-        ...record,
-        status: interrupted ? "interrupted" : "failed",
-        completedAt: new Date().toISOString(),
-        error: interrupted ? "Cancelled by user." : error?.message || "Framework generation failed.",
-      };
-      let archiveFailure = "";
-      try {
-        await saveGenerationRecord(archiveRecord
-          ? { ...archiveRecord, status: failure.status, completedAt: failure.completedAt, deliveryError: failure.error }
-          : { ...failure, context, instruction: fullInstruction });
-      } catch (archiveError) {
-        archiveFailure = archiveError?.message || "The final run state could not be archived.";
-      }
-      upsertRun(frameworkId, { ...failure, storageWarning: archiveFailure || null });
-      const message = interrupted ? "Run cancelled. Your saved context was not changed." : error?.message || "Framework generation failed.";
-      setRunMessage(`${message}${archiveFailure ? ` Archive warning: ${archiveFailure}` : ""}`);
-      refresh();
-    } finally {
-      abortRef.current = null;
-      setBusyFramework("");
-      setStartedAt(null);
-      setRunDetail("");
+    if (!result.ok) {
+      setRunMessage(result.error);
+      return;
     }
+    if (result.status === "complete") {
+      router.push(`/framework/${frameworkId}?run=${encodeURIComponent(result.runId)}`);
+      return;
+    }
+    setRunMessage(result.message || "The agent needs more input before this result can unlock downstream work.");
   }
 
   const selectedReady = selectedFramework ? active.includes(selectedFramework) : false;
   const selectedStatus = selectedFramework
     ? statusFor(selectedFramework, selectedArtifact, selectedLatestRun, selectedReady)
     : null;
-  const unmet = selectedFramework
-    ? SOURCES[selectedFramework].filter(key => !artifactIsComplete(artifacts[key], key))
-    : [];
+  const unmet = (SOURCES[selectedFramework] || [])
+    .filter(key => !artifactIsComplete(artifacts[key], key));
 
   return (
     <main>
@@ -721,11 +536,14 @@ export default function Pipeline() {
 
                   <div className="i-sec run-actions">
                     {unmet.length > 0 && <p className="status warning">Complete first: {unmet.map(key => FW[key].name).join(" · ")}</p>}
-                    {!getKey() && <p className="status warning">An Anthropic API key is required. <Link href="/settings">Open Settings →</Link></p>}
+                    {selectedFramework === "bmc" && !selectedReady && (
+                      <p className="status warning">Load Business description & URL (company URL + paragraph) first.</p>
+                    )}
+                    {!hasKey && <p className="status warning">An Anthropic API key is required. <Link href="/settings">Open Settings →</Link></p>}
                     {artifactIsComplete(selectedArtifact, selectedFramework) && (
                       <Link className="btn" href={`/framework/${selectedFramework}`}>OPEN COMPLETED ARTIFACT</Link>
                     )}
-                    <button className="btn primary" onClick={() => runFramework(selectedFramework)} disabled={!selectedReady}>
+                    <button className="btn primary" onClick={() => runFramework(selectedFramework)} disabled={!selectedReady || !hasKey}>
                       {artifactIsComplete(selectedArtifact, selectedFramework) ? "RESEARCH & REGENERATE" : "RESEARCH & BUILD FRAMEWORK"} ▸
                     </button>
                     {selectedArtifact?.status === "legacy" && <p className="status warning">This is a legacy plain-text result. Regenerate it to create a validated interactive artifact.</p>}
@@ -751,19 +569,45 @@ export default function Pipeline() {
                 <div className="btnrow"><button className="btn" onClick={copyTemplate}>COPY TEMPLATE</button></div>
               </div>
               <div className="i-sec">
-                <label className="i-label" htmlFor="bucket-contents">Bucket contents · {bucketText.trim() ? "loaded" : "empty"}</label>
-                <textarea id="bucket-contents" className="area" value={bucketText} onChange={event => setBucketText(event.target.value)} placeholder="Paste the filled template, transcripts, URLs, or raw evidence here…" />
+                {source.key === "biz" ? (
+                  <>
+                    <div className="i-label">Required to draw the canvas · {validateBizIntake({ url: bizUrl, paragraph: bizParagraph }).ok ? "loaded" : "empty"}</div>
+                    <BizIntakeFields
+                      url={bizUrl}
+                      paragraph={bizParagraph}
+                      onUrlChange={value => { setBizUrl(value); setBucketStatus(""); }}
+                      onParagraphChange={value => { setBizParagraph(value); setBucketStatus(""); }}
+                      idPrefix="pipeline-biz"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <label className="i-label" htmlFor="bucket-contents">Bucket contents · {bucketText.trim() ? "loaded" : "empty"}</label>
+                    <textarea id="bucket-contents" className="area" value={bucketText} onChange={event => setBucketText(event.target.value)} placeholder="Paste the filled template, transcripts, URLs, or raw evidence here…" />
+                  </>
+                )}
                 <div className="btnrow">
-                  <button className="btn primary" onClick={saveBucket}>SAVE TO BUCKET</button>
+                  <button
+                    className="btn primary"
+                    onClick={saveBucket}
+                    disabled={source.key === "biz" ? !validateBizIntake({ url: bizUrl, paragraph: bizParagraph }).ok : !bucketText.trim()}
+                  >SAVE TO BUCKET</button>
                   <label>UPLOAD .TXT / .MD<input type="file" aria-label={`Upload files to ${source.name}`} accept=".txt,.md,.csv,.json" multiple onChange={onFiles} /></label>
                   <button className="btn" onClick={clearBucket}>CLEAR</button>
                 </div>
-                <div className={`status${bucketStatus ? " ok" : ""}`}>{bucketStatus || "Saved evidence persists in this browser and is snapshotted into each run."}</div>
+                <div className={`status${bucketStatus ? (bucketStatus.startsWith("Saved") || bucketStatus.includes("loaded and saved") || bucketStatus.startsWith("Template") || bucketStatus.startsWith("Bucket cleared") ? " ok" : " warning") : ""}`}>{bucketStatus || "Saved evidence persists in this browser and is snapshotted into each run."}</div>
               </div>
               <div className="i-sec">
                 <div className="i-label">Read by these agents</div>
                 <div className="linkchips">{source.readers.map(key => <button key={key} onClick={() => selectFramework(key)}>{FW[key].icon} {FW[key].name}</button>)}</div>
               </div>
+            </div>
+          ) : unknownSelect ? (
+            <div className="inspector-empty">
+              <div className="i-label">Unknown framework</div>
+              <h2>No agent named “{unknownSelect}”</h2>
+              <p>That slug is not in this pipeline. Check the URL or pick a framework card from the roster.</p>
+              <p className="accent-copy">Business Model Canvas is <code>/pipeline?select=bmc</code>.</p>
             </div>
           ) : (
             <div className="inspector-empty">

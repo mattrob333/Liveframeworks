@@ -10,7 +10,12 @@ export default function Settings() {
   useEffect(() => { setKeyState(getKey()); }, []);
 
   function saveKey() {
-    const result = setKey(key.trim());
+    const value = key.trim();
+    if (!value) {
+      setStatus("Enter an API key before saving.");
+      return;
+    }
+    const result = setKey(value);
     setStatus(result.ok ? "Key saved to this browser." : `Could not save the key: ${result.error}`);
   }
 
@@ -37,10 +42,10 @@ export default function Settings() {
           placeholder="sk-ant-…"
         />
         <div className="btnrow">
-          <button className="btn primary" type="submit">SAVE KEY</button>
+          <button className="btn primary" type="submit" disabled={!key.trim()}>SAVE KEY</button>
           <button className="btn" type="button" onClick={() => { setKeyState(""); setKey(""); setStatus("Key removed."); }}>REMOVE</button>
         </div>
-        <div className={`status${status ? " ok" : ""}`}>{status || "Every framework run and follow-up agent can use live web research."}</div>
+        <div className={`status${status ? (status === "Enter an API key before saving." ? " warning" : " ok") : ""}`}>{status || "Every framework run and follow-up agent can use live web research."}</div>
       </form>
 
       <div className="panel mt settings-panel">
