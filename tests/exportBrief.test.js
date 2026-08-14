@@ -17,6 +17,7 @@ import {
   listCompleteFrameworks,
 } from "../lib/exportBrief.js";
 import ExportBrief from "../components/ExportBrief.jsx";
+import ExportPrintDocument from "../components/ExportPrintDocument.jsx";
 
 const claim = text => ({ text, basis: "known", confidence: "high", evidenceRefs: ["E1"] });
 const evidence = {
@@ -216,14 +217,86 @@ test("a second completed framework becomes a titled section, still no empty slot
   assertNoJsonDump(html);
 });
 
-test("print CSS hides nav, export chrome, and the site footer", () => {
+test("print CSS is a white letter document, not a canvas screenshot", () => {
   const cssPath = fileURLToPath(new URL("../app/globals.css", import.meta.url));
   const print = readFileSync(cssPath, "utf8").split("@media print")[1] || "";
   assert.match(print, /\.topnav/);
   assert.match(print, /\.export-chrome/);
   assert.match(print, /footer/);
-  assert.match(print, /display:\s*none/);
-  assert.match(print, /size:\s*landscape/);
-  assert.match(print, /width:\s*100%/);
-  assert.match(print, /10% 10% 10% 10% 10% 10% 10% 10% 10% 10%/);
+  assert.match(print, /\.export-brief\{display:none/);
+  assert.match(print, /size:\s*letter/);
+  assert.match(print, /margin:\s*\.75in/);
+  assert.match(print, /background:#fff/);
+  assert.doesNotMatch(print, /print-color-adjust/);
+  assert.doesNotMatch(print, /landscape/);
+  assert.doesNotMatch(print, /10% 10% 10%/);
+  assert.doesNotMatch(print, /bmc-kp/);
+  assert.doesNotMatch(print, /F4F0E6/);
+});
+
+test("print document stacks BMC as headed sections, not a nine-box", () => {
+  const html = renderToStaticMarkup(
+    React.createElement(ExportPrintDocument, {
+      meta: engagementMeta({ biz: READY_BIZ }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds: ["bmc"],
+      artifacts: { bmc: completeBmcArtifact() },
+    }),
+  );
+  const headings = [...html.matchAll(/<h3[^>]*>([^<]+)<\/h3>/g)].map(match => match[1]);
+  assert.deepEqual(headings, [
+    "Key Partnerships",
+    "Key Activities",
+    "Key Resources",
+    "Value Propositions",
+    "Customer Relationships",
+    "Channels",
+    "Customer Segments",
+    "Cost Structure",
+    "Revenue Streams",
+  ]);
+  assert.match(html, /<h2[^>]*>Business Model Canvas/);
+  assert.match(html, /Cloud infrastructure partners/);
+  assert.doesNotMatch(html, /bmc-grid/);
+  assert.doesNotMatch(html, /bmc-kp/);
+  assert.doesNotMatch(html, /No supported finding yet/);
+  assert.doesNotMatch(html, /Terrain/);
+  assert.doesNotMatch(html, /SWOT/);
+});
+
+test("print document lists Industry Map in four-band heading sequence", () => {
+  const artifact = completeArtifact("industrymap");
+  artifact.payload.map.players = [
+    { name: "AppDirect", position: "leader", revenue: null, marketShare: null, growth: null, geography: null, basis: "known", confidence: "high", evidenceRefs: [] },
+    { name: "Stripe", position: "entrant", revenue: null, marketShare: null, growth: null, geography: null, url: "https://stripe.com", basis: "known", confidence: "high", evidenceRefs: [] },
+  ];
+  const html = renderToStaticMarkup(
+    React.createElement(ExportPrintDocument, {
+      meta: engagementMeta({ biz: READY_BIZ }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds: ["bmc", "industrymap"],
+      artifacts: { bmc: completeBmcArtifact(), industrymap: artifact },
+    }),
+  );
+  const headings = [...html.matchAll(/<h3[^>]*>([^<]+)<\/h3>/g)].map(match => match[1]);
+  const mapHeadings = headings.slice(9);
+  assert.deepEqual(mapHeadings, [
+    "Segments & Suppliers",
+    "Glossary",
+    "Experts & Key Sources",
+    "Market Leaders & New Entrants",
+    "Technology Flows",
+    "Economic Flows",
+    "Personnel Flows",
+    "How It Looked 5-10 Years Ago",
+    "The Five-Year Map",
+  ]);
+  assert.doesNotMatch(html, />Terrain</);
+  assert.doesNotMatch(html, />Players</);
+  assert.doesNotMatch(html, />Flows</);
+  assert.doesNotMatch(html, />Time</);
+  assert.doesNotMatch(html, /industry-map/);
+  assert.doesNotMatch(html, /player-chip/);
+  assert.match(html, /href="https:\/\/stripe\.com\/?"/);
+  assert.doesNotMatch(html, /href="https:\/\/appdirect\.com"/);
 });

@@ -11,6 +11,7 @@ import {
   listCompleteFrameworks,
 } from "@/lib/exportBrief";
 import ExportBrief from "@/components/ExportBrief";
+import ExportPrintDocument from "@/components/ExportPrintDocument";
 
 // Read the local engagement. The preview is HTML. The download is markdown.
 function readExportState() {
@@ -70,6 +71,12 @@ export default function ExportPage() {
       </div>
 
       <ExportBrief
+        meta={meta}
+        generatedAt={state.generatedAt}
+        completeIds={completeIds}
+        artifacts={state.artifacts}
+      />
+      <ExportPrintDocument
         meta={meta}
         generatedAt={state.generatedAt}
         completeIds={completeIds}
