@@ -1,0 +1,9 @@
+<!-- FICTIONAL DEMO COMPANY — Ironwood Door Co. is invented for demo purposes; any resemblance to real businesses is coincidental. -->
+
+BUSINESS DESCRIPTION — Ironwood Door Co.
+
+Website URL: https://ironwooddoor.example
+In their own words, what the business does: We fix and install residential garage doors and openers across the Phoenix metro — Mesa, Gilbert, Chandler, Tempe, and the East Valley mostly, with some jobs out toward Scottsdale and north Phoenix. My dad started it in 1998 out of a box truck doing spring repairs for neighbors. We're still known as "the spring guys" — if your door won't open at 6am before work, we're who people call. Repair is our bread and butter and our reputation. Installs are where we make real margin, but we don't sell nearly as many as we should given how many people call us.
+Main products / services: Torsion & extension spring replacement, broken cable repair, opener repair and replacement (LiftMaster, Chamberlain, Genie), track and roller repair, full door replacement/install (steel, wood composite, insulated), new opener install with smart-home tie-in, annual tune-up/maintenance plans, emergency/same-day repair.
+Team size (rough): 22 — 8 service techs, 4-person install crew, 2 office/CSR staff, an office manager, an install/sales manager, a warehouse/parts manager, a part-time bookkeeper, a part-time marketing person, the owner, and the founder (semi-retired, still comes in).
+Anything unusual worth knowing: Second-generation family business — the founder's son took over as owner/GM about four years ago. Repair reputation is genuinely strong (mostly word of mouth and repeat customers), but install sales lag behind repair volume badly, and there's a real problem with calls going unanswered or to voicemail during peak hours and after-hours — nobody's sure how many jobs that's costing until you start counting.
