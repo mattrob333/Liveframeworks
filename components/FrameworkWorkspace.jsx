@@ -12,6 +12,7 @@ import {
 } from "@/lib/store";
 import { artifactIsComplete } from "@/lib/agentContext";
 import { normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
+import { playerLinkUrl } from "@/lib/playerLinks";
 import { companyHostname, parseBizIntake } from "@/lib/intake";
 import { agentOneLiner, resolveNextMove } from "@/lib/nextSteps";
 import {
@@ -87,7 +88,12 @@ function RegionInspector({ artifact, section, onDiscuss }) {
   if (!section) return null;
 
   const data = section.data || {};
-  const contents = collectValues(data, ["findings", "claims", "items", "signals", "jobs", "objectives", "initiatives", "strategies"]);
+  const players = Array.isArray(data) && (section.kind === "players" || section.id === "players")
+    ? data
+    : [];
+  const contents = players.length
+    ? []
+    : collectValues(data, ["findings", "claims", "items", "signals", "jobs", "objectives", "initiatives", "strategies"]);
   const items = contents.map(scalarText).filter(Boolean);
   const fallback = scalarText(data);
   const gaps = noteLine(artifact?.gaps);
@@ -100,7 +106,21 @@ function RegionInspector({ artifact, section, onDiscuss }) {
         <h2>{section.label}</h2>
         <button className="btn" type="button" onClick={onDiscuss}>Discuss</button>
       </div>
-      {items.length ? (
+      {players.length ? (
+        <ul>
+          {players.map((player, index) => {
+            const href = playerLinkUrl(player, artifact?.evidence);
+            const name = player?.name || scalarText(player) || `Player ${index + 1}`;
+            return (
+              <li key={player?.id || `${name}-${index}`}>
+                {href
+                  ? <a href={href} target="_blank" rel="noreferrer">{name}</a>
+                  : name}
+              </li>
+            );
+          })}
+        </ul>
+      ) : items.length ? (
         <ul>{items.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}</ul>
       ) : (
         <p>{fallback || "This region is empty."}</p>

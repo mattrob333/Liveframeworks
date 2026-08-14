@@ -304,6 +304,67 @@ test("RACI renders its canonical Roles section as the default selectable region"
   assert.equal((workMatrixHtml.match(/aria-selected="false"/g) || []).length, 2);
 });
 
+test("Industry Map is four bands on one 12-column grid, not a 2-col masonry", () => {
+  const artifact = completeArtifact("industrymap");
+  artifact.payload.map.players = [
+    { name: "AppDirect", position: "leader", revenue: null, marketShare: null, growth: null, geography: null, basis: "known", confidence: "high", evidenceRefs: ["E1"] },
+    { name: "Stripe", position: "entrant", revenue: null, marketShare: null, growth: null, geography: null, url: "https://stripe.com", basis: "known", confidence: "high", evidenceRefs: ["E1"] },
+  ];
+  artifact.evidence = [{
+    id: "E1",
+    kind: "web",
+    title: "AppDirect",
+    sourceKey: null,
+    artifactRevision: null,
+    messageId: null,
+    url: "https://www.appdirect.com",
+    retrievedAt: null,
+  }];
+  const html = renderToStaticMarkup(
+    React.createElement(FrameworkArtifact, { artifact, frameworkId: "industrymap", brief: true, onSelect: () => {} }),
+  );
+  assert.match(html, /industry-map/);
+  assert.match(html, /industry-map-terrain/);
+  assert.match(html, /industry-map-players/);
+  assert.match(html, /industry-map-flows/);
+  assert.match(html, /industry-map-time/);
+  assert.match(html, /industry-map-players-strip/);
+  assert.doesNotMatch(html, /grid2/);
+  assert.match(html, /href="https:\/\/stripe\.com\/?"/);
+  assert.match(html, /href="https:\/\/www\.appdirect\.com\/?"/);
+  assert.doesNotMatch(html, /href="https:\/\/appdirect\.com"/);
+});
+
+test("industry map players may omit url and still validate", () => {
+  const artifact = completeArtifact("industrymap");
+  artifact.payload.map.players = [{
+    name: "AppDirect",
+    position: "leader",
+    revenue: null,
+    marketShare: null,
+    growth: null,
+    geography: null,
+    basis: "known",
+    confidence: "high",
+    evidenceRefs: ["E1"],
+  }];
+  const result = validateFrameworkArtifact(artifact, "industrymap", { requireContent: false });
+  assert.equal(result.valid, true, result.errors.join("; "));
+});
+
+test("a player without a url and without a matching evidence title stays plain text", () => {
+  const artifact = completeArtifact("industrymap");
+  artifact.payload.map.players = [
+    { name: "AppDirect", position: "leader", revenue: null, marketShare: null, growth: null, geography: null, basis: "known", confidence: "high", evidenceRefs: [] },
+  ];
+  const html = renderToStaticMarkup(
+    React.createElement(FrameworkArtifact, { artifact, frameworkId: "industrymap", brief: true, onSelect: () => {} }),
+  );
+  assert.match(html, /AppDirect/);
+  assert.doesNotMatch(html, /href=/);
+  assert.doesNotMatch(html, /appdirect\.com/i);
+});
+
 test("brief BMC keeps the nine-box and drops handbook chrome", () => {
   const artifact = completeBmcArtifact();
   artifact.gaps = [claim("Unknown renewal terms")];

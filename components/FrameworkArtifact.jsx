@@ -7,6 +7,7 @@ import {
   normalizeFrameworkArtifact,
   validateFrameworkArtifact,
 } from "@/lib/frameworkArtifacts";
+import { playerLinkUrl } from "@/lib/playerLinks";
 
 const BMC_CLASSES = {
   keyPartners: "bmc-kp",
@@ -87,20 +88,58 @@ function EmptyFinding() {
   return <span className="artifact-empty">No supported finding yet.</span>;
 }
 
-function CompactItem({ item }) {
+function PlayerName({ player, evidence = [] }) {
+  const name = player?.name || "";
+  const href = playerLinkUrl(player, evidence);
+  if (!name) return null;
+  if (!href) return <span className="player-name">{name}</span>;
+  return (
+    <a
+      className="player-link"
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      onClick={event => event.stopPropagation()}
+    >
+      {name}
+    </a>
+  );
+}
+
+function PlayersStrip({ players, evidence = [] }) {
+  if (!Array.isArray(players) || !players.length) return <EmptyFinding />;
+  return (
+    <ul className="industry-map-players-strip">
+      {players.map((player, index) => (
+        <li key={player?.id || `${player?.name || "player"}-${index}`}>
+          <PlayerName player={player} evidence={evidence} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function CompactItem({ item, evidence = [] }) {
   if (item === null || item === undefined || item === "") return <EmptyFinding />;
   if (typeof item !== "object") return <span className="artifact-item-text">{String(item)}</span>;
   if (Array.isArray(item)) {
     if (!item.length) return <EmptyFinding />;
     return (
       <ul className="artifact-findings">
-        {item.slice(0, 5).map((entry, index) => <li key={entry?.id || `${textValue(entry)}-${index}`}><CompactItem item={entry} /></li>)}
+        {item.slice(0, 5).map((entry, index) => (
+          <li key={entry?.id || `${textValue(entry)}-${index}`}>
+            <CompactItem item={entry} evidence={evidence} />
+          </li>
+        ))}
         {item.length > 5 && <li className="artifact-more">+{item.length - 5} more</li>}
       </ul>
     );
   }
 
   const primary = textValue(item);
+  const playerHref = item.name && ("position" in item || "marketShare" in item || item.url)
+    ? playerLinkUrl(item, evidence)
+    : "";
   const details = [
     ["currentAllocationPct", item.currentAllocationPct === null || item.currentAllocationPct === undefined ? null : `${item.currentAllocationPct}%`],
     ["targetAllocationPct", item.targetAllocationPct === null || item.targetAllocationPct === undefined ? null : `${item.targetAllocationPct}%`],
@@ -140,7 +179,11 @@ function CompactItem({ item }) {
 
   return (
     <div className="artifact-item">
-      {primary !== "-" && <span className="artifact-item-text">{primary}</span>}
+      {primary !== "-" && (
+        playerHref
+          ? <PlayerName player={item} evidence={evidence} />
+          : <span className="artifact-item-text">{primary}</span>
+      )}
       {item.score !== null && item.score !== undefined && <span className="artifact-score">Score {item.score}/5</span>}
       {item.direction && item.direction !== "unknown" && <span className="artifact-direction">{item.direction}</span>}
       {details.length > 0 && (
@@ -190,6 +233,7 @@ function SelectableSection({ artifact, section, onSelect, selectedSectionId, cla
   const data = sectionPayload(artifact, section);
   const choose = () => onSelect({ ...section, frameworkId: artifact.frameworkId, data });
   const selected = selectedSectionId === section.id;
+  const players = section.kind === "players" || section.id === "players";
   return (
     <div
       role="button"
@@ -203,7 +247,13 @@ function SelectableSection({ artifact, section, onSelect, selectedSectionId, cla
       aria-pressed={selected}
     >
       <span className="artifact-section-title i-label t">{section.label}</span>
-      <div className="artifact-section-content d">{digest ? <DigestItem item={data} /> : <CompactItem item={data} />}</div>
+      <div className="artifact-section-content d">
+        {players
+          ? <PlayersStrip players={Array.isArray(data) ? data : []} evidence={artifact.evidence} />
+          : digest
+            ? <DigestItem item={data} />
+            : <CompactItem item={data} evidence={artifact.evidence} />}
+      </div>
     </div>
   );
 }
@@ -238,6 +288,35 @@ function SectionView({ artifact, definition, onSelect, selectedSectionId }) {
           selectedSectionId={selectedSectionId}
           className={`artifact-section-${section.kind} artifact-section-${index + 1}`}
         />
+      ))}
+    </div>
+  );
+}
+
+const INDUSTRY_MAP_BANDS = [
+  { id: "terrain", items: ["segments", "glossary", "expertsAndSources"] },
+  { id: "players", items: ["players"] },
+  { id: "flows", items: ["technologyFlows", "economicFlows", "personnelFlows"] },
+  { id: "time", items: ["history", "future"] },
+];
+
+function IndustryMapView({ artifact, definition, onSelect, selectedSectionId }) {
+  const byId = Object.fromEntries(definition.sections.map(section => [section.id, section]));
+  return (
+    <div className="industry-map">
+      {INDUSTRY_MAP_BANDS.map(band => (
+        <div key={band.id} className={`industry-map-band industry-map-${band.id}`}>
+          {band.items.map(id => byId[id] && (
+            <SelectableSection
+              key={id}
+              artifact={artifact}
+              section={byId[id]}
+              onSelect={onSelect}
+              selectedSectionId={selectedSectionId}
+              className={`industry-map-cell industry-map-${id}`}
+            />
+          ))}
+        </div>
       ))}
     </div>
   );
@@ -402,6 +481,7 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
   };
   let view;
   if (normalized.frameworkId === "bmc") view = <CanvasView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;
+  else if (normalized.frameworkId === "industrymap") view = <IndustryMapView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;
   else if (normalized.frameworkId === "raci") view = <RaciView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} selectedRowId={internalRowId} />;
   else if (definition.view === "table" && definition.table) view = <TableView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} selectedRowId={internalRowId} />;
   else view = <SectionView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;

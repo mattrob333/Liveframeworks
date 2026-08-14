@@ -223,4 +223,7 @@ test("print CSS hides nav, export chrome, and the site footer", () => {
   assert.match(print, /\.export-chrome/);
   assert.match(print, /footer/);
   assert.match(print, /display:\s*none/);
+  assert.match(print, /size:\s*landscape/);
+  assert.match(print, /width:\s*100%/);
+  assert.match(print, /10% 10% 10% 10% 10% 10% 10% 10% 10% 10%/);
 });
