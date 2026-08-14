@@ -425,7 +425,7 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
   .chat-input button{padding:0 24px}
 }
 
-/* Print the brief you see, minus nav / coverage / buttons.
+/* Print the brief you see, minus nav / coverage / buttons / site footer.
    Phone CSS flattens the BMC; paper must keep the nine-box. */
 @media print {
   @page{margin:.7in}
@@ -433,7 +433,8 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
   body{background:var(--bg)}
   body::before{display:none}
   .wrap{width:100%;max-width:none;padding:0}
-  .topnav,.export-chrome{display:none!important}
+  .topnav,.export-chrome,footer{display:none!important}
+  body:has(.export-page) .wrap > :not(.export-page){display:none!important}
   .export-page{padding:0;max-width:none}
   .export-brief .artifact-more,.export-brief .artifact-empty{display:none!important}
   .export-brief .bmc-grid,

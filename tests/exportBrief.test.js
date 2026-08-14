@@ -1,5 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { FW, INTAKE, ORDER } from "../lib/frameworks.js";
@@ -212,4 +214,13 @@ test("a second completed framework becomes a titled section, still no empty slot
   assert.doesNotMatch(html, /SWOT/);
   assert.doesNotMatch(html, /RACI/);
   assertNoJsonDump(html);
+});
+
+test("print CSS hides nav, export chrome, and the site footer", () => {
+  const cssPath = fileURLToPath(new URL("../app/globals.css", import.meta.url));
+  const print = readFileSync(cssPath, "utf8").split("@media print")[1] || "";
+  assert.match(print, /\.topnav/);
+  assert.match(print, /\.export-chrome/);
+  assert.match(print, /footer/);
+  assert.match(print, /display:\s*none/);
 });
