@@ -23,6 +23,7 @@ export default function Nav() {
       <Link className={"brand" + (hostname ? " brand-host" : "")} href="/">
         {hostname || "LIVEFRAMEWORKS"}
       </Link>
+      <Link href="/?new=1" className="nav-plain">New company</Link>
       <Link href="/pipeline" className={path === "/pipeline" ? "on" : ""}>Pipeline</Link>
       <Link href="/export" className={path === "/export" ? "on" : ""}>Export</Link>
       <Link

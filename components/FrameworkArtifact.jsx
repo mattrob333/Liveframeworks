@@ -384,7 +384,7 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
   const [internalSectionId, setInternalSectionId] = useState(firstSectionId);
   const [internalRowId, setInternalRowId] = useState("");
   const [summaryExpanded, setSummaryExpanded] = useState(false);
-  const activeSectionId = (controlled ? selectedSectionId : internalSectionId) || firstSectionId;
+  const activeSectionId = controlled ? (selectedSectionId || "") : (internalSectionId || firstSectionId);
 
   useEffect(() => { setInternalSectionId(firstSectionId); }, [normalized.frameworkId, firstSectionId]);
   useEffect(() => {
@@ -437,7 +437,7 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
       )}
       {view}
       {!brief && <EvidenceList evidence={normalized.evidence} />}
-      {(normalized.gaps.length > 0 || normalized.assumptions.length > 0 || normalized.nextQuestions.length > 0) && (
+      {!brief && (normalized.gaps.length > 0 || normalized.assumptions.length > 0 || normalized.nextQuestions.length > 0) && (
         <div className="artifact-notes panel mt">
           {normalized.gaps.length > 0 && <div><span className="artifact-note-title">Gaps</span><CompactItem item={normalized.gaps} /></div>}
           {normalized.assumptions.length > 0 && <div><span className="artifact-note-title">Assumptions</span><CompactItem item={normalized.assumptions} /></div>}

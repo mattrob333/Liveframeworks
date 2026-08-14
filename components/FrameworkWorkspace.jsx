@@ -8,11 +8,10 @@ import {
   getBucket,
   getLatestRun,
   getOutput,
-  getSelectedSection,
   setSelectedSection,
 } from "@/lib/store";
 import { artifactIsComplete } from "@/lib/agentContext";
-import { getArtifactSections, normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
+import { normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
 import { companyHostname, parseBizIntake } from "@/lib/intake";
 import {
   executeFrameworkRun,
@@ -79,19 +78,20 @@ function RegionSources({ artifact, section }) {
   );
 }
 
+function noteLine(values) {
+  return (values || []).map(scalarText).filter(Boolean).join(" ");
+}
+
 function RegionInspector({ artifact, section, onDiscuss }) {
-  if (!section) {
-    return (
-      <section className="region-inspector" aria-label="Region detail">
-        <p>Select a region on the map.</p>
-      </section>
-    );
-  }
+  if (!section) return null;
 
   const data = section.data || {};
   const contents = collectValues(data, ["findings", "claims", "items", "signals", "jobs", "objectives", "initiatives", "strategies"]);
   const items = contents.map(scalarText).filter(Boolean);
   const fallback = scalarText(data);
+  const gaps = noteLine(artifact?.gaps);
+  const assumptions = noteLine(artifact?.assumptions);
+  const questions = noteLine(artifact?.nextQuestions);
 
   return (
     <section className="region-inspector" aria-label={`${section.label} detail`}>
@@ -105,6 +105,13 @@ function RegionInspector({ artifact, section, onDiscuss }) {
         <p>{fallback || "This region is empty."}</p>
       )}
       <RegionSources artifact={artifact} section={section} />
+      {(gaps || assumptions || questions) && (
+        <div className="region-inspector-notes">
+          {gaps && <p><span>Gaps.</span> {gaps}</p>}
+          {assumptions && <p><span>Assumptions.</span> {assumptions}</p>}
+          {questions && <p><span>Next questions.</span> {questions}</p>}
+        </div>
+      )}
     </section>
   );
 }
@@ -136,11 +143,8 @@ export default function FrameworkWorkspace({ id, home = false }) {
     const normalized = saved ? normalizeFrameworkArtifact(saved, id) : null;
     setArtifactState(normalized);
     setLatestRun(getLatestRun(id));
-    const rememberedSection = getSelectedSection(id);
-    const sections = normalized ? getArtifactSections(id, normalized) : [];
-    const initialSection = sections.find(section => section.id === rememberedSection) || sections[0] || null;
-    setSelectedSectionId(initialSection?.id || "");
-    setSelectedSectionState(initialSection);
+    setSelectedSectionId("");
+    setSelectedSectionState(null);
     setHasKey(hasApiKey());
     setHostname(companyHostname(parseBizIntake(getBucket("biz")).url));
     setHydrated(true);
@@ -232,25 +236,15 @@ export default function FrameworkWorkspace({ id, home = false }) {
   const stale = artifact?.status === "stale";
   const viewable = complete || stale;
   const running = busy || (latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status));
-  const chatTitle = hostname || framework.name;
+  const pageTitle = hostname || "LiveFrameworks";
 
   return (
     <main className="framework-page">
-      <div className="workspace-toolbar">
-        {home ? (
-          <div className="workspace-home-actions">
-            <Link className="workspace-close" href="/?new=1">New company</Link>
-            <Link className="workspace-close" href="/pipeline">Pipeline</Link>
-          </div>
-        ) : (
-          <Link className="workspace-close" href="/pipeline">Back to pipeline</Link>
-        )}
-      </div>
-
       <div className="framework-workspace">
         <div className="artifact-column">
           <header className="framework-header">
-            <h1>{framework.name}</h1>
+            <h1>{pageTitle}</h1>
+            <p className="framework-map-label">{framework.name}</p>
             {stale && <p className="framework-state-note">This map is stale. Review it, or regenerate from the pipeline.</p>}
           </header>
 
@@ -301,7 +295,7 @@ export default function FrameworkWorkspace({ id, home = false }) {
 
         <aside className="chat-rail" ref={chatRailRef}>
           <div className="chat-rail-header">
-            <b>{chatTitle}</b>
+            <b>{pageTitle}</b>
             {(busy || chatBusy) && hasKey && <span className="live-indicator">● LIVE</span>}
           </div>
           <Chat

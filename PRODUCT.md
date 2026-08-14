@@ -63,9 +63,9 @@ These were product bugs, not polish:
 
 1. **In-place key.** Hide the key field until URL + paragraph are valid. Then reveal a password input above Draw. Same primary button. Helper: “Key stays in this browser.” Settings keeps Remove / Reset. **Eating the first canvas (we pay for inference) is out.**
 2. **Canvas is home after first run.** Once a complete BMC exists, `/` is that canvas (same workspace as `/framework/bmc`). Intake is a quiet “New company,” not the home form.
-3. **Nav.** Brand is the company hostname from the URL, linking `/`. Pipeline and Export stay. No “API Key” label. A small status dot means key present. The key itself lives in Settings (and the in-place field on first run).
+3. **Nav.** Brand is the company hostname from the URL, linking `/`. New company, Pipeline, and Export stay in the top nav. No second workspace toolbar. No “API Key” label. A small status dot means key present. The key itself lives in Settings (and the in-place field on first run).
 4. **● LIVE** only while a request is in flight. Idle: no indicator. No key: no LIVE; the composer says a key is needed. Never fake live.
-5. **Filled canvas is a brief.** After an artifact exists, the page is the map + chat. One title. Click a region for a single inspector (what’s in the box, sources, Discuss). Do not reprint the nine-box as an analysis deck. Gaps / assumptions / next questions appear once. Pipeline keeps the handbook chrome (roster, tool calls, unlock graph). The nine-box stays a nine-box on desktop; phones may stack.
+5. **Filled canvas is a brief.** After an artifact exists, the page is the map + chat. One title: the company, then the map. Land on the map only — do not pre-open a cell. Click a region for a single inspector (what’s in the box, sources, Discuss). Gaps / assumptions / next questions tuck into that inspector, not a second card deck. Pipeline keeps the handbook chrome (roster, tool calls, unlock graph). The nine-box stays a nine-box on desktop; phones may stack.
 
 ---
 

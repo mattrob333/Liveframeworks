@@ -74,23 +74,25 @@ function greeting(key) {
   ).includes(key);
 
   if (artifact?.status === "stale") {
-    return `${framework.voice}\n\nYou are viewing stale revision ${artifact.revision || 1}. We can inspect and challenge it, but downstream agents will not use it until this framework is regenerated from current evidence.`;
+    return `${framework.voice}\n\nThis map is out of date. Ask about any box — we can still talk through it.`;
   }
   if (artifactIsComplete(artifact, key)) {
-    return `${framework.voice}\n\nThe structured artifact is locked at revision ${artifact.revision || 1}. Ask about any region, request supporting evidence, or tell me what you want to challenge. I will not alter it without an explicit revision action.`;
+    return `${framework.voice}\n\nAsk about any box.`;
   }
   if (!active) {
     if (key === "bmc") {
-      return `${framework.voice}\n\nI am waiting for a company URL and a one-paragraph description before I can draw the canvas.`;
+      return `${framework.voice}\n\nI need a company URL and a short description before I can draw the canvas.`;
     }
     const need = SOURCES[key].map(source => FW[source].name).join(", ");
-    return `${framework.voice}\n\nI am on standby until ${need || "the required upstream work"} is complete.`;
+    return `${framework.voice}\n\nI am waiting on ${need || "the earlier work"} before this map is ready.`;
   }
   if (loaded.length || upstream.length) {
-    return `${framework.voice}\n\nI can see ${[...loaded.map(source => source.name.toLowerCase()), ...upstream.map(source => FW[source].name + " revision")].join(", ")}. Run the framework from the pipeline to create the structured artifact, or ask a focused question here.`;
+    return `${framework.voice}\n\nAsk about any box, or run this framework from the pipeline to fill the map.`;
   }
-  return `${framework.voice}\n\nNo evidence is loaded yet. Start with a company URL and a short description on the home page.`;
+  return `${framework.voice}\n\nAsk about any box.`;
 }
+
+const LAB_GREETING = /structured artifact is locked|explicit revision action|locked at revision/i;
 
 function citationKey(citation, index) {
   return citation.url || `${citation.title || "source"}-${index}`;
@@ -118,7 +120,10 @@ export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocus
 
   useEffect(() => {
     let saved = getChat(fwKey);
-    if (!saved.length) {
+    const onlyLabGreeting = saved.length === 1
+      && saved[0]?.role === "assistant"
+      && LAB_GREETING.test(String(saved[0].content || ""));
+    if (!saved.length || onlyLabGreeting) {
       saved = [{ role: "assistant", content: greeting(fwKey) }];
       setChat(fwKey, saved);
     }
@@ -223,7 +228,7 @@ export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocus
           ? <div key={index} className="msg sys">{message.content}</div>
           : (
             <div key={index} className={`msg ${message.role === "assistant" ? "agent" : "user"}`}>
-              <span className="who">{message.role === "assistant" ? framework.role.toUpperCase() : "YOU"}</span>
+              <span className="who">{message.role === "assistant" ? framework.role : "You"}</span>
               {message.role === "assistant" ? <RichText text={message.content} /> : message.content}
               {Array.isArray(message.citations) && message.citations.length > 0 && (
                 <div className="msg-citations" aria-label="Sources">
@@ -251,7 +256,7 @@ export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocus
           value={input}
           onChange={event => setInput(event.target.value)}
           onKeyDown={event => event.key === "Enter" && send()}
-          placeholder={hasKey ? `Discuss ${framework.name}…` : "A key is needed to send."}
+          placeholder={hasKey ? "Ask about any box." : "A key is needed to send."}
           disabled={busy || !hasKey || pendingContinuationIndex >= 0}
           aria-label={`Message ${framework.role}`}
         />

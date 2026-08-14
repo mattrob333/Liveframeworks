@@ -64,7 +64,6 @@ export default function FirstRunHome() {
   return (
     <main className="landing">
       <header className="landing-hero">
-        <div className="eyebrow">Fig. 01·A — First pass</div>
         <h1>{returning ? "New company." : "Paste a company URL. Get a Business Model Canvas."}</h1>
         <p className="landing-sub">
           One link and one paragraph is enough. The Cartographer researches the company and

@@ -315,6 +315,6 @@ test("brief BMC keeps the nine-box and drops handbook chrome", () => {
   assert.match(html, /bmc-vp/);
   assert.doesNotMatch(html, /Structured framework/);
   assert.doesNotMatch(html, /Current position/);
-  assert.match(html, /Gaps/);
+  assert.doesNotMatch(html, /Gaps/);
   assert.doesNotMatch(html, /Evidence used/);
 });
