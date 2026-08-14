@@ -1,5 +1,6 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import FirstRunHome from "@/components/FirstRunHome";
+import HomeGate from "@/components/HomeGate";
 
 export const metadata = {
   title: "LiveFrameworks — The Frameworks Are Alive Now",
@@ -10,5 +11,9 @@ export default async function Landing({ searchParams }) {
   const params = await searchParams;
   const select = Array.isArray(params?.select) ? params.select[0] : params?.select;
   if (select) redirect(`/pipeline?select=${encodeURIComponent(select)}`);
-  return <FirstRunHome />;
+  return (
+    <Suspense fallback={<main className="page-loading"><p className="eyebrow">Opening engagement</p></main>}>
+      <HomeGate />
+    </Suspense>
+  );
 }

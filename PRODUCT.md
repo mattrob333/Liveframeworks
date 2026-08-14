@@ -59,22 +59,18 @@ These were product bugs, not polish:
 
 ---
 
-## Decisions already locked (next slice, not PR #1)
+## Locked UX (now on this branch)
 
-Do not restyle or expand PR #1 for these. Implement as a follow-up on this direction, after QA on the current preview unless Matthew says otherwise.
-
-1. **In-place key.** Hide the key field until URL + paragraph are valid. Then reveal a password input above Draw. Same primary button. Helper: “Key stays in this browser.” Settings keeps Remove / Reset. **Eating the first canvas (we pay for inference) is out** for now.
-2. **Canvas is home after first run.** Once a complete BMC exists, `/` is that canvas (same workspace as `/framework/bmc`). Intake becomes a quiet “New company,” not the home form.
-3. **Nav.** Brand is the company hostname from the URL, linking `/`. Pipeline and Export stay. Kill the “API Key” label. A small status dot can mean key present. The key itself lives in Settings.
-4. **● LIVE** only while a request is in flight. Idle: no indicator. No key: no LIVE; the composer can say a key is needed. Never fake live.
+1. **In-place key.** Hide the key field until URL + paragraph are valid. Then reveal a password input above Draw. Same primary button. Helper: “Key stays in this browser.” Settings keeps Remove / Reset. **Eating the first canvas (we pay for inference) is out.**
+2. **Canvas is home after first run.** Once a complete BMC exists, `/` is that canvas (same workspace as `/framework/bmc`). Intake is a quiet “New company,” not the home form.
+3. **Nav.** Brand is the company hostname from the URL, linking `/`. Pipeline and Export stay. No “API Key” label. A small status dot means key present. The key itself lives in Settings (and the in-place field on first run).
+4. **● LIVE** only while a request is in flight. Idle: no indicator. No key: no LIVE; the composer says a key is needed. Never fake live.
 
 ---
 
-## Visual direction (agreed, not in PR #1)
+## Visual direction (now on this branch)
 
-Matthew asked: cool dark field-manual vs clean professional light for B2B.
-
-**Light is the default.** Dark is good taste on a solo night machine. Wrong for the job. This gets screenshared. It should read as a brief, not an AI console.
+**Light is the default.** Dark tokens stay unused for a later operator toggle.
 
 Keep the field-manual identity on paper:
 - IBM Plex Mono
@@ -84,10 +80,7 @@ Keep the field-manual identity on paper:
 - quiet grid
 
 **Invert the paper. Do not invent a new look.** Not generic SaaS gray.
-Export is already print-light; the working surface should match.
-Dark later as an operator toggle, not the client-facing default.
-
-Do not restyle PR #1 for this. When the visual slice happens, the job is invert-the-paper.
+The working surface (landing, canvas, pipeline, settings, export, 404, nav) matches a printed brief.
 
 ---
 
@@ -96,7 +89,7 @@ Do not restyle PR #1 for this. When the visual slice happens, the job is invert-
 - BYO Anthropic key in `localStorage`. No accounts, no database.
 - No shareable link, no hosted engagement.
 
-**Persistence + a shareable brief is the product line.** Not more agents. That is the milestone after the next UX slice.
+**Persistence + a shareable brief is the product line.** Not more agents. That is the milestone after this UX slice.
 
 ---
 

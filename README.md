@@ -25,7 +25,7 @@ To ship: import this repo at vercel.com/new, framework preset **Next.js**, no en
 
 ## Access model (honest version)
 
-- **"Sign in" = bring your own Anthropic API key**, entered on the Settings page. It lives in `localStorage`, is sent per-request to the `/api/chat` edge proxy, and is never stored server-side.
+- **"Sign in" = bring your own Anthropic API key**, pasted on first-run (after URL + paragraph) or in Settings. It lives in `localStorage`, is sent per-request to the `/api/chat` edge proxy, and is never stored server-side. The nav status dot means a key is saved in this browser.
 - **All state is per-browser**: buckets, outputs, activation, chats persist in `localStorage`. Clear the browser, lose the engagement (Export first). No accounts, no database — by design, for now.
 - Chat model: `claude-sonnet-5`, with Anthropic's `web_search` tool available to all framework agents.
 

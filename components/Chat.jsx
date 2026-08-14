@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { FW, SOURCES, INTAKE, ORDER } from "@/lib/frameworks";
-import { getKey, getBucket, getOutput, getArtifact, getChat, setChat } from "@/lib/store";
+import { getKey, getBucket, getOutput, getArtifact, getChat, setChat, hasApiKey } from "@/lib/store";
 import {
   artifactIsComplete,
   buildEvidenceBlock,
@@ -106,11 +106,12 @@ function findPendingContinuation(log) {
   return -1;
 }
 
-export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocusConsumed }) {
+export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocusConsumed, onBusyChange }) {
   const framework = FW[fwKey];
   const [log, setLog] = useState([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [hasKey, setHasKey] = useState(false);
   const [startedAt, setStartedAt] = useState(null);
   const messagesRef = useRef(null);
   const pendingContinuationIndex = findPendingContinuation(log);
@@ -122,7 +123,15 @@ export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocus
       setChat(fwKey, saved);
     }
     setLog(saved);
+    setHasKey(hasApiKey());
+    const refreshKey = () => setHasKey(hasApiKey());
+    window.addEventListener("lf:storage", refreshKey);
+    return () => window.removeEventListener("lf:storage", refreshKey);
   }, [fwKey]);
+
+  useEffect(() => {
+    onBusyChange?.(busy);
+  }, [busy, onBusyChange]);
 
   useEffect(() => {
     if (!focusPrompt) return;
@@ -242,14 +251,14 @@ export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocus
           value={input}
           onChange={event => setInput(event.target.value)}
           onKeyDown={event => event.key === "Enter" && send()}
-          placeholder={`Discuss ${framework.name}…`}
-          disabled={busy || pendingContinuationIndex >= 0}
+          placeholder={hasKey ? `Discuss ${framework.name}…` : "A key is needed to send."}
+          disabled={busy || !hasKey || pendingContinuationIndex >= 0}
           aria-label={`Message ${framework.role}`}
         />
         {pendingContinuationIndex >= 0 ? (
           <button onClick={continueResearch} disabled={busy}>CONTINUE</button>
         ) : (
-        <button onClick={send} disabled={busy || !input.trim()}>SEND ▸</button>
+        <button onClick={send} disabled={busy || !hasKey || !input.trim()}>SEND ▸</button>
         )}
       </div>
     </div>
