@@ -1,29 +1,40 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getBucket, hasApiKey } from "@/lib/store";
+import { getArtifact, getBucket, hasApiKey } from "@/lib/store";
+import { artifactIsComplete } from "@/lib/agentContext";
+import { shouldShowNewCompany } from "@/lib/homeMode";
 import { companyHostname, parseBizIntake } from "@/lib/intake";
 
 export default function Nav() {
   const path = usePathname();
+  const searchParams = useSearchParams();
   const [hasKey, setHasKey] = useState(false);
   const [hostname, setHostname] = useState("");
+  const [hasCanvas, setHasCanvas] = useState(false);
   useEffect(() => {
     const refresh = () => {
       setHasKey(hasApiKey());
       setHostname(companyHostname(parseBizIntake(getBucket("biz")).url));
+      setHasCanvas(artifactIsComplete(getArtifact("bmc"), "bmc"));
     };
     refresh();
     window.addEventListener("lf:storage", refresh);
     return () => window.removeEventListener("lf:storage", refresh);
   }, [path]);
+  const showNewCompany = shouldShowNewCompany({
+    hasCanvas,
+    wantNew: searchParams.get("new") === "1",
+    path,
+    companyLoaded: Boolean(hostname),
+  });
   return (
     <nav className="topnav" aria-label="Primary navigation">
       <Link className={"brand" + (hostname ? " brand-host" : "")} href="/">
         {hostname || "LIVEFRAMEWORKS"}
       </Link>
-      <Link href="/?new=1" className="nav-plain">New company</Link>
+      {showNewCompany && <Link href="/?new=1" className="nav-plain">New company</Link>}
       <Link href="/pipeline" className={path === "/pipeline" ? "on" : ""}>Pipeline</Link>
       <Link href="/export" className={path === "/export" ? "on" : ""}>Export</Link>
       <Link

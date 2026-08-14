@@ -11,7 +11,7 @@ import {
   validateBucketSave,
 } from "../lib/intake.js";
 import { validateApiKey } from "../lib/apiKey.js";
-import { resolveHomeMode } from "../lib/homeMode.js";
+import { resolveHomeMode, shouldShowNewCompany } from "../lib/homeMode.js";
 import { interpretRunEvent } from "../lib/frameworkRunClient.js";
 
 test("company URLs normalize with or without a scheme", () => {
@@ -72,6 +72,15 @@ test("home is the canvas after a complete BMC, unless New company", () => {
   assert.equal(resolveHomeMode({ ready: true, autorun: true, hasCanvas: false, wantNew: false }), "canvas");
   assert.equal(resolveHomeMode({ ready: true, autorun: false, hasCanvas: true, wantNew: false }), "canvas");
   assert.equal(resolveHomeMode({ ready: true, autorun: false, hasCanvas: true, wantNew: true }), "intake");
+});
+
+test("New company stays out of the nav until a canvas exists", () => {
+  assert.equal(shouldShowNewCompany({ hasCanvas: false, wantNew: false, path: "/", companyLoaded: false }), false);
+  assert.equal(shouldShowNewCompany({ hasCanvas: false, wantNew: true, path: "/", companyLoaded: true }), true);
+  assert.equal(shouldShowNewCompany({ hasCanvas: true, wantNew: false, path: "/", companyLoaded: true }), true);
+  assert.equal(shouldShowNewCompany({ hasCanvas: true, wantNew: true, path: "/", companyLoaded: true }), true);
+  assert.equal(shouldShowNewCompany({ hasCanvas: false, wantNew: false, path: "/pipeline", companyLoaded: true }), true);
+  assert.equal(shouldShowNewCompany({ hasCanvas: false, wantNew: false, path: "/pipeline", companyLoaded: false }), false);
 });
 
 test("pipeline select slugs resolve to a known framework or unknown", () => {

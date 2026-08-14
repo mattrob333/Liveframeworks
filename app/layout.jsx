@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import "./globals.css";
 import Nav from "@/components/Nav";
 
@@ -20,7 +21,9 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <div className="wrap">
-          <Nav />
+          <Suspense fallback={<nav className="topnav" aria-label="Primary navigation" />}>
+            <Nav />
+          </Suspense>
           {children}
         </div>
       </body>
