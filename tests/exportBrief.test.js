@@ -278,7 +278,7 @@ test("print document lists Industry Map in four-band heading sequence", () => {
       artifacts: { bmc: completeBmcArtifact(), industrymap: artifact },
     }),
   );
-  const headings = [...html.matchAll(/<h3[^>]*>([^<]+)<\/h3>/g)].map(match => match[1]);
+  const headings = [...html.matchAll(/<h3[^>]*>([^<]+)<\/h3>/g)].map(match => match[1].replace(/&amp;/g, "&"));
   const mapHeadings = headings.slice(9);
   assert.deepEqual(mapHeadings, [
     "Segments & Suppliers",
