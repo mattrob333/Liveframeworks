@@ -97,7 +97,7 @@ export default function FirstRunHome() {
         )}
         <div className="landing-cta">
           <button className="btn primary landing-open" type="submit" disabled={!canDraw}>
-            DRAW THE CANVAS ▸
+            Draw the canvas
           </button>
           {status && <p className="status warning" role="alert">{status}</p>}
         </div>

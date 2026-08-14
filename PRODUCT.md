@@ -65,6 +65,7 @@ These were product bugs, not polish:
 2. **Canvas is home after first run.** Once a complete BMC exists, `/` is that canvas (same workspace as `/framework/bmc`). Intake is a quiet “New company,” not the home form.
 3. **Nav.** Brand is the company hostname from the URL, linking `/`. Pipeline and Export stay. No “API Key” label. A small status dot means key present. The key itself lives in Settings (and the in-place field on first run).
 4. **● LIVE** only while a request is in flight. Idle: no indicator. No key: no LIVE; the composer says a key is needed. Never fake live.
+5. **Filled canvas is a brief.** After an artifact exists, the page is the map + chat. One title. Click a region for a single inspector (what’s in the box, sources, Discuss). Do not reprint the nine-box as an analysis deck. Gaps / assumptions / next questions appear once. Pipeline keeps the handbook chrome (roster, tool calls, unlock graph). The nine-box stays a nine-box on desktop; phones may stack.
 
 ---
 
@@ -81,6 +82,8 @@ Keep the field-manual identity on paper:
 
 **Invert the paper. Do not invent a new look.** Not generic SaaS gray.
 The working surface (landing, canvas, pipeline, settings, export, 404, nav) matches a printed brief.
+
+On a filled framework: body 14px, chrome / labels 12px minimum, dim ink no lighter than about `#5A5548`. Labels are ink, not faint orange-on-cream.
 
 ---
 

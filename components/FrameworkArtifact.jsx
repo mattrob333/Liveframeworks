@@ -374,7 +374,7 @@ function SafeFallback({ normalized, frameworkId }) {
   );
 }
 
-export default function FrameworkArtifact({ artifact, frameworkId, selectedSectionId, onSelect = () => {} }) {
+export default function FrameworkArtifact({ artifact, frameworkId, selectedSectionId, onSelect = () => {}, brief = false }) {
   const normalized = normalizeFrameworkArtifact(artifact, frameworkId);
   const definition = getArtifactDefinition(normalized.frameworkId);
   const validation = validateFrameworkArtifact(artifact, frameworkId);
@@ -407,34 +407,36 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
   else view = <SectionView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;
 
   return (
-    <section className={`framework-artifact framework-artifact-${definition.view}`} data-framework={normalized.frameworkId}>
-      <header className="artifact-header">
-        <div className="artifact-kicker">Structured framework · revision {normalized.revision}</div>
-        <h2 className="artifact-title">{normalized.title || definition.name}</h2>
-        {normalized.summary && (() => {
-          const full = normalized.summary.trim();
-          const sentences = full.match(/[^.!?]+[.!?]+["')\]]*\s*/g) || [full];
-          const short = sentences.slice(0, 2).join("").trim();
-          const truncated = short.length < full.length;
-          return (
-            <p className="artifact-summary">
-              {summaryExpanded || !truncated ? full : short}
-              {truncated && (
-                <button className="summary-toggle" onClick={() => setSummaryExpanded(value => !value)}>
-                  {summaryExpanded ? "show less" : "full summary"}
-                </button>
-              )}
-            </p>
-          );
-        })()}
-      </header>
+    <section className={`framework-artifact framework-artifact-${definition.view}${brief ? " is-brief" : ""}`} data-framework={normalized.frameworkId}>
+      {!brief && (
+        <header className="artifact-header">
+          <div className="artifact-kicker">Structured framework · revision {normalized.revision}</div>
+          <h2 className="artifact-title">{normalized.title || definition.name}</h2>
+          {normalized.summary && (() => {
+            const full = normalized.summary.trim();
+            const sentences = full.match(/[^.!?]+[.!?]+["')\]]*\s*/g) || [full];
+            const short = sentences.slice(0, 2).join("").trim();
+            const truncated = short.length < full.length;
+            return (
+              <p className="artifact-summary">
+                {summaryExpanded || !truncated ? full : short}
+                {truncated && (
+                  <button className="summary-toggle" onClick={() => setSummaryExpanded(value => !value)}>
+                    {summaryExpanded ? "show less" : "full summary"}
+                  </button>
+                )}
+              </p>
+            );
+          })()}
+        </header>
+      )}
       {!validation.valid && (
         <div className="artifact-warning" role="status">
           Showing the safe normalized view. {validation.errors.length} contract {validation.errors.length === 1 ? "issue was" : "issues were"} detected.
         </div>
       )}
       {view}
-      <EvidenceList evidence={normalized.evidence} />
+      {!brief && <EvidenceList evidence={normalized.evidence} />}
       {(normalized.gaps.length > 0 || normalized.assumptions.length > 0 || normalized.nextQuestions.length > 0) && (
         <div className="artifact-notes panel mt">
           {normalized.gaps.length > 0 && <div><span className="artifact-note-title">Gaps</span><CompactItem item={normalized.gaps} /></div>}

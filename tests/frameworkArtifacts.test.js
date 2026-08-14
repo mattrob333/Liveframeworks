@@ -303,3 +303,18 @@ test("RACI renders its canonical Roles section as the default selectable region"
   assert.equal((workMatrixHtml.match(/aria-selected="true"/g) || []).length, 0);
   assert.equal((workMatrixHtml.match(/aria-selected="false"/g) || []).length, 2);
 });
+
+test("brief BMC keeps the nine-box and drops handbook chrome", () => {
+  const artifact = completeBmcArtifact();
+  artifact.gaps = [claim("Unknown renewal terms")];
+  const html = renderToStaticMarkup(
+    React.createElement(FrameworkArtifact, { artifact, frameworkId: "bmc", brief: true, onSelect: () => {} }),
+  );
+  assert.match(html, /bmc-grid/);
+  assert.match(html, /bmc-kp/);
+  assert.match(html, /bmc-vp/);
+  assert.doesNotMatch(html, /Structured framework/);
+  assert.doesNotMatch(html, /Current position/);
+  assert.match(html, /Gaps/);
+  assert.doesNotMatch(html, /Evidence used/);
+});

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { FW, SOURCES, INTAKE, ORDER } from "@/lib/frameworks";
+import { useEffect, useRef, useState } from "react";
+import { FW } from "@/lib/frameworks";
 import {
   getArtifact,
   getBucket,
@@ -11,8 +11,9 @@ import {
   getSelectedSection,
   setSelectedSection,
 } from "@/lib/store";
-import { artifactIsComplete, deriveActiveAgents } from "@/lib/agentContext";
+import { artifactIsComplete } from "@/lib/agentContext";
 import { getArtifactSections, normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
+import { companyHostname, parseBizIntake } from "@/lib/intake";
 import {
   executeFrameworkRun,
   hasApiKey,
@@ -43,12 +44,6 @@ function collectValues(value, keys) {
   return [];
 }
 
-function DetailList({ values, empty = "No additional evidence was returned for this region." }) {
-  const items = values.map(scalarText).filter(Boolean);
-  if (!items.length) return <p>{empty}</p>;
-  return <ul>{items.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}</ul>;
-}
-
 function collectEvidenceRefs(value, refs = new Set()) {
   if (Array.isArray(value)) {
     value.forEach(item => collectEvidenceRefs(item, refs));
@@ -61,16 +56,19 @@ function collectEvidenceRefs(value, refs = new Set()) {
   return refs;
 }
 
-function EvidenceList({ artifact, section }) {
+function RegionSources({ artifact, section }) {
   const data = section?.data || {};
   const refs = collectEvidenceRefs(data);
   const all = Array.isArray(artifact?.evidence) ? artifact.evidence : [];
   const evidence = all.filter(item => refs.has(item.id));
-  if (!refs.size) return <p>No direct source reference was attached to this region.</p>;
-  if (!evidence.length) return <p>The referenced source could not be resolved in this artifact.</p>;
+  if (!refs.size && !all.length) return null;
+  const items = evidence.length ? evidence : [];
+  if (!items.length) {
+    return <p className="region-inspector-empty">No source is attached to this region.</p>;
+  }
   return (
-    <ul>
-      {evidence.map((item, index) => (
+    <ul className="region-inspector-sources">
+      {items.map((item, index) => (
         <li key={item.id || item.url || index}>
           {item.url
             ? <a href={item.url} target="_blank" rel="noreferrer">{item.title || item.url}</a>
@@ -81,57 +79,32 @@ function EvidenceList({ artifact, section }) {
   );
 }
 
-function SectionDetail({ artifact, section, onDiscuss }) {
+function RegionInspector({ artifact, section, onDiscuss }) {
   if (!section) {
     return (
-      <section className="analysis-deck empty-deck">
-        <div className="deck-card"><div className="deck-label">Select a section</div><p>Choose any region in the framework to inspect its evidence, implications, gaps, and next questions.</p></div>
+      <section className="region-inspector" aria-label="Region detail">
+        <p>Select a region on the map.</p>
       </section>
     );
   }
 
   const data = section.data || {};
-  const position = collectValues(data, ["findings", "claims", "items", "signals", "jobs", "objectives", "initiatives", "strategies"]);
-  const implications = collectValues(data, ["implications", "actions", "recommendations", "rationale"]);
-  const risks = [
-    ...collectValues(data, ["risks", "gaps", "assumptions"]),
-    ...(Array.isArray(artifact.gaps) ? artifact.gaps.slice(0, 4) : []),
-  ];
-  const questions = Array.isArray(artifact.nextQuestions) ? artifact.nextQuestions : [];
-  const claims = Array.isArray(data.claims) ? data.claims : Array.isArray(data.findings) ? data.findings : [];
-  const basis = [...new Set(claims.map(item => item?.basis).filter(Boolean))];
-  const confidence = [...new Set(claims.map(item => item?.confidence).filter(Boolean))];
+  const contents = collectValues(data, ["findings", "claims", "items", "signals", "jobs", "objectives", "initiatives", "strategies"]);
+  const items = contents.map(scalarText).filter(Boolean);
+  const fallback = scalarText(data);
 
   return (
-    <section className="analysis-deck" aria-label={`${section.label} expanded analysis`}>
-      <article className="deck-card deck-primary">
-        <div className="deck-label">Current position</div>
-        <h3>{section.label}</h3>
-        <DetailList values={position} empty={scalarText(data) || artifact.summary || "No concise position was returned."} />
-        {(basis.length > 0 || confidence.length > 0) && (
-          <div className="claim-badges">
-            {basis.map(value => <span key={value}>{value}</span>)}
-            {confidence.map(value => <span key={value}>Confidence: {value}</span>)}
-          </div>
-        )}
-      </article>
-      <article className="deck-card">
-        <div className="deck-label">Supporting evidence</div>
-        <EvidenceList artifact={artifact} section={section} />
-      </article>
-      <article className="deck-card">
-        <div className="deck-label">Implications</div>
-        <DetailList values={implications} empty={artifact.summary || "No separate implications were returned."} />
-      </article>
-      <article className="deck-card">
-        <div className="deck-label">Risks & gaps</div>
-        <DetailList values={risks} empty="No unresolved gap is attached to this region." />
-      </article>
-      <article className="deck-card deck-questions">
-        <div className="deck-label">Next questions</div>
-        <DetailList values={questions} empty="No next question was returned." />
-        <button className="btn primary discuss-region" onClick={onDiscuss}>DISCUSS THIS REGION IN CHAT</button>
-      </article>
+    <section className="region-inspector" aria-label={`${section.label} detail`}>
+      <div className="region-inspector-top">
+        <h2>{section.label}</h2>
+        <button className="btn" type="button" onClick={onDiscuss}>Discuss</button>
+      </div>
+      {items.length ? (
+        <ul>{items.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}</ul>
+      ) : (
+        <p>{fallback || "This region is empty."}</p>
+      )}
+      <RegionSources artifact={artifact} section={section} />
     </section>
   );
 }
@@ -151,6 +124,7 @@ export default function FrameworkWorkspace({ id, home = false }) {
   const [runMessage, setRunMessage] = useState("");
   const [chatBusy, setChatBusy] = useState(false);
   const [hasKey, setHasKey] = useState(false);
+  const [hostname, setHostname] = useState("");
   const chatRailRef = useRef(null);
   const abortRef = useRef(null);
   const autorunStartedRef = useRef(false);
@@ -168,6 +142,7 @@ export default function FrameworkWorkspace({ id, home = false }) {
     setSelectedSectionId(initialSection?.id || "");
     setSelectedSectionState(initialSection);
     setHasKey(hasApiKey());
+    setHostname(companyHostname(parseBizIntake(getBucket("biz")).url));
     setHydrated(true);
   }, [id]);
 
@@ -178,14 +153,13 @@ export default function FrameworkWorkspace({ id, home = false }) {
       setArtifactState(saved ? normalizeFrameworkArtifact(saved, id) : null);
       setLatestRun(getLatestRun(id));
       setHasKey(hasApiKey());
+      setHostname(companyHostname(parseBizIntake(getBucket("biz")).url));
     };
     window.addEventListener("lf:storage", onStorage);
     return () => window.removeEventListener("lf:storage", onStorage);
   }, [hydrated, id]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
-
-  const myBuckets = useMemo(() => INTAKE.filter(source => source.readers.includes(id)), [id]);
 
   useEffect(() => {
     if (!hydrated || id !== "bmc" || !FW[id]) return;
@@ -231,7 +205,7 @@ export default function FrameworkWorkspace({ id, home = false }) {
   }
 
   if (!framework) {
-    return <main className="page-message"><h1>Unknown framework</h1><p><Link href="/pipeline">← Back to the pipeline</Link></p></main>;
+    return <main className="page-message"><h1>Unknown framework</h1><p><Link href="/pipeline">Back to the pipeline</Link></p></main>;
   }
   if (!hydrated) {
     return <main className="page-loading"><LoadingState label="Opening framework" variant="Drive" /></main>;
@@ -258,6 +232,7 @@ export default function FrameworkWorkspace({ id, home = false }) {
   const stale = artifact?.status === "stale";
   const viewable = complete || stale;
   const running = busy || (latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status));
+  const chatTitle = hostname || framework.name;
 
   return (
     <main className="framework-page">
@@ -268,36 +243,28 @@ export default function FrameworkWorkspace({ id, home = false }) {
             <Link className="workspace-close" href="/pipeline">Pipeline</Link>
           </div>
         ) : (
-          <Link className="workspace-close" href="/pipeline">← CLOSE · BACK TO PIPELINE</Link>
+          <Link className="workspace-close" href="/pipeline">Back to pipeline</Link>
         )}
-        <div className="workspace-meta">
-          <span>{complete ? `REVISION ${artifact.revision || 1}` : stale ? `REVISION ${artifact.revision || 1} · STALE` : legacy ? "LEGACY OUTPUT" : "NO ARTIFACT"}</span>
-          <span>{artifact?.model || latestRun?.model || "claude-sonnet-5"}</span>
-        </div>
       </div>
 
       <div className="framework-workspace">
         <div className="artifact-column">
           <header className="framework-header">
-            <div>
-              <div className="eyebrow">Framework workspace · {running ? "run in progress" : complete ? "validated artifact" : stale ? "stale artifact · review required" : "not generated"}</div>
-              <h1><span className="framework-icon" aria-hidden="true">{framework.icon}</span> {framework.name}</h1>
-              <p className="framework-role">{framework.role}</p>
-            </div>
-            {artifact?.generatedAt && <div className="artifact-timestamp">Generated<br />{new Date(artifact.generatedAt).toLocaleString()}</div>}
+            <h1>{framework.name}</h1>
+            {stale && <p className="framework-state-note">This map is stale. Review it, or regenerate from the pipeline.</p>}
           </header>
 
           {running && (
             <div className="i-sec">
               <LoadingState
-                label={`${framework.role} is building`}
+                label={`${framework.name} is building`}
                 variant={phase >= 3 ? "Orbit" : "Drive"}
                 phases={RUN_PHASES}
                 phase={phase}
                 startedAt={startedAt || (latestRun?.startedAt ? new Date(latestRun.startedAt) : undefined)}
               />
-              {runDetail && <p className="run-detail" aria-live="polite">▸ {runDetail}</p>}
-              {busy && <button className="btn danger run-cancel" onClick={() => abortRef.current?.abort()}>CANCEL RUN</button>}
+              {runDetail && <p className="run-detail" aria-live="polite">{runDetail}</p>}
+              {busy && <button className="btn danger run-cancel" type="button" onClick={() => abortRef.current?.abort()}>Cancel run</button>}
             </div>
           )}
           {runMessage && <div className="run-error" role="alert">{runMessage}</div>}
@@ -305,18 +272,15 @@ export default function FrameworkWorkspace({ id, home = false }) {
           {viewable ? (
             <>
               <section className="artifact-panel">
-                <div className="artifact-panel-label">
-                  <span>Structured template · select any region</span>
-                  <span>{artifact.evidence?.length || 0} evidence refs · {artifact.gaps?.length || 0} gaps</span>
-                </div>
                 <FrameworkArtifact
                   artifact={artifact}
                   frameworkId={id}
                   selectedSectionId={selectedSectionId}
                   onSelect={selectSection}
+                  brief
                 />
               </section>
-              <SectionDetail
+              <RegionInspector
                 artifact={artifact}
                 section={selectedSection}
                 onDiscuss={discussSection}
@@ -324,72 +288,20 @@ export default function FrameworkWorkspace({ id, home = false }) {
             </>
           ) : !running && (
             <section className="panel empty-artifact">
-              <div className="i-label">Structured artifact unavailable</div>
               {legacy
-                ? <><p>Your previous plain-text result is preserved below, but it cannot populate the interactive framework safely. Regenerate this framework from the pipeline.</p><div className="output legacy-output">{getOutput(id)}</div></>
-                : <p>Return home, paste a company URL and one paragraph, and the canvas will draw itself. Or open the expert pipeline to launch this framework from the roster.</p>}
+                ? <><p>Your previous plain-text result is preserved below, but it cannot populate the map. Regenerate this framework from the pipeline.</p><div className="output legacy-output">{getOutput(id)}</div></>
+                : <p>Return home, paste a company URL and one paragraph, and the canvas will draw itself. Or open the pipeline to launch this framework.</p>}
               <div className="btnrow">
-                {id === "bmc" && <Link className="btn primary" href="/">DRAW FROM HOME</Link>}
-                <Link className={id === "bmc" ? "btn" : "btn primary"} href="/pipeline">OPEN PIPELINE</Link>
+                {id === "bmc" && <Link className="btn primary" href="/">Draw from home</Link>}
+                <Link className={id === "bmc" ? "btn" : "btn primary"} href="/pipeline">Open pipeline</Link>
               </div>
             </section>
           )}
-
-          <section className="framework-provenance">
-            <article className="panel">
-              <div className="i-label">Reads · saved inputs</div>
-              <div className="linkchips">
-                {myBuckets.map(source => {
-                  const loaded = Boolean(getBucket(source.key).trim());
-                  return <Link key={source.key} href="/pipeline" className={loaded ? "" : "off"}>{source.name} · {loaded ? "loaded" : "empty"}</Link>;
-                })}
-              </div>
-              <div className="i-sec">
-                <div className="i-label">Tool calls</div>
-                <div className="toolchips">{framework.tools.map(tool => <span key={tool}>{tool}</span>)}</div>
-              </div>
-            </article>
-            <article className="panel">
-              <div className="i-label">Makes these agents ready</div>
-              <div className="linkchips">
-                {framework.feeds.length
-                  ? framework.feeds.map(key => <Link key={key} href={`/framework/${key}`}>{FW[key].icon} {FW[key].name}</Link>)
-                  : <span className="muted-copy">End of pipeline · governed work routes outward</span>}
-              </div>
-              <div className="i-sec">
-                <div className="i-label">Supplied by</div>
-                <div className="linkchips">
-                  {SOURCES[id].length
-                    ? SOURCES[id].map(key => <Link key={key} href={`/framework/${key}`}>{FW[key].name} · {artifactIsComplete(getArtifact(key), key) ? "complete" : "not complete"}</Link>)
-                    : <span className="muted-copy">Intake evidence only</span>}
-                </div>
-              </div>
-            </article>
-          </section>
-
-          <section className="panel mt next-steps">
-            <div className="i-label">Next steps</div>
-            {(() => {
-              const artifactMap = Object.fromEntries(ORDER.map(key => [key, key === id ? artifact : getArtifact(key)]));
-              const bucketMap = Object.fromEntries(INTAKE.map(source => [source.key, getBucket(source.key)]));
-              const readyNow = deriveActiveAgents(artifactMap, bucketMap);
-              const nextUp = ORDER.filter(key => key !== id && readyNow.includes(key) && !artifactIsComplete(artifactMap[key], key));
-              return (
-                <div className="linkchips">
-                  {nextUp.slice(0, 3).map(key => (
-                    <Link key={key} className="next-chip" href={`/pipeline?select=${key}`}>{FW[key].icon} RUN {FW[key].name} ▸</Link>
-                  ))}
-                  {!nextUp.length && <span className="muted-copy">Every unlocked framework is complete — regenerate one, or load more evidence.</span>}
-                  <Link href="/pipeline" className="next-back">← BACK TO PIPELINE</Link>
-                </div>
-              );
-            })()}
-          </section>
         </div>
 
         <aside className="chat-rail" ref={chatRailRef}>
           <div className="chat-rail-header">
-            <div><span>Agent chat</span><b>{framework.role}</b></div>
+            <b>{chatTitle}</b>
             {(busy || chatBusy) && hasKey && <span className="live-indicator">● LIVE</span>}
           </div>
           <Chat
@@ -399,7 +311,6 @@ export default function FrameworkWorkspace({ id, home = false }) {
             onFocusConsumed={() => setChatPrompt("")}
             onBusyChange={setChatBusy}
           />
-          <p className="chat-contract">Follow-up chat may browse and propose changes, but it cannot silently mutate the locked artifact.</p>
         </aside>
       </div>
     </main>

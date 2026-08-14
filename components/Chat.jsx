@@ -147,7 +147,7 @@ export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocus
     const apiKey = String(getKey() || "").trim();
     if (!apiKey) {
       const reply = buildAssistantLogMessage({
-        error: "Add your Anthropic API key in Settings before starting a live agent request.",
+        error: "Add an Anthropic API key first. It stays in this browser.",
         resumable: Boolean(previous?.resumable),
       }, { ok: false, previous });
       const updated = [...baseLog];
@@ -256,9 +256,9 @@ export default function Chat({ fwKey, artifact = null, focusPrompt = "", onFocus
           aria-label={`Message ${framework.role}`}
         />
         {pendingContinuationIndex >= 0 ? (
-          <button onClick={continueResearch} disabled={busy}>CONTINUE</button>
+          <button onClick={continueResearch} disabled={busy}>Continue</button>
         ) : (
-        <button onClick={send} disabled={busy || !hasKey || !input.trim()}>SEND ▸</button>
+        <button onClick={send} disabled={busy || !hasKey || !input.trim()}>Send</button>
         )}
       </div>
     </div>
