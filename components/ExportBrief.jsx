@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { FW } from "@/lib/frameworks";
 import { normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
 import FrameworkArtifact from "@/components/FrameworkArtifact";
