@@ -111,7 +111,7 @@ function PlayersStrip({ players, evidence = [] }) {
   return (
     <ul className="industry-map-players-strip">
       {players.map((player, index) => (
-        <li key={player?.id || `${player?.name || "player"}-${index}`}>
+        <li className="player-chip" key={player?.id || `${player?.name || "player"}-${index}`}>
           <PlayerName player={player} evidence={evidence} />
         </li>
       ))}

@@ -329,6 +329,8 @@ test("Industry Map is four bands on one 12-column grid, not a 2-col masonry", ()
   assert.match(html, /industry-map-flows/);
   assert.match(html, /industry-map-time/);
   assert.match(html, /industry-map-players-strip/);
+  assert.match(html, /player-chip/);
+  assert.doesNotMatch(html, /industry-map-players-strip[^>]*artifact-findings/);
   assert.doesNotMatch(html, /grid2/);
   assert.match(html, /href="https:\/\/stripe\.com\/?"/);
   assert.match(html, /href="https:\/\/www\.appdirect\.com\/?"/);
