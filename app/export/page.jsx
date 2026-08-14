@@ -60,11 +60,11 @@ export default function ExportPage() {
       <div className="export-chrome">
         <p className="export-coverage">{coverageLine(evidenceCount, completeIds.length)}</p>
         <div className="btnrow">
-          <button className="btn primary" type="button" onClick={() => downloadAgentFile(readExportState())}>
-            Download for an agent
-          </button>
-          <button className="btn" type="button" onClick={() => window.print()}>
+          <button className="btn primary" type="button" onClick={() => window.print()}>
             Print brief
+          </button>
+          <button className="btn" type="button" onClick={() => downloadAgentFile(readExportState())}>
+            Download for an agent
           </button>
         </div>
       </div>

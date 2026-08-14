@@ -15,14 +15,14 @@ export default function ExportBrief({
   artifacts = {},
 }) {
   const date = formatBriefDate(generatedAt);
-  const engagement = meta.paragraph || "LiveFrameworks engagement.";
+  const lede = String(meta.paragraph || "").trim();
 
   return (
     <article className="export-brief">
       <header className="export-brief-head">
         <h1>{meta.title}</h1>
         {date && <p className="export-date">{date}</p>}
-        <p className="export-engagement">{engagement}</p>
+        {lede && <p className="export-engagement">{lede}</p>}
       </header>
 
       {completeIds.length === 0 && (

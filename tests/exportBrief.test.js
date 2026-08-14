@@ -170,10 +170,28 @@ test("HTML brief prints only the completed BMC — no empty roster slots", () =>
   assert.doesNotMatch(html, /Industry Map/);
   assert.doesNotMatch(html, /SWOT/);
   assert.doesNotMatch(html, /The Cartographer/);
+  assert.doesNotMatch(html, /LiveFrameworks engagement/);
   assert.doesNotMatch(html, /```json/);
   ORDER.filter(id => id !== "bmc").forEach(id => {
     assert.doesNotMatch(html, new RegExp(`<h2[^>]*>${FW[id].name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
   });
+});
+
+test("without an intake paragraph the brief is company and date — no engagement stub", () => {
+  const html = renderToStaticMarkup(
+    React.createElement(ExportBrief, {
+      meta: { title: "LiveFrameworks", company: "", url: "", paragraph: "" },
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds: ["bmc"],
+      artifacts: { bmc: completeBmcArtifact() },
+    }),
+  );
+
+  assert.match(html, /LiveFrameworks/);
+  assert.match(html, /14 August 2026/);
+  assert.match(html, /bmc-grid/);
+  assert.doesNotMatch(html, /LiveFrameworks engagement/);
+  assert.doesNotMatch(html, /export-engagement/);
 });
 
 test("a second completed framework becomes a titled section, still no empty slots", () => {
