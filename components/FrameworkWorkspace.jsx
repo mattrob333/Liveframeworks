@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { FW } from "@/lib/frameworks";
+import { FW, INTAKE, ORDER } from "@/lib/frameworks";
 import {
   getArtifact,
   getBucket,
@@ -13,6 +13,7 @@ import {
 import { artifactIsComplete } from "@/lib/agentContext";
 import { normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
 import { companyHostname, parseBizIntake } from "@/lib/intake";
+import { agentOneLiner, resolveNextMove } from "@/lib/nextSteps";
 import {
   executeFrameworkRun,
   hasApiKey,
@@ -237,6 +238,13 @@ export default function FrameworkWorkspace({ id, home = false }) {
   const viewable = complete || stale;
   const running = busy || (latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status));
   const pageTitle = hostname || "LiveFrameworks";
+  const nextMove = viewable
+    ? resolveNextMove({
+      frameworkId: id,
+      artifacts: Object.fromEntries(ORDER.map(key => [key, key === id ? artifact : getArtifact(key)])),
+      buckets: Object.fromEntries(INTAKE.map(source => [source.key, getBucket(source.key)])),
+    })
+    : null;
 
   return (
     <main className="framework-page">
@@ -274,6 +282,12 @@ export default function FrameworkWorkspace({ id, home = false }) {
                   brief
                 />
               </section>
+              {nextMove && (
+                <p className="next-move">
+                  <span>{nextMove.line}</span>
+                  <Link className="btn" href={nextMove.href}>{nextMove.action}</Link>
+                </p>
+              )}
               <RegionInspector
                 artifact={artifact}
                 section={selectedSection}
@@ -295,8 +309,17 @@ export default function FrameworkWorkspace({ id, home = false }) {
 
         <aside className="chat-rail" ref={chatRailRef}>
           <div className="chat-rail-header">
-            <b>{pageTitle}</b>
-            {(busy || chatBusy) && hasKey && <span className="live-indicator">● LIVE</span>}
+            <div className="agent-id">
+              <span className="agent-mark" aria-hidden="true">{framework.icon}</span>
+              <div>
+                <b>{framework.role}</b>
+                <p>{agentOneLiner(framework)}</p>
+              </div>
+            </div>
+            <div className="chat-rail-tools">
+              {(busy || chatBusy) && hasKey && <span className="live-indicator">● LIVE</span>}
+              <Link className="how-built" href={`/pipeline?select=${id}`}>How this was built ›</Link>
+            </div>
           </div>
           <Chat
             fwKey={id}
