@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { FW } from "@/lib/frameworks";
+import { FW, ORDER } from "@/lib/frameworks";
 import {
   getArtifact,
   getBucket,
@@ -12,6 +12,7 @@ import {
 } from "@/lib/store";
 import { artifactIsComplete } from "@/lib/agentContext";
 import { normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
+import { resolveNextSteps } from "@/lib/nextSteps";
 import { companyHostname, parseBizIntake } from "@/lib/intake";
 import {
   executeFrameworkRun,
@@ -82,6 +83,80 @@ function noteLine(values) {
   return (values || []).map(scalarText).filter(Boolean).join(" ");
 }
 
+function readNextSteps(frameworkId) {
+  const artifacts = Object.fromEntries(ORDER.map(key => [key, getArtifact(key)]));
+  return resolveNextSteps({ frameworkId, artifacts, buckets: { biz: getBucket("biz") } });
+}
+
+function NextSteps({ frameworkId, nextSteps }) {
+  const { steps, recommended } = nextSteps;
+  if (!steps.length) {
+    if (frameworkId !== "raci") return null;
+    return (
+      <section className="next-steps" aria-label="Next steps">
+        <div className="i-label">Next steps</div>
+        <div className="next-steps-end">
+          <p>End of the line. The engagement is assembled.</p>
+          <Link className="btn primary" href="/export">Open Export ▸</Link>
+        </div>
+      </section>
+    );
+  }
+
+  const recommendedStep = steps.find(step => step.id === recommended);
+  const restSteps = steps.filter(step => step.id !== recommended);
+
+  return (
+    <section className="next-steps" aria-label="Next steps">
+      <div className="i-label">Next steps</div>
+      <p className="kicker">This map feeds {steps.length} agent{steps.length === 1 ? "" : "s"}. Pick the next move.</p>
+
+      {recommendedStep && (
+        <div className="next-step-card recommended">
+          <span className="tag">Recommended path</span>
+          <div className="headline">{recommendedStep.icon} {recommendedStep.name}</div>
+          <div className="role">{recommendedStep.role}</div>
+          <p className="wakes-line">
+            {recommendedStep.wakes > 0
+              ? `Wakes ${recommendedStep.wakes} more agent${recommendedStep.wakes === 1 ? "" : "s"}`
+              : recommendedStep.out}
+          </p>
+          <Link className="btn primary" href={`/pipeline?select=${recommendedStep.id}`}>Run {recommendedStep.name} ▸</Link>
+        </div>
+      )}
+
+      {restSteps.length > 0 && (
+        <div className="next-steps-list">
+          {restSteps.map(step => {
+            if (step.status === "ready") {
+              return (
+                <Link key={step.id} className="next-step-row ready" href={`/pipeline?select=${step.id}`}>
+                  <span className="label">{step.icon} {step.name}</span>
+                  {step.wakes > 0 && <span className="detail">wakes {step.wakes}</span>}
+                </Link>
+              );
+            }
+            if (step.status === "done") {
+              return (
+                <Link key={step.id} className="next-step-row done" href={`/framework/${step.id}`}>
+                  <span className="label">{step.icon} {step.name}</span>
+                  <span className="detail">✓ drawn</span>
+                </Link>
+              );
+            }
+            return (
+              <div key={step.id} className="next-step-row locked">
+                <span className="label">{step.icon} {step.name}</span>
+                <span className="detail">needs {step.missing.join(", ")}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function RegionInspector({ artifact, section, onDiscuss }) {
   if (!section) return null;
 
@@ -120,6 +195,7 @@ export default function FrameworkWorkspace({ id, home = false }) {
   const framework = FW[id];
   const [artifact, setArtifactState] = useState(null);
   const [latestRun, setLatestRun] = useState(null);
+  const [nextSteps, setNextSteps] = useState({ steps: [], recommended: null });
   const [selectedSection, setSelectedSectionState] = useState(null);
   const [selectedSectionId, setSelectedSectionId] = useState("");
   const [chatPrompt, setChatPrompt] = useState("");
@@ -143,6 +219,7 @@ export default function FrameworkWorkspace({ id, home = false }) {
     const normalized = saved ? normalizeFrameworkArtifact(saved, id) : null;
     setArtifactState(normalized);
     setLatestRun(getLatestRun(id));
+    setNextSteps(readNextSteps(id));
     setSelectedSectionId("");
     setSelectedSectionState(null);
     setHasKey(hasApiKey());
@@ -156,6 +233,7 @@ export default function FrameworkWorkspace({ id, home = false }) {
       const saved = getArtifact(id);
       setArtifactState(saved ? normalizeFrameworkArtifact(saved, id) : null);
       setLatestRun(getLatestRun(id));
+      setNextSteps(readNextSteps(id));
       setHasKey(hasApiKey());
       setHostname(companyHostname(parseBizIntake(getBucket("biz")).url));
     };
@@ -204,6 +282,7 @@ export default function FrameworkWorkspace({ id, home = false }) {
     const saved = getArtifact(id);
     setArtifactState(saved ? normalizeFrameworkArtifact(saved, id) : null);
     setLatestRun(getLatestRun(id));
+    setNextSteps(readNextSteps(id));
     if (!result.ok) setRunMessage(result.error);
     else if (result.message) setRunMessage(result.message);
   }
@@ -279,6 +358,7 @@ export default function FrameworkWorkspace({ id, home = false }) {
                 section={selectedSection}
                 onDiscuss={discussSection}
               />
+              <NextSteps frameworkId={id} nextSteps={nextSteps} />
             </>
           ) : !running && (
             <section className="panel empty-artifact">

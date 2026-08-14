@@ -263,6 +263,24 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
 .region-inspector-notes p:last-child{margin-bottom:0}
 .region-inspector-notes span{color:var(--line);font-weight:600}
 
+.next-steps{margin-top:20px;border:1px solid var(--faint);background:var(--panel);padding:16px}
+.next-steps .kicker{color:var(--dim);font-size:12px;line-height:1.5;margin:2px 0 14px}
+.next-step-card{border:1px solid var(--amber);background:var(--amber-dim);padding:14px}
+.next-step-card .tag{display:block;color:var(--amber);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.next-step-card .headline{font-size:14px;font-weight:600;color:var(--line)}
+.next-step-card .role{margin-top:2px;color:var(--dim);font-size:12px}
+.next-step-card .wakes-line{margin:8px 0 12px;color:var(--line);font-size:13px}
+.next-steps-list{margin-top:14px;display:grid}
+.next-step-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px dashed var(--faint);font-size:13px;color:var(--line);text-decoration:none}
+.next-step-row:last-child{border-bottom:none}
+.next-step-row .label{display:flex;align-items:center;gap:8px}
+.next-step-row .detail{color:var(--dim);font-size:12px}
+a.next-step-row:hover{color:var(--amber)}
+a.next-step-row:hover .detail{color:var(--amber)}
+.next-step-row.locked{opacity:.55}
+.next-step-row.done .detail{color:var(--ok)}
+.next-steps-end p{color:var(--dim);font-size:14px;max-width:70ch;margin-bottom:14px}
+
 /* The structured renderer uses these shared visual primitives. */
 .framework-artifact{min-width:0}
 .framework-artifact button{font:inherit}
