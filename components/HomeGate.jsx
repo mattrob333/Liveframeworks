@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { INTAKE } from "@/lib/frameworks";
 import { getArtifact, getBucket, setBucket } from "@/lib/store";
-import { artifactIsComplete, getBucketAffectedFrameworks } from "@/lib/agentContext";
+import { getBucketAffectedFrameworks } from "@/lib/agentContext";
 import { applyDemoBuckets } from "@/lib/demoPacks";
 import { markDependentArtifactsStale } from "@/lib/frameworkRunClient";
-import { resolveHomeMode } from "@/lib/homeMode";
+import { hasHomeCanvas, resolveHomeMode } from "@/lib/homeMode";
 import FirstRunHome from "@/components/FirstRunHome";
 import FrameworkWorkspace from "@/components/FrameworkWorkspace";
 import LoadingState from "@/components/LoadingState";
@@ -32,7 +32,7 @@ export default function HomeGate({ demoBuckets = null }) {
         }
       }
     }
-    const sync = () => setHasCanvas(artifactIsComplete(getArtifact("bmc"), "bmc"));
+    const sync = () => setHasCanvas(hasHomeCanvas(getArtifact("bmc")));
     sync();
     setReady(true);
     window.addEventListener("lf:storage", sync);

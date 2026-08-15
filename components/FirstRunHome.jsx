@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getArtifact, getBucket, getKey, setBucket, setKey } from "@/lib/store";
-import { artifactIsComplete, getBucketAffectedFrameworks } from "@/lib/agentContext";
+import { getBucketAffectedFrameworks } from "@/lib/agentContext";
+import { hasHomeCanvas } from "@/lib/homeMode";
 import { formatBizIntake, parseBizIntake, validateBizIntake } from "@/lib/intake";
 import { validateApiKey } from "@/lib/apiKey";
 import { markDependentArtifactsStale } from "@/lib/frameworkRunClient";
@@ -24,7 +25,7 @@ export default function FirstRunHome() {
     setUrl(parsed.url);
     setParagraph(parsed.paragraph);
     setKeyField(getKey());
-    setReturning(artifactIsComplete(getArtifact("bmc"), "bmc"));
+    setReturning(hasHomeCanvas(getArtifact("bmc")));
     setHydrated(true);
   }, []);
 

@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   companyHostname,
   formatBizIntake,
@@ -11,8 +12,30 @@ import {
   validateBucketSave,
 } from "../lib/intake.js";
 import { validateApiKey } from "../lib/apiKey.js";
-import { resolveHomeMode, shouldShowNewCompany } from "../lib/homeMode.js";
+import { getArtifactJsonSchema } from "../lib/frameworkArtifacts.js";
+import { hasHomeCanvas, resolveHomeMode, shouldShowNewCompany } from "../lib/homeMode.js";
 import { interpretRunEvent } from "../lib/frameworkRunClient.js";
+
+function sampleFromSchema(schema) {
+  if (schema.const !== undefined) return schema.const;
+  if (schema.enum) return schema.enum[0];
+  const type = Array.isArray(schema.type) ? schema.type.find(value => value !== "null") : schema.type;
+  if (type === "object") {
+    return Object.fromEntries(Object.entries(schema.properties || {}).map(([key, value]) => [key, sampleFromSchema(value)]));
+  }
+  if (type === "array") return [sampleFromSchema(schema.items)];
+  if (type === "number") return schema.minimum ?? 1;
+  if (type === "string") return "x";
+  return null;
+}
+
+function completeBmc() {
+  return { ...sampleFromSchema(getArtifactJsonSchema("bmc")), status: "complete" };
+}
+
+function homeMode({ artifact = null, ready = true, autorun = false, wantNew = false } = {}) {
+  return resolveHomeMode({ ready, autorun, hasCanvas: hasHomeCanvas(artifact), wantNew });
+}
 
 test("company URLs normalize with or without a scheme", () => {
   assert.equal(normalizeCompanyUrl("https://acme.test/path"), "https://acme.test/path");
@@ -74,6 +97,29 @@ test("home is the canvas after a complete BMC, unless New company", () => {
   assert.equal(resolveHomeMode({ ready: true, autorun: false, hasCanvas: true, wantNew: true }), "intake");
 });
 
+test("stale BMC keeps home on the canvas; empty and ?new=1 go to intake", () => {
+  const complete = completeBmc();
+  const stale = { ...complete, status: "stale" };
+
+  assert.equal(hasHomeCanvas(complete), true);
+  assert.equal(hasHomeCanvas(stale), true);
+  assert.equal(hasHomeCanvas(null), false);
+  assert.equal(hasHomeCanvas({ frameworkId: "bmc", status: "needs_input" }), false);
+  assert.equal(hasHomeCanvas({ frameworkId: "bmc", status: "legacy" }), false);
+
+  assert.equal(homeMode({ artifact: complete }), "canvas");
+  assert.equal(homeMode({ artifact: stale }), "canvas");
+  assert.equal(homeMode({ artifact: null }), "intake");
+  assert.equal(homeMode({ artifact: stale, wantNew: true }), "intake");
+  assert.equal(homeMode({ artifact: complete, wantNew: true }), "intake");
+});
+
+test("HomeGate treats stale BMC as a canvas, not a complete-only check", () => {
+  const gate = readFileSync("components/HomeGate.jsx", "utf8");
+  assert.match(gate, /hasHomeCanvas\(getArtifact\("bmc"\)\)/);
+  assert.doesNotMatch(gate, /artifactIsComplete/);
+});
+
 test("New company stays out of the nav until a canvas exists", () => {
   assert.equal(shouldShowNewCompany({ hasCanvas: false, wantNew: false, path: "/", companyLoaded: false }), false);
   assert.equal(shouldShowNewCompany({ hasCanvas: false, wantNew: true, path: "/", companyLoaded: true }), true);
@@ -81,6 +127,41 @@ test("New company stays out of the nav until a canvas exists", () => {
   assert.equal(shouldShowNewCompany({ hasCanvas: true, wantNew: true, path: "/", companyLoaded: true }), true);
   assert.equal(shouldShowNewCompany({ hasCanvas: false, wantNew: false, path: "/pipeline", companyLoaded: true }), true);
   assert.equal(shouldShowNewCompany({ hasCanvas: false, wantNew: false, path: "/pipeline", companyLoaded: false }), false);
+});
+
+test("New company stays in the nav when the BMC is stale", () => {
+  const stale = { ...completeBmc(), status: "stale" };
+  assert.equal(hasHomeCanvas(stale), true);
+  assert.equal(shouldShowNewCompany({
+    hasCanvas: hasHomeCanvas(stale),
+    wantNew: false,
+    path: "/",
+    companyLoaded: true,
+  }), true);
+  assert.equal(shouldShowNewCompany({
+    hasCanvas: hasHomeCanvas(null),
+    wantNew: false,
+    path: "/",
+    companyLoaded: false,
+  }), false);
+});
+
+test("Nav treats stale BMC as a canvas for New company", () => {
+  const nav = readFileSync("components/Nav.jsx", "utf8");
+  assert.match(nav, /hasHomeCanvas\(getArtifact\("bmc"\)\)/);
+  assert.doesNotMatch(nav, /artifactIsComplete/);
+});
+
+test("?new=1 on a stale canvas is returning copy, not first-run", () => {
+  const stale = { ...completeBmc(), status: "stale" };
+  assert.equal(hasHomeCanvas(stale), true);
+  assert.equal(hasHomeCanvas(null), false);
+
+  const home = readFileSync("components/FirstRunHome.jsx", "utf8");
+  assert.match(home, /setReturning\(hasHomeCanvas\(getArtifact\("bmc"\)\)\)/);
+  assert.match(home, /returning \? "New company\."/);
+  assert.match(home, /returning && <><Link href="\/">Back to the canvas<\/Link>/);
+  assert.doesNotMatch(home, /artifactIsComplete/);
 });
 
 test("pipeline select slugs resolve to a known framework or unknown", () => {
