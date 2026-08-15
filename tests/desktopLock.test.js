@@ -102,19 +102,31 @@ test("BMC nine-box columns can shrink so digest text wraps instead of clipping m
   assert.doesNotMatch(cell, /align-items:flex-start/);
 
   const body = cssRule(".bmc-cell .d");
-  assert.match(body, /overflow-wrap:break-word/);
+  assert.match(body, /overflow-wrap:normal/);
   assert.match(body, /word-break:normal/);
   assert.match(body, /min-width:0/);
+  assert.doesNotMatch(body, /overflow-wrap:break-word/);
+  assert.doesNotMatch(body, /overflow-wrap:anywhere/);
   assert.doesNotMatch(body, /word-break:break-all/);
+
+  const title = cssRule(".bmc-cell .t");
+  assert.match(title, /overflow-wrap:normal/);
+  assert.match(title, /word-break:normal/);
+  assert.doesNotMatch(title, /overflow-wrap:break-word/);
+  assert.doesNotMatch(title, /word-break:break-all/);
 
   const digest = cssRule(".artifact-digest");
   assert.match(digest, /min-width:0/);
   assert.match(digest, /width:100%/);
 
   const item = cssRule(".artifact-digest li");
-  assert.match(item, /overflow-wrap:break-word/);
+  assert.match(item, /overflow-wrap:normal/);
   assert.match(item, /word-break:normal/);
+  assert.match(item, /overflow:visible/);
+  assert.doesNotMatch(item, /overflow-wrap:break-word/);
   assert.doesNotMatch(item, /word-break:break-all/);
+  assert.doesNotMatch(item, /-webkit-line-clamp/);
+  assert.doesNotMatch(item, /overflow:hidden/);
 });
 
 test("BMC canvas rows may grow; overflow cannot slice a word at ~1280", () => {

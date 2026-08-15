@@ -152,25 +152,9 @@ test("empty or missing Ansoff quadrants stay empty — no invented cells", () =>
   assert.doesNotMatch(partialHtml, /<b>Title:<\/b>/);
 });
 
-test("SWOT, ToC, 7S, and upload stay on today's render path", () => {
-  const swot = createFrameworkArtifact("swot", {
-    payload: {
-      quadrants: {
-        strengths: [{ text: "Brand trust", basis: "known", confidence: "high", evidenceRefs: ["E1"] }],
-      },
-    },
-  });
-  const swotHtml = renderToStaticMarkup(React.createElement(FrameworkArtifact, {
-    artifact: swot,
-    frameworkId: "swot",
-    brief: true,
-    onSelect: () => {},
-  }));
-  assert.match(swotHtml, /artifact-sections artifact-matrix grid2/);
-  assert.doesNotMatch(swotHtml, /ansoff-matrix/);
-
+test("ToC, 7S, and upload stay on today's render path", () => {
   assert.match(ARTIFACT, /normalized\.frameworkId === "ansoff"/);
-  assert.doesNotMatch(ARTIFACT, /frameworkId === "swot"/);
+  assert.match(ARTIFACT, /normalized\.frameworkId === "swot"/);
   assert.doesNotMatch(ARTIFACT, /frameworkId === "sevens"/);
   assert.match(ARTIFACT, /section\.id !== "constraint"/);
   assert.match(WORKSPACE, /<TocConstraintHero hero=\{tocHero\} \/>/);

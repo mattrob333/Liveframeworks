@@ -315,6 +315,32 @@ const ANSOFF_ROWS = [
   },
 ];
 
+// Classic SWOT geometry: helpful/harmful × internal/external.
+// Cells read payload.quadrants.* only — empty arrays stay empty.
+const SWOT_ROWS = [
+  {
+    locus: "Internal",
+    cells: ["strengths", "weaknesses"],
+  },
+  {
+    locus: "External",
+    cells: ["opportunities", "threats"],
+  },
+];
+
+// TOWS crossing: the same internal × external pairing, made literal.
+// Cells read payload.tows.* only — empty arrays stay empty.
+const TOWS_ROWS = [
+  {
+    external: "Opportunities",
+    cells: ["so", "wo"],
+  },
+  {
+    external: "Threats",
+    cells: ["st", "wt"],
+  },
+];
+
 function AnsoffView({ artifact, definition, onSelect, selectedSectionId }) {
   const byId = Object.fromEntries(definition.sections.map(section => [section.id, section]));
   const selectedVector = byId.selectedVector;
@@ -349,6 +375,52 @@ function AnsoffView({ artifact, definition, onSelect, selectedSectionId }) {
           />
         </div>
       )}
+    </div>
+  );
+}
+
+function SwotView({ artifact, definition, onSelect, selectedSectionId }) {
+  const byId = Object.fromEntries(definition.sections.map(section => [section.id, section]));
+  return (
+    <div className="swot-matrix">
+      <div className="swot-matrix-frame swot-quadrants" role="grid" aria-label="SWOT">
+        <span className="swot-axis swot-axis-corner" aria-hidden="true" />
+        <span className="swot-axis swot-axis-col">Helpful</span>
+        <span className="swot-axis swot-axis-col">Harmful</span>
+        {SWOT_ROWS.flatMap(row => [
+          <span key={row.locus} className="swot-axis swot-axis-row">{row.locus}</span>,
+          ...row.cells.map(id => byId[id] && (
+            <SelectableSection
+              key={id}
+              artifact={artifact}
+              section={byId[id]}
+              onSelect={onSelect}
+              selectedSectionId={selectedSectionId}
+              className={`swot-cell swot-${id}`}
+              digest
+            />
+          )),
+        ])}
+      </div>
+      <div className="swot-matrix-frame swot-tows" role="grid" aria-label="TOWS">
+        <span className="swot-axis swot-axis-corner" aria-hidden="true" />
+        <span className="swot-axis swot-axis-col">Strengths</span>
+        <span className="swot-axis swot-axis-col">Weaknesses</span>
+        {TOWS_ROWS.flatMap(row => [
+          <span key={row.external} className="swot-axis swot-axis-row">{row.external}</span>,
+          ...row.cells.map(id => byId[id] && (
+            <SelectableSection
+              key={id}
+              artifact={artifact}
+              section={byId[id]}
+              onSelect={onSelect}
+              selectedSectionId={selectedSectionId}
+              className={`swot-cell swot-${id}`}
+              digest
+            />
+          )),
+        ])}
+      </div>
     </div>
   );
 }
@@ -539,6 +611,7 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
   else if (normalized.frameworkId === "raci") view = <RaciView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} selectedRowId={internalRowId} />;
   else if (definition.view === "table" && definition.table) view = <TableView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} selectedRowId={internalRowId} />;
   else if (normalized.frameworkId === "ansoff") view = <AnsoffView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;
+  else if (normalized.frameworkId === "swot") view = <SwotView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;
   else if (normalized.frameworkId === "toc") {
     const argument = definition.sections.filter(section => section.id !== "constraint");
     view = (
