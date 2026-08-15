@@ -11,6 +11,7 @@ import {
   agentDownloadName,
   buildAgentMarkdown,
   coverageLine,
+  downloadAgentFile,
   engagementMeta,
   flattenFrameworkMarkdown,
   formatBriefDate,
@@ -189,6 +190,78 @@ test("coverage and download name stay quiet and human", () => {
   const meta = engagementMeta({ biz: READY_BIZ });
   assert.equal(meta.title, "example.com");
   assert.equal(meta.paragraph, "We sell compliance software to mid-market operations teams.");
+});
+
+test("Download for an agent click path creates a named markdown blob and clicks it", async () => {
+  const state = {
+    buckets: { biz: READY_BIZ },
+    artifacts: { bmc: completeBmcArtifact() },
+    generatedAt: "2026-08-14T12:00:00.000Z",
+  };
+  const expectedName = agentDownloadName(engagementMeta(state.buckets));
+  const expectedMarkdown = buildAgentMarkdown(state);
+  const blobUrl = "blob:liveframeworks-agent-brief";
+  const clicks = [];
+  const attached = [];
+  const created = [];
+  let capturedBlob = null;
+
+  const originalCreate = URL.createObjectURL;
+  const originalRevoke = URL.revokeObjectURL;
+  URL.createObjectURL = blob => {
+    capturedBlob = blob;
+    return blobUrl;
+  };
+  URL.revokeObjectURL = () => {};
+
+  const previousDocument = globalThis.document;
+  globalThis.document = {
+    createElement(tag) {
+      const node = {
+        tagName: tag,
+        href: "",
+        download: "",
+        click() {
+          clicks.push({ href: this.href, download: this.download, attached: attached.includes(this) });
+        },
+      };
+      created.push(node);
+      return node;
+    },
+    body: {
+      appendChild(node) {
+        attached.push(node);
+        return node;
+      },
+      removeChild(node) {
+        const index = attached.indexOf(node);
+        if (index >= 0) attached.splice(index, 1);
+        return node;
+      },
+    },
+  };
+
+  try {
+    downloadAgentFile(state);
+    assert.equal(created.length, 1);
+    assert.equal(clicks.length, 1);
+    assert.equal(clicks[0].attached, true);
+    assert.equal(clicks[0].href, blobUrl);
+    assert.equal(clicks[0].download, expectedName);
+    assert.match(clicks[0].download, /\.md$/);
+    assert.ok(capturedBlob);
+    assert.equal(capturedBlob.type, "text/markdown");
+    assert.equal(await capturedBlob.text(), expectedMarkdown);
+    assert.match(expectedMarkdown, /## Business Model Canvas/);
+  } finally {
+    URL.createObjectURL = originalCreate;
+    URL.revokeObjectURL = originalRevoke;
+    globalThis.document = previousDocument;
+  }
+
+  const page = readFileSync(fileURLToPath(new URL("../app/export/page.jsx", import.meta.url)), "utf8");
+  assert.match(page, /onClick=\{\(\) => downloadAgentFile\(readExportState\(\)\)\}/);
+  assert.match(page, /Download for an agent/);
 });
 
 test("HTML brief prints only the completed BMC — no empty roster slots", () => {

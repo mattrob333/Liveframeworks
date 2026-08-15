@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import { INTAKE, ORDER } from "@/lib/frameworks";
 import { getArtifact, getBucket } from "@/lib/store";
 import {
-  agentDownloadName,
-  buildAgentMarkdown,
   coverageLine,
+  downloadAgentFile,
   engagementMeta,
   listCompleteFrameworks,
 } from "@/lib/exportBrief";
@@ -29,17 +28,6 @@ function readExportState() {
     artifacts,
     generatedAt: new Date().toISOString(),
   };
-}
-
-function downloadAgentFile(state) {
-  const markdown = buildAgentMarkdown(state);
-  const meta = engagementMeta(state.buckets);
-  const url = URL.createObjectURL(new Blob([markdown], { type: "text/markdown" }));
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = agentDownloadName(meta);
-  anchor.click();
-  URL.revokeObjectURL(url);
 }
 
 export default function ExportPage() {
