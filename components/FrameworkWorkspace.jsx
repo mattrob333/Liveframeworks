@@ -283,7 +283,7 @@ export default function FrameworkWorkspace({ id, home = false, orgInstalls = {} 
     id === "toc" ? artifact : getArtifact("toc"),
   );
   const tocHero = id === "toc" && viewable ? tocConstraintHero(artifact) : null;
-  const orgInstall = orgInstallForLoadedCompany(orgInstalls, hostname);
+  const orgInstall = orgInstallForLoadedCompany(orgInstalls, `${hostname}\n${getBucket("biz")}`);
   const tocRoster = tocHero ? orgInstallRoster(orgInstall) : { router: null, teams: [] };
   const questions = collectArtifactQuestions(artifact);
   const running = busy || (latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status));
