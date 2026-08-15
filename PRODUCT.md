@@ -90,80 +90,55 @@ On a filled framework: body 14px, chrome / labels 12px minimum, dim ink no light
 
 ---
 
-## Tonight's slice (2026-08-15) — in priority order, stop when out of night
+## Slice log
 
-Context first, code second: this repo is now registered canon in the Instinct design repo
-([source-repos](https://github.com/mattrob333/instinct/blob/main/docs/source-repos.md),
-[ADR-0016](https://github.com/mattrob333/instinct/blob/main/docs/adr/0016-engagement-seeds-the-framework-stack.md),
-[component page](https://github.com/mattrob333/instinct/blob/main/docs/components/liveframeworks.md)).
-Read ADR-0016 before working. The `docs/ideas/` directory there is **context, not backlog** —
-build nothing from it tonight.
+**2026-08-15 (night + day) — SHIPPED, all five orders.** Driftline end-to-end signed
+(brief at `demo-data/coffee/driftline-brief-reference.md`); the seeded constraint
+surfaced **unprompted and correctly as a policy constraint** — the diagnosis we hoped
+the tool could make, made. `?demo=` pack loading, stale-canvas home fix, the
+limiting-factor line, PRs #6–#16 of rendering fixes, and the first complete **Org
+Install export** (`demo-data/coffee/driftline-org-install.md`) — reviewed and signed:
+the six-field charters, the human-judge right-sizing, the "Not staffed" refusals with
+receipts, and the honest missing-data table are exactly what this product is for. The
+"Not staffed: MKT" section — declining to build what the founder asked for because the
+evidence says otherwise — is the single best thing this codebase has produced. Work of
+this quality is why the Team Install service is now real. Well done — every seat.
 
-1. **Drive Driftline end-to-end and fix what breaks.** `demo-data/coffee/` holds four files
-   that map to the four intake buckets (see `demo-data/README.md`). Paste all four, run the
-   full waterfall BMC → … → ToC → RACI, argue with at least one map in chat, then produce
-   both exports. Fix every crash, truncation, mis-rendered artifact section, dead link, or
-   wrong next-move encountered — each fix its own commit. **Done:** a full clean run
-   exists; the exported Driftline brief (`.md` download) is checked in as
-   `demo-data/coffee/driftline-brief-reference.md`; a run log of what broke and what was
-   fixed is in the PR/commit messages. The seeded constraint (wholesale bottlenecked
-   through the founder) should surface in the ToC artifact without being told — if it
-   doesn't, that is a finding to record, not a prompt to hand-edit.
-2. **One-click demo load (dev ergonomics).** A quiet way to load a demo pack into all four
-   buckets at once (e.g. a dev-only control on Pipeline or a `/?demo=driftline` param that
-   fills `lf:bucket:*` from `demo-data/`). Must not appear in the client-facing brief or
-   first-run surfaces. **Done:** one action fills all four buckets; works for all three
-   packs; nothing visible changes for a normal user.
-3. **Stale canvas keeps home.** `HomeGate` routes `/` back to the intake form when the BMC
-   is stale (it checks complete-only). A stale canvas should render as the canvas with its
-   existing stale note, not vanish into the landing form. **Done:** mark canvas stale →
-   `/` still shows the map + stale note; `?new=1` still forces intake; tests cover
-   `resolveHomeMode`.
-4. **(Stretch) "Today's limiting factor."** Only if 1–3 are done: when a ToC artifact
-   exists, the canvas header (under the company name) and the brief's lede carry one line —
-   the current constraint in plain words. No new agents, no new surfaces; it is a rendering
-   of the existing ToC artifact.
-5. **The Org Install document (written deliverable, not code).** Once Order 1's full
-   Driftline run is complete, write `demo-data/coffee/driftline-org-install.md` — the
-   agent-org export for the analyzed company, drawn ONLY from the completed artifacts
-   (org bucket, BMC, ToC constraint, RACI routing) and following the pattern in
-   `team/README.md` and the Instinct repo's `docs/ideas/org-compiler.md`. Structure:
-   - **`EXE ★ Chief of Staff`** — charter (six fields) + a routing table: every
-     department ★ below it and what kinds of requests/events route to each + a daily
-     cron instruction for it to check every ★, roster inline, escalation-to-owner rules.
-   - **Departments sized to what Driftline actually needs** — derived from the
-     constraint and RACI, not a fixed template (expect a wholesale desk, since that is
-     the constraint; ops; marketing — whatever the artifacts justify). Per department:
-     one **★ manager charter**, then 2–4 agents, each with: name in the `TEAM ★/· Role`
-     convention, one-line description, skills, and the tools/scopes it would need from
-     Driftline's systems (Shopify, QuickBooks, Slack per the intake).
-   - **A cron routine per department** (roster inline, work-order source named, cadence
-     justified by the department's rhythm) plus the EXE daily cron.
-   - **A Trigger Map per department** — event-driven wiring to where Driftline's humans
-     work, drawn from the systems in the intake (Slack, Shopify, QuickBooks): event
-     source → condition → which ★ wakes → what it does → what cascades → where the loop
-     closes back to the human. Rules: triggers fire ★ agents only, never workers;
-     cascades happen by assignment, never trigger→trigger; an agent that writes to a
-     channel is never woken by it; the schedule cron stays as the fallback heartbeat.
-     Example shape: "Slack #wholesale, human message containing an order/lead → wakes
-     WSL ★ → classifies, assigns quote prep, replies in-thread with status."
-   - **The filled Operator's Manual** — the humans' half, per the template in the
-     Instinct repo's `docs/ideas/operators-manual.md`: name the Owner and a Section
-     Steward per department **from Driftline's actual org chart** (e.g. the wholesale
-     lead stewards the wholesale desk), each with their 10-minute daily check-in, red
-     flags, escalation boundaries, and the install's approval-queue rules.
-   - **Grounding rule:** every department and every role must cite the artifact fact
-     that justifies it (the constraint, an org gap, a RACI row, a canvas box). A role
-     that cannot cite its reason does not ship. No generic org-chart filler. The same
-     rule covers steward assignments — a steward is named because the org chart says
-     that person owns that department's reality.
-   **Done:** the file exists; the Partner's verdict says it reads like something Matt
-   could paste into his agent runtime tomorrow and staff Driftline with; every role
-   carries its citation. This document is the hand-built prototype of the productized
-   "Team Install" export — treat its structure as a draft schema, and note in the run
-   report what data the artifacts were missing that the export needed.
+## Current slice (2026-08-16) — in priority order
 
-Tonight's don't-touch: no acquirer mode, no cartridges, no BIC comparison UI, no daily
+Same canon as before (ADR-0016 et al. in the Instinct repo; `docs/ideas/` there is
+context, not backlog).
+
+1. **Clear the parked visual defects.** SWOT renders as **four quadrants** (with the
+   TOWS crossing legible), not two lists; BMC top-row cells stop breaking inside a word
+   at 1280. **Done:** both clean at 1280 and in the print brief; no other framework
+   regresses.
+2. **Intake learns from the export.** The org-install's "Missing data" table
+   (`driftline-org-install.md` §7) is the spec: extend the intake bucket guides and
+   templates so the next install has fewer missing rows — named inboxes/channels, the
+   account book, approval thresholds and $ gates, key vendor names,
+   production-rate/system facts. Existing pastes must keep parsing (backward
+   compatible); new fields are optional prompts, not validation gates. **Done:**
+   guides/templates updated; parse tests cover old and new formats; the PR lists which
+   missing-data rows the new intake would have filled.
+3. **The client-facing install summary (written deliverable).** The Partner writes
+   `demo-data/coffee/driftline-org-install-summary.md`: two pages max — the org-at-a-
+   glance chart, the signed constraint sentence, the steward list, the approval-gates
+   table, and one line each for the "Not staffed" refusals — pointing to the full
+   install for depth. The 925-line document is the advisor's copy; this is what Maya
+   reads. **Done:** Partner signs that a founder could read it in ten minutes and know
+   exactly what was installed and why; Inspector checks it against the brief's voice.
+4. **Prove it wasn't coffee-specific: run Ironwood end-to-end.** Same as the Driftline
+   mission — `?demo=ironwood`, full waterfall, argue with a map, both exports, fix what
+   breaks — then check in `demo-data/garage-doors/ironwood-brief-reference.md`. The
+   seeded constraint (booking capacity, not marketing spend) should surface unprompted;
+   record honestly if it doesn't. **Done:** clean run, brief checked in, run log in the
+   PR.
+5. **(Stretch) Ironwood org-install.** Only if 1–4 are done: the Order-5 export for
+   Ironwood, same grounding rule, same five artifacts. A second install from a second
+   vertical is what turns the Driftline document from an artifact into a schema.
+
+Don't-touch, unchanged: no acquirer mode, no cartridges, no BIC comparison UI, no daily
 brief, no persistence layer, no new frameworks or agents, nothing merged to `main`.
 Run `npm test` and `npx next build` before every push.
 
