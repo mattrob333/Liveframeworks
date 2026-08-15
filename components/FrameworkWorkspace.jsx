@@ -11,6 +11,13 @@ import {
   setSelectedSection,
 } from "@/lib/store";
 import { artifactIsComplete } from "@/lib/agentContext";
+import {
+  FIRST_RUN_EMPTY_COPY,
+  NEEDS_INPUT_COPY,
+  collectArtifactQuestions,
+  pipelineLauncherHref,
+  resolveFrameworkWorkspaceView,
+} from "@/lib/frameworkWorkspaceView";
 import { normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
 import { playerLinkUrl } from "@/lib/playerLinks";
 import { companyHostname, parseBizIntake } from "@/lib/intake";
@@ -252,10 +259,12 @@ export default function FrameworkWorkspace({ id, home = false }) {
     }
   }
 
-  const complete = artifactIsComplete(artifact, id);
-  const legacy = artifact?.status === "legacy";
-  const stale = artifact?.status === "stale";
-  const viewable = complete || stale;
+  const view = resolveFrameworkWorkspaceView(artifact, latestRun, id);
+  const viewable = view === "map";
+  const needsInput = view === "needs_input";
+  const legacy = view === "legacy";
+  const stale = artifact?.status === "stale" && viewable;
+  const questions = collectArtifactQuestions(artifact);
   const running = busy || (latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status));
   const pageTitle = hostname || "LiveFrameworks";
   const nextMove = viewable
@@ -274,6 +283,7 @@ export default function FrameworkWorkspace({ id, home = false }) {
             <h1>{pageTitle}</h1>
             <p className="framework-map-label">{framework.name}</p>
             {stale && <p className="framework-state-note">This map is stale. Review it, or regenerate from the pipeline.</p>}
+            {needsInput && <p className="framework-state-note">This run is waiting on clarifying questions.</p>}
           </header>
 
           {running && (
@@ -314,11 +324,25 @@ export default function FrameworkWorkspace({ id, home = false }) {
                 onDiscuss={discussSection}
               />
             </>
+          ) : !running && needsInput ? (
+            <section className="panel empty-artifact">
+              <p>{NEEDS_INPUT_COPY}</p>
+              {questions.length > 0 && (
+                <ul>
+                  {questions.map((question, index) => (
+                    <li key={`${question}-${index}`}>{question}</li>
+                  ))}
+                </ul>
+              )}
+              <div className="btnrow">
+                <Link className="btn primary" href={pipelineLauncherHref(id)}>Open pipeline launcher</Link>
+              </div>
+            </section>
           ) : !running && (
             <section className="panel empty-artifact">
               {legacy
                 ? <><p>Your previous plain-text result is preserved below, but it cannot populate the map. Regenerate this framework from the pipeline.</p><div className="output legacy-output">{getOutput(id)}</div></>
-                : <p>Return home, paste a company URL and one paragraph, and the canvas will draw itself. Or open the pipeline to launch this framework.</p>}
+                : <p>{FIRST_RUN_EMPTY_COPY}</p>}
               <div className="btnrow">
                 {id === "bmc" && <Link className="btn primary" href="/">Draw from home</Link>}
                 <Link className={id === "bmc" ? "btn" : "btn primary"} href="/pipeline">Open pipeline</Link>
