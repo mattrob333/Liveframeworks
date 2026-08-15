@@ -139,6 +139,46 @@ test("incomplete frameworks are omitted from the agent file and the brief roster
   assertNoJsonDump(markdown);
 });
 
+test("stale BMC and SWOT stay in the export set with complete frameworks", () => {
+  const staleBmc = { ...completeBmcArtifact(), status: "stale" };
+  const staleSwot = { ...completeArtifact("swot"), status: "stale" };
+  const artifacts = { bmc: staleBmc, swot: staleSwot };
+  const completeIds = listCompleteFrameworks(artifacts);
+  assert.deepEqual(completeIds, ["bmc", "swot"]);
+  assert.deepEqual(listCompleteFrameworks({ bmc: completeBmcArtifact() }), ["bmc"]);
+
+  const markdown = buildAgentMarkdown({
+    buckets: { biz: READY_BIZ },
+    artifacts,
+    generatedAt: "2026-08-14T12:00:00.000Z",
+  });
+  assert.match(markdown, /## Business Model Canvas/);
+  assert.match(markdown, /## SWOT/);
+  assertNoJsonDump(markdown);
+
+  const brief = renderToStaticMarkup(
+    React.createElement(ExportBrief, {
+      meta: engagementMeta({ biz: READY_BIZ }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds,
+      artifacts,
+    }),
+  );
+  assert.match(brief, /bmc-grid/);
+  assert.match(brief, /SWOT/);
+
+  const print = renderToStaticMarkup(
+    React.createElement(ExportPrintDocument, {
+      meta: engagementMeta({ biz: READY_BIZ }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds,
+      artifacts,
+    }),
+  );
+  assert.match(print, /<h2[^>]*>Business Model Canvas/);
+  assert.match(print, /<h2[^>]*>SWOT/);
+});
+
 test("coverage and download name stay quiet and human", () => {
   assert.equal(coverageLine(1, 1), "1 of 4 evidence · 1 of 16 frameworks");
   assert.equal(INTAKE.length, 4);
