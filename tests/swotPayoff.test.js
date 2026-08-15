@@ -58,7 +58,7 @@ function renderSwot(artifact, extras = {}) {
 }
 
 function cellBlock(html, id) {
-  const marker = `swot-cell swot-${id}`;
+  const marker = `swot-cell swot-${id}"`;
   const start = html.indexOf(marker);
   assert.ok(start >= 0, `missing cell ${id}`);
   const next = html.indexOf("swot-cell swot-", start + marker.length);
