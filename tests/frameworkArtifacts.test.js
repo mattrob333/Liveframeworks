@@ -21,6 +21,7 @@ import {
   shouldReplaceCurrentArtifact,
 } from "../lib/agentContext.js";
 import { formatBizIntake } from "../lib/intake.js";
+import { ANSOFF_IGNORE_ANSWER_DIRECTION } from "../lib/frameworkRunFollowUp.js";
 import FrameworkArtifact from "../components/FrameworkArtifact.jsx";
 
 const claim = text => ({ text, basis: "known", confidence: "high", evidenceRefs: ["E1"] });
@@ -240,6 +241,37 @@ test("chat answers travel as authoritative clarifications and change the input f
   const withoutChats = buildContextSnapshot("fiveforces", { biz: "desc" }, {}, "Run it");
   assert.equal(withoutChats.userClarifications.length, 0);
   assert.notEqual(withChats.inputFingerprint, withoutChats.inputFingerprint);
+});
+
+test("a needs_input follow-up snapshot carries prior questions and the run direction", () => {
+  const prior = {
+    frameworkId: "ansoff",
+    status: "needs_input",
+    nextQuestions: [
+      "What is current market share in the beachhead segment?",
+      "What capacity is available for a penetration push?",
+    ],
+  };
+  const first = buildContextSnapshot("ansoff", { biz: "desc" }, { ansoff: prior }, "");
+  assert.deepEqual(first.priorQuestions, prior.nextQuestions);
+  assert.equal(first.manifest.priorQuestionCount, 2);
+  assert.equal(first.userClarifications.length, 0);
+
+  const directed = buildContextSnapshot(
+    "ansoff",
+    { biz: "desc" },
+    { ansoff: prior },
+    `Read the saved context, research the company, and create the Ansoff Matrix.\n\nAdditional direction: ${ANSOFF_IGNORE_ANSWER_DIRECTION}`,
+  );
+  assert.deepEqual(directed.priorQuestions, prior.nextQuestions);
+  assert.equal(directed.userClarifications.length, 1);
+  assert.equal(directed.userClarifications[0].statement, ANSOFF_IGNORE_ANSWER_DIRECTION);
+  assert.equal(directed.userClarifications[0].agent, "The Route Setter");
+  assert.notEqual(first.inputFingerprint, directed.inputFingerprint);
+
+  const emptyFirst = buildContextSnapshot("ansoff", { biz: "desc" }, {}, ANSOFF_IGNORE_ANSWER_DIRECTION);
+  assert.deepEqual(emptyFirst.priorQuestions, []);
+  assert.equal(emptyFirst.userClarifications.length, 0);
 });
 
 test("stale propagation reaches every transitive descendant and snapshots preserve legacy text", () => {

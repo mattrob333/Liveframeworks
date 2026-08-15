@@ -101,6 +101,8 @@ test("framework synthesis applies the ignore-answer follow-up to needs_input", (
   assert.match(source, /resolveNeedsInputDecision/);
   assert.match(source, /priorQuestionsFromContextJson/);
   assert.match(source, /finalizeArtifact\(parsed, frameworkId, now, \{ instruction, priorQuestions \}\)/);
+  assert.match(source, /PRIOR QUESTIONS FROM THE LAST RUN/);
+  assert.match(source, /Do not repeat priorQuestions/);
 });
 
 test("prior questions read from the engagement context snapshot", () => {
