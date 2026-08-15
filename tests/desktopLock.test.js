@@ -315,28 +315,44 @@ function driftlineSevens() {
   });
 }
 
-test("7S scorecard is seven shrinkable columns at desktop, not the shared 4-up", () => {
+test("7S scorecard wraps at a title-safe min, not seven 87px 1fr tracks", () => {
   const shared = cssRule(".artifact-scorecard");
   assert.match(shared, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
 
   const sevens = cssRule('[data-framework="sevens"] .artifact-scorecard');
-  assert.match(sevens, /grid-template-columns:repeat\(7,minmax\(0,1fr\)\)/);
+  const minMatch = sevens.match(/grid-template-columns:repeat\(auto-fit,minmax\((\d+)px,1fr\)\)/);
+  assert.ok(minMatch, "7S must auto-fit columns with a px min, not seven equal 1fr tracks");
+  const columnMin = Number(minMatch[1]);
+  // STRUCTURE at 12px mono + 12px cell padding needs ~96px; 148px also holds
+  // "independently" / "relationship" on Current/Target lines. Four 148px tracks
+  // plus 8px gaps still fit in the 657px 1280+chat pane, so all seven S-elements wrap to two rows.
+  assert.ok(columnMin >= 148, `7S column min ${columnMin}px cannot hold STRUCTURE at a word boundary`);
+  assert.ok(4 * columnMin + 24 <= 657, `7S column min ${columnMin}px cannot wrap seven S-elements into a 657px pane`);
   assert.match(sevens, /min-width:0/);
   assert.match(sevens, /align-items:stretch/);
-  assert.doesNotMatch(sevens, /repeat\(4,/);
+  assert.doesNotMatch(sevens, /repeat\(7,/);
   assert.doesNotMatch(sevens, /repeat\(7,1fr\)/);
+  assert.doesNotMatch(sevens, /minmax\(0,1fr\)/);
 });
 
-test("7S cells wrap; overflow cannot slice a Target word at ~1280", () => {
+test("7S titles and Target/Current lines wrap at word boundaries only", () => {
+  const title = cssRule('[data-framework="sevens"] .artifact-section-title');
+  assert.match(title, /overflow-wrap:normal/);
+  assert.match(title, /word-break:normal/);
+  assert.doesNotMatch(title, /overflow-wrap:break-word/);
+  assert.doesNotMatch(title, /word-break:break-all/);
+  assert.doesNotMatch(title, /overflow-wrap:anywhere/);
+
   const cell = cssRule('[data-framework="sevens"] .artifact-section');
   assert.match(cell, /overflow:visible/);
   assert.match(cell, /min-width:0/);
   assert.doesNotMatch(cell, /overflow:hidden/);
 
   const body = cssRule('[data-framework="sevens"] .artifact-section-content');
-  assert.match(body, /overflow-wrap:break-word/);
+  assert.match(body, /overflow-wrap:normal/);
   assert.match(body, /word-break:normal/);
   assert.match(body, /overflow:visible/);
+  assert.doesNotMatch(body, /overflow-wrap:break-word/);
   assert.doesNotMatch(body, /word-break:break-all/);
   assert.doesNotMatch(body, /overflow:hidden/);
 
@@ -345,14 +361,15 @@ test("7S cells wrap; overflow cannot slice a Target word at ~1280", () => {
   assert.match(details, /min-width:0/);
 
   const line = cssRule('[data-framework="sevens"] .artifact-details span');
-  assert.match(line, /overflow-wrap:break-word/);
+  assert.match(line, /overflow-wrap:normal/);
   assert.match(line, /word-break:normal/);
   assert.match(line, /overflow:visible/);
+  assert.doesNotMatch(line, /overflow-wrap:break-word/);
   assert.doesNotMatch(line, /overflow:hidden/);
   assert.doesNotMatch(line, /word-break:break-all/);
 });
 
-test("desktop ~1280 keeps seven 7S columns; phones may stack at 700px", () => {
+test("desktop ~1280 keeps all seven 7S elements via wrap; phones may stack at 700px", () => {
   assert.doesNotMatch(screenCss, /@media\(max-width:1280px\)/);
   const phone = mediaBlock("max-width:700px");
   assert.match(phone, /\[data-framework="sevens"\] \.artifact-scorecard\{grid-template-columns:1fr\}/);
