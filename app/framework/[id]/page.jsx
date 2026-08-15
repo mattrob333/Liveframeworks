@@ -1,9 +1,7 @@
-"use client";
-
-import { use } from "react";
 import FrameworkWorkspace from "@/components/FrameworkWorkspace";
+import { readSignedOrgInstall } from "@/lib/server/orgInstall";
 
-export default function FrameworkPage(props) {
-  const params = use(props.params);
-  return <FrameworkWorkspace id={params?.id} />;
+export default async function FrameworkPage({ params }) {
+  const { id } = await params;
+  return <FrameworkWorkspace id={id} orgInstall={id === "toc" ? readSignedOrgInstall() : ""} />;
 }
