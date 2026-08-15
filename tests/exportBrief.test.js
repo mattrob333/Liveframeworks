@@ -300,3 +300,81 @@ test("print document lists Industry Map in four-band heading sequence", () => {
   assert.match(html, /href="https:\/\/stripe\.com\/?"/);
   assert.doesNotMatch(html, /href="https:\/\/appdirect\.com"/);
 });
+
+function tocWithConstraint(text) {
+  return createFrameworkArtifact("toc", {
+    status: "complete",
+    payload: {
+      constraint: {
+        text,
+        type: "capacity",
+        location: "Founder desk",
+        throughputMetric: "quotes per week",
+        basis: "known",
+        confidence: "high",
+        evidenceRefs: [],
+      },
+    },
+  });
+}
+
+test("ToC constraint is one line on the on-screen brief lede; no ToC means no line", () => {
+  const constraint = "Wholesale quotes bottleneck through the founder.";
+  const withToc = renderToStaticMarkup(
+    React.createElement(ExportBrief, {
+      meta: engagementMeta({ biz: READY_BIZ }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds: ["bmc"],
+      artifacts: { bmc: completeBmcArtifact(), toc: tocWithConstraint(constraint) },
+    }),
+  );
+  assert.match(withToc, /We sell compliance software/);
+  assert.match(withToc, /export-constraint/);
+  assert.match(withToc, /Wholesale quotes bottleneck through the founder\./);
+  assert.doesNotMatch(withToc, /Today's limiting factor/);
+
+  const withoutToc = renderToStaticMarkup(
+    React.createElement(ExportBrief, {
+      meta: engagementMeta({ biz: READY_BIZ }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds: ["bmc"],
+      artifacts: { bmc: completeBmcArtifact() },
+    }),
+  );
+  assert.match(withoutToc, /We sell compliance software/);
+  assert.doesNotMatch(withoutToc, /export-constraint/);
+  assert.doesNotMatch(withoutToc, /Wholesale quotes bottleneck/);
+
+  const emptyToc = renderToStaticMarkup(
+    React.createElement(ExportBrief, {
+      meta: engagementMeta({ biz: READY_BIZ }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds: ["bmc"],
+      artifacts: { bmc: completeBmcArtifact(), toc: createFrameworkArtifact("toc") },
+    }),
+  );
+  assert.doesNotMatch(emptyToc, /export-constraint/);
+});
+
+test("print brief lede also carries the ToC constraint when present", () => {
+  const constraint = "Wholesale quotes bottleneck through the founder.";
+  const withToc = renderToStaticMarkup(
+    React.createElement(ExportPrintDocument, {
+      meta: engagementMeta({ biz: READY_BIZ }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds: ["bmc"],
+      artifacts: { bmc: completeBmcArtifact(), toc: tocWithConstraint(constraint) },
+    }),
+  );
+  assert.match(withToc, /Wholesale quotes bottleneck through the founder\./);
+
+  const withoutToc = renderToStaticMarkup(
+    React.createElement(ExportPrintDocument, {
+      meta: engagementMeta({ biz: READY_BIZ }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds: ["bmc"],
+      artifacts: { bmc: completeBmcArtifact() },
+    }),
+  );
+  assert.doesNotMatch(withoutToc, /Wholesale quotes bottleneck/);
+});

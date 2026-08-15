@@ -2,7 +2,7 @@
 
 import React from "react";
 import { FW } from "@/lib/frameworks";
-import { normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
+import { currentConstraintLine, normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
 import FrameworkArtifact from "@/components/FrameworkArtifact";
 import { formatBriefDate } from "@/lib/exportBrief";
 
@@ -16,6 +16,7 @@ export default function ExportBrief({
 }) {
   const date = formatBriefDate(generatedAt);
   const lede = String(meta.paragraph || "").trim();
+  const constraint = currentConstraintLine(artifacts.toc);
 
   return (
     <article className="export-brief">
@@ -23,6 +24,7 @@ export default function ExportBrief({
         <h1>{meta.title}</h1>
         {date && <p className="export-date">{date}</p>}
         {lede && <p className="export-engagement">{lede}</p>}
+        {constraint && <p className="export-constraint">{constraint}</p>}
       </header>
 
       {completeIds.length === 0 && (
