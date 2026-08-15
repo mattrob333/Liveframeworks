@@ -396,7 +396,7 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
   background:var(--panel);
 }
 .ansoff-axis{
-  color:var(--amber);
+  color:var(--line);
   font-size:12px;
   font-weight:600;
   letter-spacing:.1em;

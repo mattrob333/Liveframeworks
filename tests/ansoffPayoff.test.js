@@ -7,6 +7,7 @@ import { createFrameworkArtifact } from "../lib/frameworkArtifacts.js";
 import FrameworkArtifact from "../components/FrameworkArtifact.jsx";
 
 const ARTIFACT = readFileSync("components/FrameworkArtifact.jsx", "utf8");
+const CSS = readFileSync("app/globals.css", "utf8");
 const WORKSPACE = readFileSync("components/FrameworkWorkspace.jsx", "utf8");
 const PAGE = readFileSync("app/framework/[id]/page.jsx", "utf8");
 
@@ -84,6 +85,8 @@ test("filled Ansoff reads as a 2×2 from payload.quadrants, not two findings car
   assert.match(html, /New products/);
   assert.match(html, /Existing markets/);
   assert.match(html, /New markets/);
+  assert.match(CSS, /\.ansoff-axis\{[^}]*color:var\(--line\)/);
+  assert.doesNotMatch(CSS, /\.ansoff-axis\{[^}]*color:var\(--amber\)/);
 
   const order = [
     html.indexOf("Open Market Penetration"),
