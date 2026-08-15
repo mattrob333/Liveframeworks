@@ -232,6 +232,11 @@ test("print CSS is a white letter document, not a canvas screenshot", () => {
   assert.doesNotMatch(print, /10% 10% 10%/);
   assert.doesNotMatch(print, /bmc-kp/);
   assert.doesNotMatch(print, /F4F0E6/);
+  assert.match(print, /\.export-print-doc li\{[^}]*overflow-wrap:normal/);
+  assert.match(print, /\.export-print-doc li\{[^}]*word-break:normal/);
+  assert.match(print, /\.export-print-sec h3\{[^}]*overflow-wrap:normal/);
+  assert.doesNotMatch(print, /overflow-wrap:break-word/);
+  assert.doesNotMatch(print, /word-break:break-all/);
 });
 
 test("print document stacks BMC as headed sections, not a nine-box", () => {

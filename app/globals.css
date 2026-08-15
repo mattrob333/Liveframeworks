@@ -130,11 +130,12 @@ h1{font-size:clamp(22px,4vw,36px);font-weight:600;margin:12px 0 10px;line-height
 
 .output{background:var(--bg);border:1px solid var(--faint);padding:16px 18px;font-size:12.5px;white-space:pre-wrap;line-height:1.6}
 
-/* BMC nine-box template. minmax(0,1fr) lets columns shrink at ~1280 so words wrap. */
+/* BMC nine-box template. minmax(0,1fr) lets columns shrink at ~1280.
+   Wrap at word boundaries only — break-word was still splitting Driftline words. */
 .bmc-grid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:repeat(3,minmax(90px,auto));gap:8px;min-width:0}
 .bmc-cell{border:1px solid var(--faint);background:var(--panel);padding:9px 11px;min-width:0}
 .bmc-cell .t{font-size:12px;font-weight:600;color:var(--line)}
-.bmc-cell .d{font-size:14px;color:var(--line);margin-top:4px;line-height:1.45;min-width:0;overflow-wrap:break-word;word-break:normal}
+.bmc-cell .d{font-size:14px;color:var(--line);margin-top:4px;line-height:1.45;min-width:0;overflow-wrap:normal;word-break:normal}
 .bmc-kp{grid-column:1/3;grid-row:1/3}.bmc-ka{grid-column:3/5;grid-row:1/2}
 .bmc-kr{grid-column:3/5;grid-row:2/3}.bmc-vp{grid-column:5/7;grid-row:1/3}
 .bmc-cr{grid-column:7/9;grid-row:1/2}.bmc-ch{grid-column:7/9;grid-row:2/3}
@@ -366,13 +367,14 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
 .artifact-capability-summary{display:block;margin-top:3px;color:var(--dim);font-size:12px;font-weight:400}
 .bmc-cell{cursor:pointer;text-align:left;color:var(--line);transition:border-color .18s,background .18s;display:flex;flex-direction:column;align-items:stretch;min-width:0}
 .bmc-cell:hover{border-color:var(--dim)}
-.bmc-cell .d{font-size:14px;color:var(--line);min-height:0;min-width:0;max-width:100%;overflow:visible;overflow-wrap:break-word;word-break:normal}
-.bmc-cell .t{text-transform:uppercase;letter-spacing:.04em;color:var(--line);font-size:12px;overflow-wrap:break-word}
+.bmc-cell .d{font-size:14px;color:var(--line);min-height:0;min-width:0;max-width:100%;overflow:visible;overflow-wrap:normal;word-break:normal}
+.bmc-cell .t{text-transform:uppercase;letter-spacing:.04em;color:var(--line);font-size:12px;overflow-wrap:normal;word-break:normal}
 /* Nine-box stays a nine-box. Rows may grow so overflow:hidden cannot slice a word. */
 .framework-artifact-canvas{grid-template-rows:minmax(210px,auto) minmax(210px,auto) minmax(180px,auto);min-width:0}
 .framework-artifact-canvas .bmc-cell{overflow:visible;min-width:0}
 .artifact-digest{gap:8px;min-width:0;width:100%;max-width:100%}
-.artifact-digest li{font-size:14px;line-height:1.55;padding-left:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:break-word;word-break:normal;min-width:0}
+/* G2: wrap at word boundaries only. Line-clamp + overflow:hidden can slice a word. */
+.artifact-digest li{font-size:14px;line-height:1.55;padding-left:12px;overflow:visible;overflow-wrap:normal;word-break:normal;min-width:0}
 
 /* Industry Map: four stacked bands (Terrain / Players / Flows / Time).
    display:contents flattened nine cards into one 12-col grid — a 3-up tile. */
@@ -436,6 +438,54 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
 }
 .ansoff-vector{margin-top:8px}
 .ansoff-vector .artifact-section{min-height:0}
+
+/* SWOT payoff: two 2×2 frames (quadrants + TOWS cross), not a 2-col stack. */
+.swot-matrix{display:flex;flex-direction:column;gap:16px;min-width:0}
+.swot-matrix-frame{
+  display:grid;
+  grid-template-columns:minmax(40px,auto) minmax(0,1fr) minmax(0,1fr);
+  grid-template-rows:auto minmax(148px,auto) minmax(148px,auto);
+  border:1px solid var(--faint);
+  background:var(--panel);
+}
+.swot-axis{
+  color:var(--line);
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  padding:10px 12px;
+  overflow-wrap:normal;
+  word-break:normal;
+}
+.swot-axis-col{text-align:center;border-left:1px solid var(--faint);border-bottom:1px solid var(--faint)}
+.swot-axis-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-top:1px solid var(--faint);
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+}
+.swot-axis-corner{border-bottom:1px solid var(--faint)}
+.swot-cell.panel,.swot-cell.artifact-section{
+  min-width:0;
+  min-height:148px;
+  margin:0;
+  border:0;
+  border-top:1px solid var(--faint);
+  border-left:1px solid var(--faint);
+  border-radius:0;
+  background:var(--panel);
+  padding:12px;
+  overflow:visible;
+}
+.swot-cell .t,.swot-cell .d,.swot-cell .artifact-digest li{
+  overflow:visible;
+  overflow-wrap:normal;
+  word-break:normal;
+  min-width:0;
+}
 
 .muted-copy{color:var(--dim);font-size:12px}
 
@@ -543,8 +593,8 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
   .export-print-fw h2{font-size:16px;font-weight:600;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid #111;color:#111}
   .export-print-fw > p{margin:0 0 12px;color:#111}
   .export-print-sec{margin-top:14px}
-  .export-print-sec h3{font-size:13px;font-weight:600;margin:0 0 6px;color:#111}
+  .export-print-sec h3{font-size:13px;font-weight:600;margin:0 0 6px;color:#111;overflow-wrap:normal;word-break:normal}
   .export-print-doc ul{margin:0;padding:0 0 0 1.1em;color:#111}
-  .export-print-doc li{margin:0 0 3px}
+  .export-print-doc li{margin:0 0 3px;overflow-wrap:normal;word-break:normal}
   .export-print-doc a{color:#111;text-decoration:underline}
 }

@@ -32,12 +32,26 @@ const INDUSTRY_MAP_PRINT_ORDER = [
   "future",
 ];
 
+// Four quadrant headings, then the TOWS cross labeled so the pairing is obvious.
+const SWOT_PRINT_ORDER = [
+  "strengths",
+  "weaknesses",
+  "opportunities",
+  "threats",
+  "so",
+  "st",
+  "wo",
+  "wt",
+];
+
 function sectionOrder(frameworkId, sections) {
   const preferred = frameworkId === "bmc"
     ? BMC_PRINT_ORDER
     : frameworkId === "industrymap"
       ? INDUSTRY_MAP_PRINT_ORDER
-      : [];
+      : frameworkId === "swot"
+        ? SWOT_PRINT_ORDER
+        : [];
   if (!preferred.length) return sections;
   const byId = Object.fromEntries(sections.map(section => [section.id, section]));
   return preferred.map(id => byId[id]).filter(Boolean);
