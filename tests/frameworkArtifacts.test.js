@@ -357,6 +357,11 @@ test("Industry Map is four bands on one 12-column grid, not a 2-col masonry", ()
     React.createElement(FrameworkArtifact, { artifact, frameworkId: "industrymap", brief: true, onSelect: () => {} }),
   );
   assert.match(html, /industry-map/);
+  assert.equal((html.match(/industry-map-band /g) || []).length, 4);
+  assert.match(html, /industry-map-band-label">Terrain</);
+  assert.match(html, /industry-map-band-label">Players</);
+  assert.match(html, /industry-map-band-label">Flows</);
+  assert.match(html, /industry-map-band-label">Time</);
   assert.match(html, /industry-map-terrain/);
   assert.match(html, /industry-map-players/);
   assert.match(html, /industry-map-flows/);

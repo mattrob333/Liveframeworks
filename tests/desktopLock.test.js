@@ -34,24 +34,37 @@ const PILOT = {
 
 function cssRule(selector) {
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const matches = [...screenCss.matchAll(new RegExp(`${escaped}\\{([^}]+)\\}`, "g"))];
+  const matches = [...screenCss.matchAll(new RegExp(`${escaped}(?![\\w-])\\{([^}]+)\\}`, "g"))];
   assert.ok(matches.length, `missing CSS rule ${selector}`);
   return matches.map(match => match[1]).join(";");
 }
 
 function mediaBlock(query) {
-  const start = screenCss.indexOf(`@media(${query})`);
-  assert.ok(start >= 0, `missing @media(${query})`);
-  const open = screenCss.indexOf("{", start);
-  let depth = 0;
-  for (let i = open; i < screenCss.length; i += 1) {
-    if (screenCss[i] === "{") depth += 1;
-    if (screenCss[i] === "}") {
-      depth -= 1;
-      if (depth === 0) return screenCss.slice(open + 1, i);
+  const needle = `@media(${query})`;
+  const blocks = [];
+  let from = 0;
+  while (from < screenCss.length) {
+    const start = screenCss.indexOf(needle, from);
+    if (start < 0) break;
+    const open = screenCss.indexOf("{", start);
+    let depth = 0;
+    let end = -1;
+    for (let i = open; i < screenCss.length; i += 1) {
+      if (screenCss[i] === "{") depth += 1;
+      if (screenCss[i] === "}") {
+        depth -= 1;
+        if (depth === 0) {
+          end = i;
+          break;
+        }
+      }
     }
+    if (end < 0) break;
+    blocks.push(screenCss.slice(open + 1, end));
+    from = end + 1;
   }
-  return "";
+  assert.ok(blocks.length, `missing @media(${query})`);
+  return blocks.join("\n");
 }
 
 function driftlineBmc() {
@@ -175,5 +188,84 @@ test("/export BMC stays a nine-box on screen", () => {
   assert.match(html, /Wholesale accounts: high-touch/);
   assert.match(html, /26 independent/);
   assert.match(html, /one-off retail/);
+  assert.doesNotMatch(html, /grid2/);
+});
+
+test("Industry Map CSS is four stacked bands, not a flattened 3-up tile", () => {
+  const map = cssRule(".industry-map");
+  assert.match(map, /flex-direction:column/);
+  assert.doesNotMatch(map, /grid-template-columns:repeat\(12/);
+  assert.doesNotMatch(map, /repeat\(3,/);
+
+  const band = cssRule(".industry-map-band");
+  assert.match(band, /grid-template-columns:repeat\(12,minmax\(0,1fr\)\)/);
+  assert.doesNotMatch(band, /display:contents/);
+  assert.doesNotMatch(band, /repeat\(3,/);
+
+  const label = cssRule(".industry-map-band-label");
+  assert.match(label, /grid-column:1\/-1/);
+
+  const phone = mediaBlock("max-width:800px");
+  assert.match(phone, /\.industry-map-band\{grid-template-columns:1fr\}/);
+  assert.doesNotMatch(screenCss, /@media\(max-width:1280px\)/);
+});
+
+test("Industry Map markup is Terrain / Players / Flows / Time — nine cells, four bands", () => {
+  const html = renderToStaticMarkup(
+    React.createElement(FrameworkArtifact, {
+      artifact: createFrameworkArtifact("industrymap"),
+      frameworkId: "industrymap",
+      brief: true,
+      onSelect: () => {},
+    }),
+  );
+  const bands = html.match(/industry-map-band /g) || [];
+  assert.equal(bands.length, 4);
+  assert.match(html, /industry-map-band-label">Terrain</);
+  assert.match(html, /industry-map-band-label">Players</);
+  assert.match(html, /industry-map-band-label">Flows</);
+  assert.match(html, /industry-map-band-label">Time</);
+  assert.match(html, /industry-map-terrain/);
+  assert.match(html, /industry-map-players/);
+  assert.match(html, /industry-map-flows/);
+  assert.match(html, /industry-map-time/);
+  assert.match(html, /industry-map-segments/);
+  assert.match(html, /industry-map-glossary/);
+  assert.match(html, /industry-map-expertsAndSources/);
+  assert.match(html, /industry-map-technologyFlows/);
+  assert.match(html, /industry-map-economicFlows/);
+  assert.match(html, /industry-map-personnelFlows/);
+  assert.match(html, /industry-map-history/);
+  assert.match(html, /industry-map-future/);
+  assert.doesNotMatch(html, /grid2/);
+  assert.doesNotMatch(html, /artifact-sections/);
+  assert.doesNotMatch(html, /artifact-force-map/);
+});
+
+test("/export Industry Map stays four bands; BMC stays a nine-box", () => {
+  const html = renderToStaticMarkup(
+    React.createElement(ExportBrief, {
+      meta: engagementMeta({
+        biz: formatBizIntake({
+          url: "https://driftline.example",
+          paragraph: "Small-batch coffee.",
+        }),
+      }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds: ["bmc", "industrymap"],
+      artifacts: {
+        bmc: driftlineBmc(),
+        industrymap: createFrameworkArtifact("industrymap"),
+      },
+    }),
+  );
+  assert.match(html, /bmc-grid/);
+  assert.match(html, /bmc-kp/);
+  assert.match(html, /bmc-vp/);
+  assert.equal((html.match(/industry-map-band /g) || []).length, 4);
+  assert.match(html, /industry-map-band-label">Terrain</);
+  assert.match(html, /industry-map-band-label">Players</);
+  assert.match(html, /industry-map-band-label">Flows</);
+  assert.match(html, /industry-map-band-label">Time</);
   assert.doesNotMatch(html, /grid2/);
 });

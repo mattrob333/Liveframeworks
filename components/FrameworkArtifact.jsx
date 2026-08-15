@@ -294,10 +294,10 @@ function SectionView({ artifact, definition, onSelect, selectedSectionId }) {
 }
 
 const INDUSTRY_MAP_BANDS = [
-  { id: "terrain", items: ["segments", "glossary", "expertsAndSources"] },
-  { id: "players", items: ["players"] },
-  { id: "flows", items: ["technologyFlows", "economicFlows", "personnelFlows"] },
-  { id: "time", items: ["history", "future"] },
+  { id: "terrain", label: "Terrain", items: ["segments", "glossary", "expertsAndSources"] },
+  { id: "players", label: "Players", items: ["players"] },
+  { id: "flows", label: "Flows", items: ["technologyFlows", "economicFlows", "personnelFlows"] },
+  { id: "time", label: "Time", items: ["history", "future"] },
 ];
 
 function IndustryMapView({ artifact, definition, onSelect, selectedSectionId }) {
@@ -306,6 +306,7 @@ function IndustryMapView({ artifact, definition, onSelect, selectedSectionId }) 
     <div className="industry-map">
       {INDUSTRY_MAP_BANDS.map(band => (
         <div key={band.id} className={`industry-map-band industry-map-${band.id}`}>
+          <span className="industry-map-band-label">{band.label}</span>
           {band.items.map(id => byId[id] && (
             <SelectableSection
               key={id}
