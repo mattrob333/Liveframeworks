@@ -13,6 +13,7 @@ import {
   validateBizIntake,
   validateBucketSave,
 } from "../lib/intake.js";
+import { INTAKE } from "../lib/frameworks.js";
 import { validateApiKey } from "../lib/apiKey.js";
 import { getArtifactJsonSchema } from "../lib/frameworkArtifacts.js";
 import { hasHomeCanvas, resolveHomeMode, shouldShowNewCompany } from "../lib/homeMode.js";
@@ -70,7 +71,15 @@ test("formatted biz buckets round-trip and count as ready", () => {
   assert.equal(parsed.products, "");
   assert.equal(parsed.team, "");
   assert.equal(parsed.unusual, "");
+  assert.equal(parsed.inboxes, "");
+  assert.equal(parsed.systems, "");
+  assert.equal(parsed.vendors, "");
+  assert.equal(parsed.productionFacts, "");
+  assert.equal(parsed.priceSheet, "");
   assert.doesNotMatch(formatted, /Main products/);
+  assert.doesNotMatch(formatted, /Named inboxes/);
+  assert.doesNotMatch(formatted, /Key vendors/);
+  assert.doesNotMatch(formatted, /Standing price sheet/);
   assert.equal(isBizIntakeReady(formatted), true);
   assert.equal(isBizIntakeReady("A paragraph with no website"), false);
   const loose = parseBizIntake("See https://acme.test for the site.\nWe audit ledgers.");
@@ -95,8 +104,158 @@ test("formatBizIntake keeps products, team, and unusual from the coffee pack", (
   assert.equal(again.products, parsed.products);
   assert.equal(again.team, parsed.team);
   assert.equal(again.unusual, parsed.unusual);
+  assert.equal(parsed.inboxes, "");
+  assert.equal(parsed.systems, "");
+  assert.equal(parsed.vendors, "");
+  assert.equal(parsed.productionFacts, "");
+  assert.equal(parsed.priceSheet, "");
+  assert.doesNotMatch(formatted, /Named inboxes/);
+  assert.doesNotMatch(formatted, /Key systems/);
+  assert.doesNotMatch(formatted, /Key vendors/);
+  assert.doesNotMatch(formatted, /Production-rate/);
+  assert.doesNotMatch(formatted, /Standing price sheet/);
   assert.equal(isBizIntakeReady(formatted), true);
+}
+
+test("old demo biz packs still parse; new optional labels stay empty", () => {
+  for (const file of [
+    path.join("demo-data", "coffee", "driftline-biz.md"),
+    path.join("demo-data", "garage-doors", "ironwood-biz.md"),
+    path.join("demo-data", "saas", "quartermast-biz.md"),
+  ]) {
+    const parsed = parseBizIntake(readFileSync(file, "utf8"));
+    assert.equal(isBizIntakeReady(readFileSync(file, "utf8")), true, file);
+    assert.ok(parsed.url, file);
+    assert.ok(parsed.paragraph, file);
+    assert.ok(parsed.products, file);
+    assert.equal(parsed.inboxes, "", file);
+    assert.equal(parsed.systems, "", file);
+    assert.equal(parsed.vendors, "", file);
+    assert.equal(parsed.productionFacts, "", file);
+    assert.equal(parsed.priceSheet, "", file);
+  }
 });
+
+test("new labeled biz paste round-trips; URL + paragraph only stays ready", () => {
+  const labeled = [
+    "BUSINESS DESCRIPTION — Acme",
+    "",
+    "Website URL: https://acme.test",
+    "In their own words, what the business does: We audit ledgers for factories.",
+    "Main products / services: Ledger audits",
+    "Team size (rough): 4",
+    "Anything unusual worth knowing: Founder still signs every exception.",
+    "Named inboxes / channels: Slack workspace acme.slack.com; general-orders inbox orders@acme.test; Shopify wholesale form /pages/wholesale",
+    "Key systems (names and account IDs): Shopify store unset; QuickBooks unset",
+    "Key vendors: carrier unknown; packaging supplier unknown",
+    "Production-rate / system facts: packer output unknown; production is paper",
+    "Standing price sheet location: shared spreadsheet, not published",
+  ].join("\n");
+
+  const parsed = parseBizIntake(labeled);
+  assert.equal(parsed.url, "https://acme.test/");
+  assert.equal(parsed.paragraph, "We audit ledgers for factories.");
+  assert.equal(parsed.products, "Ledger audits");
+  assert.equal(parsed.team, "4");
+  assert.equal(parsed.unusual, "Founder still signs every exception.");
+  assert.match(parsed.inboxes, /orders@acme\.test/);
+  assert.match(parsed.systems, /Shopify store unset/);
+  assert.match(parsed.vendors, /carrier unknown/);
+  assert.match(parsed.productionFacts, /packer output unknown/);
+  assert.match(parsed.priceSheet, /shared spreadsheet/);
+  assert.equal(isBizIntakeReady(labeled), true);
+
+  const formatted = formatBizIntake(parsed);
+  const again = parseBizIntake(formatted);
+  assert.deepEqual(again, parsed);
+
+  const urlOnly = validateBizIntake({ url: "https://acme.test", paragraph: "We audit ledgers." });
+  assert.equal(urlOnly.ok, true);
+  assert.equal(urlOnly.inboxes, "");
+  assert.equal(urlOnly.vendors, "");
+  assert.equal(urlOnly.priceSheet, "");
+  const urlOnlyFormatted = formatBizIntake(urlOnly);
+  assert.doesNotMatch(urlOnlyFormatted, /Named inboxes/);
+  assert.doesNotMatch(urlOnlyFormatted, /Key vendors/);
+  assert.equal(isBizIntakeReady(urlOnlyFormatted), true);
+
+  const store = {};
+  const uploaded = applyUploadedFiles("biz", [{ name: "acme-biz.md", text: labeled }], {
+    getBucket: key => store[key] || "",
+    setBucket: (key, value) => {
+      store[key] = value;
+      return { ok: true };
+    },
+  });
+  assert.equal(uploaded.ok, true);
+  assert.match(store.biz, /Named inboxes \/ channels: Slack workspace acme\.slack\.com/);
+  assert.match(store.biz, /Standing price sheet location: shared spreadsheet/);
+  assert.equal(isBizIntakeReady(store.biz), true);
+});
+
+test("new biz labels are optional prompts, not validation gates", () => {
+  const ready = validateBizIntake({ url: "https://acme.test", paragraph: "We audit ledgers." });
+  assert.equal(ready.ok, true);
+  assert.equal(isBizIntakeReady(formatBizIntake(ready)), true);
+
+  const withPrompts = validateBizIntake({
+    url: "https://acme.test",
+    paragraph: "We audit ledgers.",
+    inboxes: "orders@acme.test",
+    vendors: "carrier unknown",
+  });
+  assert.equal(withPrompts.ok, true);
+  assert.equal(withPrompts.inboxes, "orders@acme.test");
+  assert.equal(withPrompts.vendors, "carrier unknown");
+});
+
+test("intake stays four buckets; guides and templates ask the §7 families", () => {
+  assert.deepEqual(INTAKE.map(source => source.key), ["biz", "leadership", "calls", "org"]);
+
+  const biz = INTAKE.find(source => source.key === "biz");
+  assert.match(biz.guide.join("\n"), /inboxes and channels/);
+  assert.match(biz.guide.join("\n"), /key systems and account IDs/);
+  assert.match(biz.guide.join("\n"), /key vendors/);
+  assert.match(biz.guide.join("\n"), /standing price sheet/);
+  assert.match(biz.template, /Named inboxes \/ channels:/);
+  assert.match(biz.template, /Key systems \(names and account IDs\):/);
+  assert.match(biz.template, /Key vendors:/);
+  assert.match(biz.template, /Production-rate \/ system facts:/);
+  assert.match(biz.template, /Standing price sheet location:/);
+
+  const leadership = INTAKE.find(source => source.key === "leadership");
+  assert.match(leadership.guide.join("\n"), /account book/);
+  assert.match(leadership.guide.join("\n"), /approval envelopes/);
+  assert.match(leadership.guide.join("\n"), /vendor names/);
+  assert.match(leadership.template, /11\. Where does the account book live/);
+  assert.match(leadership.template, /12\. What are the approval envelopes/);
+  assert.match(leadership.template, /13\. Name the key vendors/);
+  assert.match(leadership.template, /14\. What production-rate or system facts/);
+
+  const org = INTAKE.find(source => source.key === "org");
+  assert.match(org.guide.join("\n"), /approval thresholds/);
+  assert.match(org.guide.join("\n"), /channels the org already uses/);
+  assert.match(org.template, /Approval thresholds \/ \$ gates:/);
+  assert.match(org.template, /Named channels the org already uses:/);
+
+  const calls = INTAKE.find(source => source.key === "calls");
+  assert.match(calls.guide.join("\n"), /inbox addresses, vendor names, and account names/);
+  assert.match(calls.template, /\{paste transcript\}/);
+  assert.doesNotMatch(calls.template, /Named inboxes/);
+});
+
+test("coffee leadership, org, and calls pastes still save without the new prompts", () => {
+  const leadership = readFileSync(path.join("demo-data", "coffee", "driftline-leadership-interviews.md"), "utf8");
+  const org = readFileSync(path.join("demo-data", "coffee", "driftline-org.md"), "utf8");
+  const calls = readFileSync(path.join("demo-data", "coffee", "driftline-calls.md"), "utf8");
+  assert.equal(validateBucketSave("leadership", leadership).ok, true);
+  assert.equal(validateBucketSave("org", org).ok, true);
+  assert.equal(validateBucketSave("calls", calls).ok, true);
+  assert.match(leadership, /10\. If a competitor wanted to kill you/);
+  assert.doesNotMatch(leadership, /11\. Where does the account book live/);
+  assert.match(org, /Where do decisions stall most:/);
+  assert.doesNotMatch(org, /Approval thresholds \/ \$ gates:/);
+}););
 
 test("applyUploadedFiles loads a pack file into a bucket without paste", () => {
   const biz = readFileSync(path.join("demo-data", "coffee", "driftline-biz.md"), "utf8");
@@ -121,6 +280,7 @@ test("applyUploadedFiles loads a pack file into a bucket without paste", () => {
   assert.match(store.biz, /Team size \(rough\):/);
   assert.match(store.biz, /Anything unusual worth knowing:/);
   assert.match(store.biz, /no dedicated wholesale owner/);
+  assert.doesNotMatch(store.biz, /Named inboxes/);
   assert.doesNotMatch(store.biz, /=== FILE:/);
   assert.equal(isBizIntakeReady(store.biz), true);
 
