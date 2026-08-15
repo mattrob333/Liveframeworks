@@ -51,6 +51,21 @@ before every push; push only to the designated dev branch; nothing merges to `ma
 > changed, log "all quiet, no action" and end. Escalate to Matt only for: a blocker no
 > agent can clear, all orders done, or anything destructive about to happen.
 
+## Standing amendments (2026-08-16, from the Ironwood commit storm)
+
+1. **Two-strike tool rule.** A tool or pipeline that fails the same way twice is a
+   BLOCKER to escalate to the Floor Lead — never a loop to grind. Six retries of the
+   same commit is a storm, not persistence. Name the failure, park the item, move on.
+2. **Large generated artifacts land once.** A reference dump (a brief, an export, a
+   transcript) goes into a PR in one commit. If the tooling cannot carry the payload,
+   that is a two-strike escalation — do not commit stubs, do not retry-spam, do not
+   split the file to sneak it through.
+3. **History is append-only on shared branches.** Never force-push, rebase, or delete
+   pushed commits on `dev/first-run` to "clean up" — every agent's clone breaks and the
+   cure is worse than the noise. Noisy-history prevention going forward: the Floor Lead
+   squash-merges any PR whose branch carries retry noise, so `dev/first-run` gets one
+   clean commit per concern regardless of how rough the side branch was.
+
 ## The human's part (Owner + Steward: Matt, for now)
 
 Full manual: the Instinct repo's `docs/ideas/operators-manual.md`. The short version:
