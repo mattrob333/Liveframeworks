@@ -1,10 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createFrameworkArtifact } from "../lib/frameworkArtifacts.js";
-import { isSignedOrgInstallRoster, orgInstallRoster, showTocStaleBannerBetweenHeroAndRoster, tocConstraintHero } from "../lib/tocPayoff.js";
+import { isSignedOrgInstallRoster, orgInstallForLoadedCompany, orgInstallRoster, showTocStaleBannerBetweenHeroAndRoster, tocConstraintHero } from "../lib/tocPayoff.js";
+import { readSignedOrgInstall, readSignedOrgInstalls } from "../lib/server/orgInstall.js";
 import { TocConstraintHero, TocRoster } from "../components/TocPayoff.jsx";
 import FrameworkArtifact from "../components/FrameworkArtifact.jsx";
 
@@ -179,12 +180,13 @@ test("ToC argument stays reachable after the constraint is the hero", () => {
 
 test("workspace wires hero then roster then the existing ToC argument", () => {
   assert.match(WORKSPACE, /tocConstraintHero\(/);
+  assert.match(WORKSPACE, /orgInstallForLoadedCompany\(/);
   assert.match(WORKSPACE, /orgInstallRoster\(/);
   assert.match(WORKSPACE, /<TocConstraintHero hero=\{tocHero\} \/>/);
   assert.match(WORKSPACE, /<TocRoster roster=\{tocRoster\} \/>/);
   assert.match(WORKSPACE, /<h1>\{pageTitle\}<\/h1>\s*\{constraintLine && <p className="framework-constraint">\{constraintLine\}<\/p>\}/);
   assert.match(ARTIFACT, /section\.id !== "constraint"/);
-  assert.match(PAGE, /readSignedOrgInstall/);
+  assert.match(PAGE, /readSignedOrgInstalls/);
   assert.match(PAGE, /id === "toc"/);
 });
 
@@ -217,4 +219,39 @@ test("other maps and an unsigned ToC roster keep today's stale banner", () => {
     /<h1>\{pageTitle\}<\/h1>[\s\S]*?\{stale && <p className="framework-state-note">This map is stale\. Review it, or regenerate from the pipeline\.<\/p>\}/,
   );
   assert.match(WORKSPACE, /showTocStaleBannerBetweenHeroAndRoster\(\{ stale, hero: tocHero, roster: tocRoster \}\)/);
+  assert.match(WORKSPACE, /orgInstallForLoadedCompany\(/);
+});
+
+test("Ironwood and other non-Driftline companies do not receive the Driftline roster", () => {
+  const installs = readSignedOrgInstalls();
+  assert.deepEqual(Object.keys(installs), ["driftline"]);
+  assert.equal(installs.driftline, SIGNED_ORG_INSTALL);
+  assert.equal(readSignedOrgInstall("driftline"), SIGNED_ORG_INSTALL);
+  assert.equal(readSignedOrgInstall("ironwood"), "");
+  assert.equal(readSignedOrgInstall("quartermast"), "");
+  assert.equal(readSignedOrgInstall(), "");
+  assert.equal(existsSync("demo-data/garage-doors/ironwood-org-install.md"), false);
+
+  const driftlineMarkdown = orgInstallForLoadedCompany(installs, "driftline.example");
+  const ironwoodMarkdown = orgInstallForLoadedCompany(installs, "ironwooddoor.example");
+  const quartermastMarkdown = orgInstallForLoadedCompany(installs, "quartermast.example");
+  assert.equal(driftlineMarkdown, SIGNED_ORG_INSTALL);
+  assert.equal(ironwoodMarkdown, "");
+  assert.equal(quartermastMarkdown, "");
+  assert.equal(orgInstallForLoadedCompany(installs, ""), "");
+  assert.equal(orgInstallForLoadedCompany({}, "driftline.example"), "");
+
+  const driftlineRoster = orgInstallRoster(driftlineMarkdown);
+  const ironwoodRoster = orgInstallRoster(ironwoodMarkdown);
+  assert.equal(isSignedOrgInstallRoster(driftlineRoster), true);
+  assert.equal(driftlineRoster.router.name, "EXE ★ Chief of Staff");
+  assert.equal(isSignedOrgInstallRoster(ironwoodRoster), false);
+  assert.deepEqual(ironwoodRoster, { router: null, teams: [] });
+  assert.equal(JSON.stringify(ironwoodRoster).includes("Chief of Staff"), false);
+  assert.equal(JSON.stringify(ironwoodRoster).includes("Ledger & Bean"), false);
+  assert.equal(JSON.stringify(ironwoodRoster).includes("410 subscribers"), false);
+
+  const hero = tocConstraintHero(tocWithConstraint("Inbound answer capacity is the constraint."));
+  assert.equal(showTocStaleBannerBetweenHeroAndRoster({ stale: true, hero, roster: ironwoodRoster }), true);
+  assert.equal(showTocStaleBannerBetweenHeroAndRoster({ stale: true, hero, roster: driftlineRoster }), false);
 });
