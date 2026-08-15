@@ -1,14 +1,18 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createFrameworkArtifact } from "../lib/frameworkArtifacts.js";
-import { isSignedOrgInstallRoster, orgInstallRoster, showTocStaleBannerBetweenHeroAndRoster, tocConstraintHero } from "../lib/tocPayoff.js";
+import { companyHostname, parseBizIntake } from "../lib/intake.js";
+import { isSignedOrgInstallRoster, orgInstallForLoadedCompany, orgInstallRoster, showTocStaleBannerBetweenHeroAndRoster, tocConstraintHero } from "../lib/tocPayoff.js";
+import { readSignedOrgInstall, readSignedOrgInstalls } from "../lib/server/orgInstall.js";
 import { TocConstraintHero, TocRoster } from "../components/TocPayoff.jsx";
 import FrameworkArtifact from "../components/FrameworkArtifact.jsx";
 
 const SIGNED_ORG_INSTALL = readFileSync("demo-data/coffee/driftline-org-install.md", "utf8");
+const DRIFTLINE_BIZ = readFileSync("demo-data/coffee/driftline-biz.md", "utf8");
+const IRONWOOD_BIZ = readFileSync("demo-data/garage-doors/ironwood-biz.md", "utf8");
 const WORKSPACE = readFileSync("components/FrameworkWorkspace.jsx", "utf8");
 const ARTIFACT = readFileSync("components/FrameworkArtifact.jsx", "utf8");
 const PAGE = readFileSync("app/framework/[id]/page.jsx", "utf8");
@@ -179,12 +183,13 @@ test("ToC argument stays reachable after the constraint is the hero", () => {
 
 test("workspace wires hero then roster then the existing ToC argument", () => {
   assert.match(WORKSPACE, /tocConstraintHero\(/);
+  assert.match(WORKSPACE, /orgInstallForLoadedCompany\(orgInstalls, `\$\{hostname\}\\n\$\{getBucket\("biz"\)\}`\)/);
   assert.match(WORKSPACE, /orgInstallRoster\(/);
   assert.match(WORKSPACE, /<TocConstraintHero hero=\{tocHero\} \/>/);
   assert.match(WORKSPACE, /<TocRoster roster=\{tocRoster\} \/>/);
   assert.match(WORKSPACE, /<h1>\{pageTitle\}<\/h1>\s*\{constraintLine && <p className="framework-constraint">\{constraintLine\}<\/p>\}/);
   assert.match(ARTIFACT, /section\.id !== "constraint"/);
-  assert.match(PAGE, /readSignedOrgInstall/);
+  assert.match(PAGE, /readSignedOrgInstalls/);
   assert.match(PAGE, /id === "toc"/);
 });
 
@@ -217,4 +222,64 @@ test("other maps and an unsigned ToC roster keep today's stale banner", () => {
     /<h1>\{pageTitle\}<\/h1>[\s\S]*?\{stale && <p className="framework-state-note">This map is stale\. Review it, or regenerate from the pipeline\.<\/p>\}/,
   );
   assert.match(WORKSPACE, /showTocStaleBannerBetweenHeroAndRoster\(\{ stale, hero: tocHero, roster: tocRoster \}\)/);
+  assert.match(WORKSPACE, /orgInstallForLoadedCompany\(/);
+});
+
+test("Ironwood and other non-Driftline companies do not receive the Driftline roster", () => {
+  const installs = readSignedOrgInstalls();
+  assert.deepEqual(Object.keys(installs), ["driftline"]);
+  assert.equal(installs.driftline, SIGNED_ORG_INSTALL);
+  assert.equal(readSignedOrgInstall("driftline"), SIGNED_ORG_INSTALL);
+  assert.equal(readSignedOrgInstall("ironwood"), "");
+  assert.equal(readSignedOrgInstall("quartermast"), "");
+  assert.equal(readSignedOrgInstall(), "");
+  assert.equal(existsSync("demo-data/garage-doors/ironwood-org-install.md"), false);
+
+  const driftlineHost = companyHostname(parseBizIntake(DRIFTLINE_BIZ).url);
+  const ironwoodHost = companyHostname(parseBizIntake(IRONWOOD_BIZ).url);
+  assert.equal(driftlineHost, "driftline.example");
+  assert.equal(ironwoodHost, "ironwooddoor.example");
+
+  // Same hint the workspace passes: hostname plus the loaded biz bucket.
+  const driftlineMarkdown = orgInstallForLoadedCompany(installs, `${driftlineHost}\n${DRIFTLINE_BIZ}`);
+  const ironwoodMarkdown = orgInstallForLoadedCompany(installs, `${ironwoodHost}\n${IRONWOOD_BIZ}`);
+  const quartermastMarkdown = orgInstallForLoadedCompany(installs, "quartermast.example");
+  assert.equal(driftlineMarkdown, SIGNED_ORG_INSTALL);
+  assert.equal(ironwoodMarkdown, "");
+  assert.equal(quartermastMarkdown, "");
+  assert.equal(orgInstallForLoadedCompany(installs, ironwoodHost), "");
+  assert.equal(orgInstallForLoadedCompany(installs, IRONWOOD_BIZ), "");
+  assert.equal(orgInstallForLoadedCompany(installs, ""), "");
+  assert.equal(orgInstallForLoadedCompany({}, "driftline.example"), "");
+  assert.equal(orgInstallForLoadedCompany(SIGNED_ORG_INSTALL, ironwoodHost), "");
+
+  const driftlineRoster = orgInstallRoster(driftlineMarkdown);
+  const ironwoodRoster = orgInstallRoster(ironwoodMarkdown);
+  assert.equal(isSignedOrgInstallRoster(driftlineRoster), true);
+  assert.equal(driftlineRoster.router.name, "EXE ★ Chief of Staff");
+  assert.equal(isSignedOrgInstallRoster(ironwoodRoster), false);
+  assert.deepEqual(ironwoodRoster, { router: null, teams: [] });
+
+  const driftlineHtml = renderToStaticMarkup(React.createElement(TocRoster, { roster: driftlineRoster }));
+  const ironwoodHtml = renderToStaticMarkup(React.createElement(TocRoster, { roster: ironwoodRoster }));
+  const leaked = [
+    "EXE ★ Chief of Staff",
+    "WS ★ Desk Lead",
+    "Ledger &amp; Bean",
+    "Shopify shipping",
+    "Q4 packaging",
+    "410 subscribers",
+    "subscriber support",
+  ];
+  for (const text of leaked) {
+    assert.equal(driftlineHtml.includes(text), true, `Driftline ToC missing signed copy: ${text}`);
+    assert.equal(ironwoodHtml.includes(text), false, `Ironwood ToC leaked Driftline copy: ${text}`);
+  }
+  assert.equal(ironwoodHtml, "");
+
+  const hero = tocConstraintHero(tocWithConstraint(
+    "no after-hours/weekend coverage – is THE constraint: it gates volume into repair and install simultaneously and is already causing lost and near-lost deals.",
+  ));
+  assert.equal(showTocStaleBannerBetweenHeroAndRoster({ stale: true, hero, roster: ironwoodRoster }), true);
+  assert.equal(showTocStaleBannerBetweenHeroAndRoster({ stale: true, hero, roster: driftlineRoster }), false);
 });

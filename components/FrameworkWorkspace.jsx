@@ -21,7 +21,7 @@ import {
   resolveFrameworkWorkspaceView,
 } from "@/lib/frameworkWorkspaceView";
 import { normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
-import { orgInstallRoster, showTocStaleBannerBetweenHeroAndRoster, tocConstraintHero } from "@/lib/tocPayoff";
+import { orgInstallForLoadedCompany, orgInstallRoster, showTocStaleBannerBetweenHeroAndRoster, tocConstraintHero } from "@/lib/tocPayoff";
 import { playerLinkUrl } from "@/lib/playerLinks";
 import { companyHostname, parseBizIntake } from "@/lib/intake";
 import { agentOneLiner, filledCanvasNextMove } from "@/lib/nextSteps";
@@ -148,7 +148,7 @@ function RegionInspector({ artifact, section, onDiscuss }) {
   );
 }
 
-export default function FrameworkWorkspace({ id, home = false, orgInstall = "" }) {
+export default function FrameworkWorkspace({ id, home = false, orgInstalls = {} }) {
   const framework = FW[id];
   const [artifact, setArtifactState] = useState(null);
   const [latestRun, setLatestRun] = useState(null);
@@ -283,6 +283,7 @@ export default function FrameworkWorkspace({ id, home = false, orgInstall = "" }
     id === "toc" ? artifact : getArtifact("toc"),
   );
   const tocHero = id === "toc" && viewable ? tocConstraintHero(artifact) : null;
+  const orgInstall = orgInstallForLoadedCompany(orgInstalls, `${hostname}\n${getBucket("biz")}`);
   const tocRoster = tocHero ? orgInstallRoster(orgInstall) : { router: null, teams: [] };
   const questions = collectArtifactQuestions(artifact);
   const running = busy || (latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status));
