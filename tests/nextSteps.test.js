@@ -158,8 +158,9 @@ test("completed 16/16 run still shows one next-move on BMC, Industry Map, and th
     const filledHtml = renderNextMove(
       filledCanvasNextMove("map", { frameworkId: id, artifacts, buckets: readyBuckets }),
     );
+    const namePattern = FW[nextId].name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/'/g, "(?:'|&#x27;)");
     assert.match(filledHtml, /class="next-move"/);
-    assert.match(filledHtml, new RegExp(`Next: ${FW[nextId].name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
+    assert.match(filledHtml, new RegExp(`Next: ${namePattern}`));
     assert.match(filledHtml, new RegExp(`href="/pipeline\\?select=${nextId}"`));
     assert.equal((filledHtml.match(/class="btn"/g) || []).length, 1);
   }
