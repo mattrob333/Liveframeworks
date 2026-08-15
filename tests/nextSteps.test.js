@@ -1,9 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { FW } from "../lib/frameworks.js";
 import { getArtifactJsonSchema } from "../lib/frameworkArtifacts.js";
 import { formatBizIntake } from "../lib/intake.js";
-import { agentOneLiner, resolveNextMove, resolveNextSteps } from "../lib/nextSteps.js";
+import { resolveFrameworkWorkspaceView } from "../lib/frameworkWorkspaceView.js";
+import { agentOneLiner, filledCanvasNextMove, resolveNextMove, resolveNextSteps } from "../lib/nextSteps.js";
 
 const READY_BIZ = formatBizIntake({
   url: "https://example.com",
@@ -60,6 +64,67 @@ test("RACI's one next move is Export", () => {
 
 test("no recommended ready framework means no next move", () => {
   assert.equal(resolveNextMove({ frameworkId: "industrymap", artifacts: {}, buckets: {} }), null);
+});
+
+// Next chapter in ORDER. Same one-line + one-button as BMC.
+const WATERFALL_NEXT = [
+  { id: "fiveforces", nextId: "pestle" },
+  { id: "swot", nextId: "vrio" },
+  { id: "threehorizons", nextId: "blueocean" },
+  { id: "blueocean", nextId: "jtbd" },
+  { id: "sevens", nextId: "bsc" },
+];
+
+function renderNextMove(nextMove) {
+  if (!nextMove) return "";
+  return renderToStaticMarkup(
+    React.createElement(
+      "p",
+      { className: "next-move" },
+      React.createElement("span", null, nextMove.line),
+      React.createElement("a", { className: "btn", href: nextMove.href }, nextMove.action),
+    ),
+  );
+}
+
+test("Five Forces, SWOT, Three Horizons, Blue Ocean, and 7S show one next move when filled, none when not", () => {
+  for (const { id, nextId } of WATERFALL_NEXT) {
+    const filledArtifacts = { [id]: completeArtifact(id) };
+    const expected = {
+      href: `/pipeline?select=${nextId}`,
+      line: `Next: ${FW[nextId].name}`,
+      action: FW[nextId].name,
+    };
+
+    assert.equal(resolveFrameworkWorkspaceView(filledArtifacts[id], null, id), "map");
+    assert.deepEqual(
+      filledCanvasNextMove("map", { frameworkId: id, artifacts: filledArtifacts, buckets: readyBuckets }),
+      expected,
+    );
+
+    const filledHtml = renderNextMove(
+      filledCanvasNextMove("map", { frameworkId: id, artifacts: filledArtifacts, buckets: readyBuckets }),
+    );
+    assert.match(filledHtml, /class="next-move"/);
+    assert.match(filledHtml, new RegExp(`Next: ${FW[nextId].name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
+    assert.match(filledHtml, new RegExp(`href="/pipeline\\?select=${nextId}"`));
+    assert.equal((filledHtml.match(/class="btn"/g) || []).length, 1);
+
+    assert.equal(resolveFrameworkWorkspaceView(null, null, id), "empty");
+    assert.equal(filledCanvasNextMove("empty", { frameworkId: id, artifacts: filledArtifacts, buckets: readyBuckets }), null);
+    assert.equal(filledCanvasNextMove("map", { frameworkId: id, artifacts: {}, buckets: {} }), null);
+    assert.equal(filledCanvasNextMove("needs_input", { frameworkId: id, artifacts: filledArtifacts, buckets: readyBuckets }), null);
+    assert.equal(filledCanvasNextMove("legacy", { frameworkId: id, artifacts: filledArtifacts, buckets: readyBuckets }), null);
+    assert.equal(renderNextMove(filledCanvasNextMove("empty", { frameworkId: id, artifacts: filledArtifacts, buckets: readyBuckets })), "");
+  }
+});
+
+test("filled canvas still renders one next-move line and one button under the map", () => {
+  const workspace = readFileSync("components/FrameworkWorkspace.jsx", "utf8");
+  assert.match(workspace, /filledCanvasNextMove\(/);
+  assert.match(workspace, /<p className="next-move">\s*<span>\{nextMove\.line\}<\/span>\s*<Link className="btn" href=\{nextMove\.href\}>\{nextMove\.action\}<\/Link>\s*<\/p>/);
+  assert.doesNotMatch(workspace, /wakes/);
+  assert.doesNotMatch(workspace, /locked/);
 });
 
 test("agent one-liner is the first voice sentence", () => {
