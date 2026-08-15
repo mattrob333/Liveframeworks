@@ -15,6 +15,7 @@ import {
   FIRST_RUN_EMPTY_COPY,
   NEEDS_INPUT_COPY,
   collectArtifactQuestions,
+  filledCanvasConstraintLine,
   pipelineLauncherHref,
   resolveFrameworkWorkspaceView,
 } from "@/lib/frameworkWorkspaceView";
@@ -264,6 +265,10 @@ export default function FrameworkWorkspace({ id, home = false }) {
   const needsInput = view === "needs_input";
   const legacy = view === "legacy";
   const stale = artifact?.status === "stale" && viewable;
+  const constraintLine = filledCanvasConstraintLine(
+    view,
+    id === "toc" ? artifact : getArtifact("toc"),
+  );
   const questions = collectArtifactQuestions(artifact);
   const running = busy || (latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status));
   const pageTitle = hostname || "LiveFrameworks";
@@ -281,6 +286,7 @@ export default function FrameworkWorkspace({ id, home = false }) {
         <div className="artifact-column">
           <header className="framework-header">
             <h1>{pageTitle}</h1>
+            {constraintLine && <p className="framework-constraint">{constraintLine}</p>}
             <p className="framework-map-label">{framework.name}</p>
             {stale && <p className="framework-state-note">This map is stale. Review it, or regenerate from the pipeline.</p>}
             {needsInput && <p className="framework-state-note">This run is waiting on clarifying questions.</p>}

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { FW } from "@/lib/frameworks";
-import { getArtifactSections, normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
+import { currentConstraintLine, getArtifactSections, normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
 import { asList, formatBriefDate } from "@/lib/exportBrief";
 import { playerLinkUrl } from "@/lib/playerLinks";
 
@@ -104,6 +104,7 @@ export default function ExportPrintDocument({
 }) {
   const date = formatBriefDate(generatedAt);
   const lede = String(meta.paragraph || "").trim();
+  const constraint = currentConstraintLine(artifacts.toc);
 
   return (
     <article className="export-print-doc">
@@ -111,6 +112,7 @@ export default function ExportPrintDocument({
         <h1>{meta.title}</h1>
         {date && <p className="export-print-date">{date}</p>}
         {lede && <p className="export-print-lede">{lede}</p>}
+        {constraint && <p className="export-print-lede">{constraint}</p>}
       </header>
 
       {completeIds.length === 0 && (

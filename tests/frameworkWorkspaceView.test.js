@@ -1,10 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getArtifactJsonSchema } from "../lib/frameworkArtifacts.js";
+import { readFileSync } from "node:fs";
+import { createFrameworkArtifact, getArtifactJsonSchema } from "../lib/frameworkArtifacts.js";
 import {
   FIRST_RUN_EMPTY_COPY,
   NEEDS_INPUT_COPY,
   collectArtifactQuestions,
+  filledCanvasConstraintLine,
   pipelineLauncherHref,
   resolveFrameworkWorkspaceView,
 } from "../lib/frameworkWorkspaceView.js";
@@ -62,4 +64,37 @@ test("true empty and legacy stay distinct from needs_input", () => {
   assert.equal(resolveFrameworkWorkspaceView(null, { status: "failed" }, "ansoff"), "empty");
   assert.equal(resolveFrameworkWorkspaceView(legacy, null, "ansoff"), "legacy");
   assert.equal(resolveFrameworkWorkspaceView(legacy, { status: "needs_input" }, "ansoff"), "needs_input");
+});
+
+test("filled canvas constraint line is ToC constraint.text; absent or unfilled is blank", () => {
+  const toc = createFrameworkArtifact("toc", {
+    payload: {
+      constraint: {
+        text: "Wholesale quotes bottleneck through the founder.",
+        type: "capacity",
+        location: "Founder desk",
+        throughputMetric: "quotes per week",
+        basis: "known",
+        confidence: "high",
+        evidenceRefs: [],
+      },
+    },
+  });
+
+  assert.equal(
+    filledCanvasConstraintLine("map", toc),
+    "Wholesale quotes bottleneck through the founder.",
+  );
+  assert.equal(filledCanvasConstraintLine("map", null), "");
+  assert.equal(filledCanvasConstraintLine("map", createFrameworkArtifact("toc")), "");
+  assert.equal(filledCanvasConstraintLine("empty", toc), "");
+  assert.equal(filledCanvasConstraintLine("needs_input", toc), "");
+  assert.equal(filledCanvasConstraintLine("legacy", toc), "");
+});
+
+test("filled canvas header renders the constraint under the company name", () => {
+  const workspace = readFileSync("components/FrameworkWorkspace.jsx", "utf8");
+  assert.match(workspace, /filledCanvasConstraintLine\(/);
+  assert.match(workspace, /getArtifact\("toc"\)/);
+  assert.match(workspace, /<h1>\{pageTitle\}<\/h1>\s*\{constraintLine && <p className="framework-constraint">\{constraintLine\}<\/p>\}/);
 });
