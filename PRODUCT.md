@@ -140,6 +140,54 @@ context, not backlog).
 
 Don't-touch, unchanged: no acquirer mode, no cartridges, no BIC comparison UI, no daily
 brief, no persistence layer, no new frameworks or agents, nothing merged to `main`.
+
+---
+
+## The Gauntlet (appended 2026-08-16) — quality bars and the loop protocol
+
+The slice above says *what*; this section says *how good*, and how you know. Each
+surface has a **named reference**. Work on a surface is not DONE until the named judge
+has compared the output against its reference and signed the bar — in the PR, quoting
+the gauntlet ID. "The builder thinks it's good" is not a state in this system.
+
+**The loop:** builder ships → Test Pilot re-flies the *whole* affected flow (never just
+the changed screen) → the judge compares against the reference and either **SIGNS**
+("meets G-n: <one sentence why>") or returns a **numbered defect list** (every gap, not
+the top three) → builder fixes → loop. **Three loops maximum per gauntlet per slice** —
+if it hasn't passed in three, park it with the defect list in the run report; grinding a
+fourth loop hides the finding that the bar needs different work. Judges judge the
+artifact, never the effort.
+
+| ID | Surface | Named reference (judge against THIS, blind) | Judge |
+|---|---|---|---|
+| **G1** | The client brief — print and on-screen `/export` | The engagement summary a top-tier strategy consultancy leaves with a founder — the document a client pays five figures for and forwards to their board. Zero rendering defects at 1280 and on paper; every claim traceable to evidence or labeled inference; the constraint story reads as a narrative, not a data dump. | Partner (content), Inspector (form) |
+| **G2** | The nine-box and framework maps on screen | Strategyzer's printed Business Model Canvas poster — the real Osterwalder artifact. Side-by-side at 1280: ours must look like the professionally typeset original, not a web app imitating it. No cell breaks inside a word, no clipped column, no orphaned label, at 1280 and 1440. | Inspector |
+| **G3** | The full waterfall run | A zero-intervention pass on **all three demo packs**: `?demo=` → BMC → … → ToC → RACI → both exports, with no crash, no dead-end, no artifact stuck `needs_input` without a visible, human-readable reason. The Morning Line bar: a stranger screensharing this to a client never has to apologize for the tool. | Test Pilot flies, Partner signs |
+| **G4** | Org installs | The signed Driftline install is now the internal reference. Every subsequent install (Ironwood, then Quartermast) must survive a **blind** comparison: the Partner reads it without being told which company, and finds the same grounding density, the same honest missing-data table, the same right-sizing and refusals. | Partner |
+| **G5** | Agent voice in chat and artifacts | The field-manual voice of this repo's own copy: mono, declarative, specific, zero slop tells (no "game-changer", no breathless triads, no summarizing the take back at the reader). Every chat claim carries an evidence ref or says "inference." | Inspector (voice), Partner (evidence) |
+
+### The next 12 hours, sequenced — work top to bottom, mark each DONE before advancing
+
+1. Slice orders 1–2 (SWOT quadrants + BMC word-break; intake learns from the export) →
+   **G2 loop** on every framework surface touched.
+2. Slice order 3 (client-facing Driftline install summary) → **G1 loop** (it is a
+   client-facing document; both judges).
+3. Slice order 4 (Ironwood end-to-end) → **G3 loop** on the garage-doors pack; fixes
+   discovered here re-run the Driftline pack too before signing (no fixing one vertical
+   by breaking another).
+4. **G1 full pass** on the print + screen brief for BOTH verticals — this is the
+   gauntlet most likely to reveal parked-defect ghosts; loop it hard.
+5. Slice order 5 (Ironwood org-install) → **G4 blind comparison**.
+6. If all signed and hours remain: **Quartermast end-to-end (G3), then its org-install
+   (G4)** — three verticals signed is the full house.
+7. Remaining time: **G5 sweep** — read the Cartographer's and Conductor's actual chat
+   output and artifact prose against the bar; file defects as numbered findings even if
+   unfixed by end of window.
+
+Rules for the window: every DONE is a judge's signature in a PR, never a self-mark; a
+parked gauntlet with an honest defect list is a valid outcome, a quietly lowered bar is
+not; tests and build green before every push, as always. End-of-window deliverable: the
+run report lists each gauntlet as SIGNED / PARKED(defects) / NOT-REACHED, in order.
 Run `npm test` and `npx next build` before every push.
 
 ---
