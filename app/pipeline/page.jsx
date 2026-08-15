@@ -24,6 +24,7 @@ import {
   RUN_PHASES,
 } from "@/lib/frameworkRunClient";
 import {
+  applyUploadedFiles,
   formatBizIntake,
   parseBizIntake,
   resolvePipelineSelect,
@@ -257,10 +258,10 @@ export default function Pipeline() {
 
   function saveBucket() {
     const nextValue = selectedIntake === "biz"
-      ? formatBizIntake({ url: bizUrl, paragraph: bizParagraph })
+      ? formatBizIntake({ ...parseBizIntake(getBucket("biz")), url: bizUrl, paragraph: bizParagraph })
       : bucketText;
     const validation = selectedIntake === "biz"
-      ? validateBizIntake({ url: bizUrl, paragraph: bizParagraph })
+      ? validateBizIntake({ ...parseBizIntake(getBucket("biz")), url: bizUrl, paragraph: bizParagraph })
       : validateBucketSave(selectedIntake, nextValue);
     if (!validation.ok) {
       setBucketStatus(validation.error);
@@ -285,43 +286,30 @@ export default function Pipeline() {
   }
 
   async function onFiles(event) {
-    const previous = getBucket(selectedIntake);
-    let value = selectedIntake === "biz" ? bizParagraph : bucketText;
+    const files = [];
     for (const file of [...event.target.files]) {
-      const text = await file.text();
-      value += (value.trim() ? "\n\n" : "") + `=== FILE: ${file.name} ===\n${text}`;
+      files.push({ name: file.name, text: await file.text() });
+    }
+    const current = selectedIntake === "biz"
+      ? { ...parseBizIntake(getBucket("biz")), url: bizUrl, paragraph: bizParagraph }
+      : { text: bucketText };
+    const applied = applyUploadedFiles(selectedIntake, files, { getBucket, setBucket, current });
+    if (!applied.ok) {
+      setBucketStatus(applied.error);
+      return;
     }
     if (selectedIntake === "biz") {
-      setBizParagraph(value);
-      const validation = validateBizIntake({ url: bizUrl, paragraph: value });
-      if (!validation.ok) {
-        setBucketStatus(validation.error);
-        return;
-      }
-      const formatted = formatBizIntake(validation);
-      const result = setBucket(selectedIntake, formatted);
-      if (result.ok && previous !== formatted) {
-        const stale = staleArtifacts(getBucketAffectedFrameworks(selectedIntake), `${source.name} changed.`);
-        setBucketStatus(`${event.target.files.length} file(s) loaded and saved.${stale.staled.length ? ` ${stale.staled.length} dependent artifact(s) marked stale.` : ""}${stale.failures.length ? ` Could not mark stale: ${stale.failures.join("; ")}` : ""}`);
-      } else {
-        setBucketStatus(result.ok ? `${event.target.files.length} file(s) loaded and saved.` : `Could not save: ${result.error}`);
-      }
-      setBucketText(formatted);
-      refresh();
-      return;
+      setBizUrl(applied.fields.url);
+      setBizParagraph(applied.fields.paragraph);
+      setBucketText(applied.value);
+    } else {
+      setBucketText(applied.value);
     }
-    setBucketText(value);
-    const validation = validateBucketSave(selectedIntake, value);
-    if (!validation.ok) {
-      setBucketStatus(validation.error);
-      return;
-    }
-    const result = setBucket(selectedIntake, value);
-    if (result.ok && previous !== value) {
+    if (applied.previous !== applied.value) {
       const stale = staleArtifacts(getBucketAffectedFrameworks(selectedIntake), `${source.name} changed.`);
       setBucketStatus(`${event.target.files.length} file(s) loaded and saved.${stale.staled.length ? ` ${stale.staled.length} dependent artifact(s) marked stale.` : ""}${stale.failures.length ? ` Could not mark stale: ${stale.failures.join("; ")}` : ""}`);
     } else {
-      setBucketStatus(result.ok ? `${event.target.files.length} file(s) loaded and saved.` : `Could not save: ${result.error}`);
+      setBucketStatus(`${event.target.files.length} file(s) loaded and saved.`);
     }
     refresh();
   }

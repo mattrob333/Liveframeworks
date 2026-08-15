@@ -1,7 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import path from "node:path";
 import {
+  applyUploadedFiles,
   companyHostname,
   formatBizIntake,
   isBizIntakeReady,
@@ -65,11 +67,74 @@ test("formatted biz buckets round-trip and count as ready", () => {
   const parsed = parseBizIntake(formatted);
   assert.equal(parsed.url, "https://acme.test/");
   assert.equal(parsed.paragraph, "We audit ledgers.");
+  assert.equal(parsed.products, "");
+  assert.equal(parsed.team, "");
+  assert.equal(parsed.unusual, "");
+  assert.doesNotMatch(formatted, /Main products/);
   assert.equal(isBizIntakeReady(formatted), true);
   assert.equal(isBizIntakeReady("A paragraph with no website"), false);
   const loose = parseBizIntake("See https://acme.test for the site.\nWe audit ledgers.");
   assert.equal(loose.url, "https://acme.test/");
   assert.match(loose.paragraph, /audit ledgers/);
+});
+
+test("formatBizIntake keeps products, team, and unusual from the coffee pack", () => {
+  const pack = readFileSync(path.join("demo-data", "coffee", "driftline-biz.md"), "utf8");
+  const parsed = parseBizIntake(pack);
+  assert.match(parsed.paragraph, /roast specialty coffee/);
+  assert.match(parsed.products, /Subscription coffee bags/);
+  assert.match(parsed.team, /8 \(founder\/CEO/);
+  assert.match(parsed.unusual, /no dedicated wholesale owner/);
+
+  const formatted = formatBizIntake(parsed);
+  assert.match(formatted, /Main products \/ services: Subscription coffee bags/);
+  assert.match(formatted, /Team size \(rough\): 8 \(founder\/CEO/);
+  assert.match(formatted, /Anything unusual worth knowing: There is no dedicated wholesale owner/);
+
+  const again = parseBizIntake(formatted);
+  assert.equal(again.products, parsed.products);
+  assert.equal(again.team, parsed.team);
+  assert.equal(again.unusual, parsed.unusual);
+  assert.equal(isBizIntakeReady(formatted), true);
+});
+
+test("applyUploadedFiles loads a pack file into a bucket without paste", () => {
+  const biz = readFileSync(path.join("demo-data", "coffee", "driftline-biz.md"), "utf8");
+  const calls = readFileSync(path.join("demo-data", "coffee", "driftline-calls.md"), "utf8");
+  const store = {};
+  const writer = {
+    getBucket: key => store[key] || "",
+    setBucket: (key, value) => {
+      store[key] = value;
+      return { ok: true };
+    },
+  };
+
+  const emptyBiz = applyUploadedFiles("biz", [], writer);
+  assert.equal(emptyBiz.ok, false);
+
+  const loadedBiz = applyUploadedFiles("biz", [{ name: "driftline-biz.md", text: biz }], writer);
+  assert.equal(loadedBiz.ok, true);
+  assert.equal(store.biz, loadedBiz.value);
+  assert.match(store.biz, /Website URL: https:\/\/driftline\.example\/?/);
+  assert.match(store.biz, /Main products \/ services:/);
+  assert.match(store.biz, /Team size \(rough\):/);
+  assert.match(store.biz, /Anything unusual worth knowing:/);
+  assert.match(store.biz, /no dedicated wholesale owner/);
+  assert.doesNotMatch(store.biz, /=== FILE:/);
+  assert.equal(isBizIntakeReady(store.biz), true);
+
+  const loadedCalls = applyUploadedFiles("calls", [{ name: "driftline-calls.md", text: calls }], writer);
+  assert.equal(loadedCalls.ok, true);
+  assert.match(store.calls, /=== FILE: driftline-calls\.md ===/);
+  assert.match(store.calls, /OTTESSA/);
+});
+
+test("pipeline file upload writes through applyUploadedFiles", () => {
+  const page = readFileSync("app/pipeline/page.jsx", "utf8");
+  assert.match(page, /applyUploadedFiles/);
+  assert.match(page, /onChange=\{onFiles\}/);
+  assert.match(page, /UPLOAD \.TXT \/ \.MD/);
 });
 
 test("company hostname for the nav brand strips www", () => {

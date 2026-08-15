@@ -48,7 +48,11 @@ export default function FirstRunHome() {
       setStatus(`Could not save the key: ${savedKey.error}`);
       return;
     }
-    const formatted = formatBizIntake({ url: intake.url, paragraph: intake.paragraph });
+    const formatted = formatBizIntake({
+      ...parseBizIntake(getBucket("biz")),
+      url: intake.url,
+      paragraph: intake.paragraph,
+    });
     const previous = getBucket("biz");
     const saved = setBucket("biz", formatted);
     if (!saved.ok) {
