@@ -22,7 +22,7 @@ import {
 import { normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
 import { playerLinkUrl } from "@/lib/playerLinks";
 import { companyHostname, parseBizIntake } from "@/lib/intake";
-import { agentOneLiner, resolveNextMove } from "@/lib/nextSteps";
+import { agentOneLiner, filledCanvasNextMove } from "@/lib/nextSteps";
 import {
   executeFrameworkRun,
   hasApiKey,
@@ -272,13 +272,11 @@ export default function FrameworkWorkspace({ id, home = false }) {
   const questions = collectArtifactQuestions(artifact);
   const running = busy || (latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status));
   const pageTitle = hostname || "LiveFrameworks";
-  const nextMove = viewable
-    ? resolveNextMove({
-      frameworkId: id,
-      artifacts: Object.fromEntries(ORDER.map(key => [key, key === id ? artifact : getArtifact(key)])),
-      buckets: Object.fromEntries(INTAKE.map(source => [source.key, getBucket(source.key)])),
-    })
-    : null;
+  const nextMove = filledCanvasNextMove(view, {
+    frameworkId: id,
+    artifacts: Object.fromEntries(ORDER.map(key => [key, key === id ? artifact : getArtifact(key)])),
+    buckets: Object.fromEntries(INTAKE.map(source => [source.key, getBucket(source.key)])),
+  });
 
   return (
     <main className="framework-page">
