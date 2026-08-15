@@ -115,7 +115,7 @@ test("formatBizIntake keeps products, team, and unusual from the coffee pack", (
   assert.doesNotMatch(formatted, /Production-rate/);
   assert.doesNotMatch(formatted, /Standing price sheet/);
   assert.equal(isBizIntakeReady(formatted), true);
-}
+});
 
 test("old demo biz packs still parse; new optional labels stay empty", () => {
   for (const file of [
@@ -255,7 +255,7 @@ test("coffee leadership, org, and calls pastes still save without the new prompt
   assert.doesNotMatch(leadership, /11\. Where does the account book live/);
   assert.match(org, /Where do decisions stall most:/);
   assert.doesNotMatch(org, /Approval thresholds \/ \$ gates:/);
-}););
+});
 
 test("applyUploadedFiles loads a pack file into a bucket without paste", () => {
   const biz = readFileSync(path.join("demo-data", "coffee", "driftline-biz.md"), "utf8");
