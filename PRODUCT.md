@@ -123,6 +123,30 @@ build nothing from it tonight.
    exists, the canvas header (under the company name) and the brief's lede carry one line —
    the current constraint in plain words. No new agents, no new surfaces; it is a rendering
    of the existing ToC artifact.
+5. **The Org Install document (written deliverable, not code).** Once Order 1's full
+   Driftline run is complete, write `demo-data/coffee/driftline-org-install.md` — the
+   agent-org export for the analyzed company, drawn ONLY from the completed artifacts
+   (org bucket, BMC, ToC constraint, RACI routing) and following the pattern in
+   `team/README.md` and the Instinct repo's `docs/ideas/org-compiler.md`. Structure:
+   - **`EXE ★ Chief of Staff`** — charter (six fields) + a routing table: every
+     department ★ below it and what kinds of requests/events route to each + a daily
+     cron instruction for it to check every ★, roster inline, escalation-to-owner rules.
+   - **Departments sized to what Driftline actually needs** — derived from the
+     constraint and RACI, not a fixed template (expect a wholesale desk, since that is
+     the constraint; ops; marketing — whatever the artifacts justify). Per department:
+     one **★ manager charter**, then 2–4 agents, each with: name in the `TEAM ★/· Role`
+     convention, one-line description, skills, and the tools/scopes it would need from
+     Driftline's systems (Shopify, QuickBooks, Slack per the intake).
+   - **A cron routine per department** (roster inline, work-order source named, cadence
+     justified by the department's rhythm) plus the EXE daily cron.
+   - **Grounding rule:** every department and every role must cite the artifact fact
+     that justifies it (the constraint, an org gap, a RACI row, a canvas box). A role
+     that cannot cite its reason does not ship. No generic org-chart filler.
+   **Done:** the file exists; the Partner's verdict says it reads like something Matt
+   could paste into his agent runtime tomorrow and staff Driftline with; every role
+   carries its citation. This document is the hand-built prototype of the productized
+   "Team Install" export — treat its structure as a draft schema, and note in the run
+   report what data the artifacts were missing that the export needed.
 
 Tonight's don't-touch: no acquirer mode, no cartridges, no BIC comparison UI, no daily
 brief, no persistence layer, no new frameworks or agents, nothing merged to `main`.
