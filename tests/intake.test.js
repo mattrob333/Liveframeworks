@@ -129,6 +129,29 @@ test("New company stays out of the nav until a canvas exists", () => {
   assert.equal(shouldShowNewCompany({ hasCanvas: false, wantNew: false, path: "/pipeline", companyLoaded: false }), false);
 });
 
+test("New company stays in the nav when the BMC is stale", () => {
+  const stale = { ...completeBmc(), status: "stale" };
+  assert.equal(hasHomeCanvas(stale), true);
+  assert.equal(shouldShowNewCompany({
+    hasCanvas: hasHomeCanvas(stale),
+    wantNew: false,
+    path: "/",
+    companyLoaded: true,
+  }), true);
+  assert.equal(shouldShowNewCompany({
+    hasCanvas: hasHomeCanvas(null),
+    wantNew: false,
+    path: "/",
+    companyLoaded: false,
+  }), false);
+});
+
+test("Nav treats stale BMC as a canvas for New company", () => {
+  const nav = readFileSync("components/Nav.jsx", "utf8");
+  assert.match(nav, /hasHomeCanvas\(getArtifact\("bmc"\)\)/);
+  assert.doesNotMatch(nav, /artifactIsComplete/);
+});
+
 test("pipeline select slugs resolve to a known framework or unknown", () => {
   assert.deepEqual(resolvePipelineSelect(""), { kind: "none" });
   assert.deepEqual(resolvePipelineSelect("bmc"), { kind: "framework", id: "bmc" });

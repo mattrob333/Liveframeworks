@@ -3,8 +3,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getArtifact, getBucket, hasApiKey } from "@/lib/store";
-import { artifactIsComplete } from "@/lib/agentContext";
-import { shouldShowNewCompany } from "@/lib/homeMode";
+import { hasHomeCanvas, shouldShowNewCompany } from "@/lib/homeMode";
 import { companyHostname, parseBizIntake } from "@/lib/intake";
 
 export default function Nav() {
@@ -17,7 +16,7 @@ export default function Nav() {
     const refresh = () => {
       setHasKey(hasApiKey());
       setHostname(companyHostname(parseBizIntake(getBucket("biz")).url));
-      setHasCanvas(artifactIsComplete(getArtifact("bmc"), "bmc"));
+      setHasCanvas(hasHomeCanvas(getArtifact("bmc")));
     };
     refresh();
     window.addEventListener("lf:storage", refresh);
