@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { FW } from "../lib/frameworks.js";
+import { FW, ORDER } from "../lib/frameworks.js";
 import { getArtifactJsonSchema } from "../lib/frameworkArtifacts.js";
 import { formatBizIntake } from "../lib/intake.js";
 import { resolveFrameworkWorkspaceView } from "../lib/frameworkWorkspaceView.js";
@@ -125,6 +125,56 @@ test("filled canvas still renders one next-move line and one button under the ma
   assert.match(workspace, /<p className="next-move">\s*<span>\{nextMove\.line\}<\/span>\s*<Link className="btn" href=\{nextMove\.href\}>\{nextMove\.action\}<\/Link>\s*<\/p>/);
   assert.doesNotMatch(workspace, /wakes/);
   assert.doesNotMatch(workspace, /locked/);
+});
+
+// Completed 16/16 run: every feed is done, so recommended is null. The map
+// must still point at the next ORDER sibling — same chrome as a first fill.
+const COMPLETED_RUN_NEXT = [
+  { id: "bmc", nextId: "industrymap" },
+  { id: "industrymap", nextId: "fiveforces" },
+  ...WATERFALL_NEXT,
+];
+
+function expectedMove(nextId) {
+  return {
+    href: `/pipeline?select=${nextId}`,
+    line: `Next: ${FW[nextId].name}`,
+    action: FW[nextId].name,
+  };
+}
+
+test("completed 16/16 run still shows one next-move on BMC, Industry Map, and the five", () => {
+  const artifacts = Object.fromEntries(ORDER.map(id => [id, completeArtifact(id)]));
+  for (const { id, nextId } of COMPLETED_RUN_NEXT) {
+    const expected = expectedMove(nextId);
+
+    assert.equal(resolveFrameworkWorkspaceView(artifacts[id], null, id), "map");
+    assert.equal(resolveNextSteps({ frameworkId: id, artifacts, buckets: readyBuckets }).recommended, null);
+    assert.deepEqual(
+      filledCanvasNextMove("map", { frameworkId: id, artifacts, buckets: readyBuckets }),
+      expected,
+    );
+
+    const filledHtml = renderNextMove(
+      filledCanvasNextMove("map", { frameworkId: id, artifacts, buckets: readyBuckets }),
+    );
+    const namePattern = FW[nextId].name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/'/g, "(?:'|&#x27;)");
+    assert.match(filledHtml, /class="next-move"/);
+    assert.match(filledHtml, new RegExp(`Next: ${namePattern}`));
+    assert.match(filledHtml, new RegExp(`href="/pipeline\\?select=${nextId}"`));
+    assert.equal((filledHtml.match(/class="btn"/g) || []).length, 1);
+  }
+});
+
+test("unfilled BMC, Industry Map, and the five show no next-move", () => {
+  for (const { id } of COMPLETED_RUN_NEXT) {
+    assert.equal(resolveFrameworkWorkspaceView(null, null, id), "empty");
+    assert.equal(filledCanvasNextMove("empty", { frameworkId: id, artifacts: {}, buckets: {} }), null);
+    assert.equal(filledCanvasNextMove("map", { frameworkId: id, artifacts: {}, buckets: {} }), null);
+    assert.equal(filledCanvasNextMove("needs_input", { frameworkId: id, artifacts: {}, buckets: {} }), null);
+    assert.equal(filledCanvasNextMove("legacy", { frameworkId: id, artifacts: {}, buckets: {} }), null);
+    assert.equal(renderNextMove(filledCanvasNextMove("map", { frameworkId: id, artifacts: {}, buckets: {} })), "");
+  }
 });
 
 test("agent one-liner is the first voice sentence", () => {
