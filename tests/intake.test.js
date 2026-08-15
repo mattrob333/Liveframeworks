@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   companyHostname,
   formatBizIntake,
@@ -111,6 +112,12 @@ test("stale BMC keeps home on the canvas; empty and ?new=1 go to intake", () => 
   assert.equal(homeMode({ artifact: null }), "intake");
   assert.equal(homeMode({ artifact: stale, wantNew: true }), "intake");
   assert.equal(homeMode({ artifact: complete, wantNew: true }), "intake");
+});
+
+test("HomeGate treats stale BMC as a canvas, not a complete-only check", () => {
+  const gate = readFileSync("components/HomeGate.jsx", "utf8");
+  assert.match(gate, /hasHomeCanvas\(getArtifact\("bmc"\)\)/);
+  assert.doesNotMatch(gate, /artifactIsComplete/);
 });
 
 test("New company stays out of the nav until a canvas exists", () => {
