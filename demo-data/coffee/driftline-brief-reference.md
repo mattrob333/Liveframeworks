@@ -1,1 +1,3 @@
-@file:/workspace/demo-data/coffee/driftline-brief-reference.md
+# driftline.example
+
+FILE_TOO_LARGE_TO_INLINE_SEE_DISK
