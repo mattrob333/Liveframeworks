@@ -269,3 +269,145 @@ test("/export Industry Map stays four bands; BMC stays a nine-box", () => {
   assert.match(html, /industry-map-band-label">Time</);
   assert.doesNotMatch(html, /grid2/);
 });
+
+const SEVENS_TARGET = {
+  strategy: "Documented wholesale sample-to-quote process owned independently of the founder.",
+  structure: "A named wholesale owner sits beside roasting, not mid-word clipped into the founder.",
+  systems: "Standing price sheet and reorder path — quoting no longer waits on one inbox.",
+  sharedValues: "High-touch care stays in the product, not in every founder text.",
+  style: "Hands-on care without personal involvement in every transaction.",
+  staff: "Two packers plus a wholesale owner; packing capacity is a hard ceiling.",
+  skills: "Sample roasting and quoting can move off Maya without inventing a new desk.",
+};
+
+function scoreElement(targetState) {
+  return {
+    score: 2,
+    currentState: "Founder-owned wholesale sampling, quoting, and approval.",
+    targetState,
+    gaps: [],
+    actions: [],
+    basis: "known",
+    confidence: "high",
+    evidenceRefs: ["E1"],
+  };
+}
+
+function driftlineSevens() {
+  return createFrameworkArtifact("sevens", {
+    status: "complete",
+    title: "Driftline 7S",
+    summary: "Hard elements converge on one founder.",
+    generatedAt: "2026-08-11T00:00:00.000Z",
+    evidence: [evidence],
+    payload: {
+      elements: {
+        strategy: scoreElement(SEVENS_TARGET.strategy),
+        structure: scoreElement(SEVENS_TARGET.structure),
+        systems: scoreElement(SEVENS_TARGET.systems),
+        sharedValues: scoreElement(SEVENS_TARGET.sharedValues),
+        style: scoreElement(SEVENS_TARGET.style),
+        staff: scoreElement(SEVENS_TARGET.staff),
+        skills: scoreElement(SEVENS_TARGET.skills),
+      },
+      keyMisalignments: [claim("Structure, systems, staff, and skills converge on Maya.")],
+    },
+  });
+}
+
+test("7S scorecard is seven shrinkable columns at desktop, not the shared 4-up", () => {
+  const shared = cssRule(".artifact-scorecard");
+  assert.match(shared, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+
+  const sevens = cssRule('[data-framework="sevens"] .artifact-scorecard');
+  assert.match(sevens, /grid-template-columns:repeat\(7,minmax\(0,1fr\)\)/);
+  assert.match(sevens, /min-width:0/);
+  assert.match(sevens, /align-items:stretch/);
+  assert.doesNotMatch(sevens, /repeat\(4,/);
+  assert.doesNotMatch(sevens, /repeat\(7,1fr\)/);
+});
+
+test("7S cells wrap; overflow cannot slice a Target word at ~1280", () => {
+  const cell = cssRule('[data-framework="sevens"] .artifact-section');
+  assert.match(cell, /overflow:visible/);
+  assert.match(cell, /min-width:0/);
+  assert.doesNotMatch(cell, /overflow:hidden/);
+
+  const body = cssRule('[data-framework="sevens"] .artifact-section-content');
+  assert.match(body, /overflow-wrap:break-word/);
+  assert.match(body, /word-break:normal/);
+  assert.match(body, /overflow:visible/);
+  assert.doesNotMatch(body, /word-break:break-all/);
+  assert.doesNotMatch(body, /overflow:hidden/);
+
+  const details = cssRule('[data-framework="sevens"] .artifact-details');
+  assert.match(details, /minmax\(0,1fr\)/);
+  assert.match(details, /min-width:0/);
+
+  const line = cssRule('[data-framework="sevens"] .artifact-details span');
+  assert.match(line, /overflow-wrap:break-word/);
+  assert.match(line, /word-break:normal/);
+  assert.match(line, /overflow:visible/);
+  assert.doesNotMatch(line, /overflow:hidden/);
+  assert.doesNotMatch(line, /word-break:break-all/);
+});
+
+test("desktop ~1280 keeps seven 7S columns; phones may stack at 700px", () => {
+  assert.doesNotMatch(screenCss, /@media\(max-width:1280px\)/);
+  const phone = mediaBlock("max-width:700px");
+  assert.match(phone, /\[data-framework="sevens"\] \.artifact-scorecard\{grid-template-columns:1fr\}/);
+  const mid = mediaBlock("max-width:1180px");
+  assert.match(mid, /\.artifact-scorecard\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
+  assert.doesNotMatch(mid, /\[data-framework="sevens"\]/);
+});
+
+test("7S markup keeps all seven elements and the Target words that were clipping", () => {
+  const html = renderToStaticMarkup(
+    React.createElement(FrameworkArtifact, {
+      artifact: driftlineSevens(),
+      frameworkId: "sevens",
+      brief: true,
+      onSelect: () => {},
+    }),
+  );
+  assert.match(html, /data-framework="sevens"/);
+  assert.match(html, /artifact-scorecard/);
+  assert.match(html, /Open Strategy/);
+  assert.match(html, /Open Structure/);
+  assert.match(html, /Open Systems/);
+  assert.match(html, /Open Shared Values/);
+  assert.match(html, /Open Style/);
+  assert.match(html, /Open Staff/);
+  assert.match(html, /Open Skills/);
+  assert.match(html, /<b>Target:<\/b> Documented wholesale sample-to-quote process owned independently of the founder\./);
+  assert.match(html, /independently/);
+  assert.match(html, /quoting/);
+  assert.match(html, /High-touch/);
+  assert.doesNotMatch(html, /independen(?!tly)/);
+  assert.doesNotMatch(html, /High-(?!touch)/);
+  assert.doesNotMatch(html, /ansoff-matrix/);
+  assert.doesNotMatch(html, /bmc-grid/);
+});
+
+test("/export 7S stays seven columns and keeps Target words", () => {
+  const html = renderToStaticMarkup(
+    React.createElement(ExportBrief, {
+      meta: engagementMeta({
+        biz: formatBizIntake({
+          url: "https://driftline.example",
+          paragraph: "Small-batch coffee.",
+        }),
+      }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds: ["sevens"],
+      artifacts: { sevens: driftlineSevens() },
+    }),
+  );
+  assert.match(html, /data-framework="sevens"/);
+  assert.match(html, /artifact-scorecard/);
+  assert.match(html, /Open Strategy/);
+  assert.match(html, /Open Skills/);
+  assert.match(html, /independently/);
+  assert.match(html, /quoting/);
+  assert.doesNotMatch(html, /ansoff-matrix/);
+});
