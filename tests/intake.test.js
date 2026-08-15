@@ -152,6 +152,18 @@ test("Nav treats stale BMC as a canvas for New company", () => {
   assert.doesNotMatch(nav, /artifactIsComplete/);
 });
 
+test("?new=1 on a stale canvas is returning copy, not first-run", () => {
+  const stale = { ...completeBmc(), status: "stale" };
+  assert.equal(hasHomeCanvas(stale), true);
+  assert.equal(hasHomeCanvas(null), false);
+
+  const home = readFileSync("components/FirstRunHome.jsx", "utf8");
+  assert.match(home, /setReturning\(hasHomeCanvas\(getArtifact\("bmc"\)\)\)/);
+  assert.match(home, /returning \? "New company\."/);
+  assert.match(home, /returning && <><Link href="\/">Back to the canvas<\/Link>/);
+  assert.doesNotMatch(home, /artifactIsComplete/);
+});
+
 test("pipeline select slugs resolve to a known framework or unknown", () => {
   assert.deepEqual(resolvePipelineSelect(""), { kind: "none" });
   assert.deepEqual(resolvePipelineSelect("bmc"), { kind: "framework", id: "bmc" });
