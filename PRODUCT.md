@@ -139,6 +139,14 @@ build nothing from it tonight.
      Driftline's systems (Shopify, QuickBooks, Slack per the intake).
    - **A cron routine per department** (roster inline, work-order source named, cadence
      justified by the department's rhythm) plus the EXE daily cron.
+   - **A Trigger Map per department** — event-driven wiring to where Driftline's humans
+     work, drawn from the systems in the intake (Slack, Shopify, QuickBooks): event
+     source → condition → which ★ wakes → what it does → what cascades → where the loop
+     closes back to the human. Rules: triggers fire ★ agents only, never workers;
+     cascades happen by assignment, never trigger→trigger; an agent that writes to a
+     channel is never woken by it; the schedule cron stays as the fallback heartbeat.
+     Example shape: "Slack #wholesale, human message containing an order/lead → wakes
+     WSL ★ → classifies, assigns quote prep, replies in-thread with status."
    - **Grounding rule:** every department and every role must cite the artifact fact
      that justifies it (the constraint, an org gap, a RACI row, a canvas box). A role
      that cannot cite its reason does not ship. No generic org-chart filler.
