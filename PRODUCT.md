@@ -147,9 +147,16 @@ build nothing from it tonight.
      channel is never woken by it; the schedule cron stays as the fallback heartbeat.
      Example shape: "Slack #wholesale, human message containing an order/lead → wakes
      WSL ★ → classifies, assigns quote prep, replies in-thread with status."
+   - **The filled Operator's Manual** — the humans' half, per the template in the
+     Instinct repo's `docs/ideas/operators-manual.md`: name the Owner and a Section
+     Steward per department **from Driftline's actual org chart** (e.g. the wholesale
+     lead stewards the wholesale desk), each with their 10-minute daily check-in, red
+     flags, escalation boundaries, and the install's approval-queue rules.
    - **Grounding rule:** every department and every role must cite the artifact fact
      that justifies it (the constraint, an org gap, a RACI row, a canvas box). A role
-     that cannot cite its reason does not ship. No generic org-chart filler.
+     that cannot cite its reason does not ship. No generic org-chart filler. The same
+     rule covers steward assignments — a steward is named because the org chart says
+     that person owns that department's reality.
    **Done:** the file exists; the Partner's verdict says it reads like something Matt
    could paste into his agent runtime tomorrow and staff Driftline with; every role
    carries its citation. This document is the hand-built prototype of the productized

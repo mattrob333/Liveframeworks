@@ -51,7 +51,19 @@ before every push; push only to the designated dev branch; nothing merges to `ma
 > changed, log "all quiet, no action" and end. Escalate to Matt only for: a blocker no
 > agent can clear, all orders done, or anything destructive about to happen.
 
-## Morning read (the human's part)
+## The human's part (Owner + Steward: Matt, for now)
 
-Read the Floor Lead's run report and the Partner's verdict, then write the next slice
-into PRODUCT.md. The charters stay stable; the slice changes nightly.
+Full manual: the Instinct repo's `docs/ideas/operators-manual.md`. The short version:
+
+**Morning read (daily, 10–15 min):** read the Floor Lead's run log and the Partner's
+verdict; clear anything queued for approval; answer escalations with decisions; write
+the next slice into PRODUCT.md. The charters stay stable; the slice changes nightly.
+
+**Red flags — pause the routine and look closer:** the Floor Lead assigning work that
+isn't in the slice; a worker silent across multiple ticks while holding an assignment;
+output drifting off-charter; message storms or duplicate work (usually a mis-wired
+trigger). **Prime rule: manage the charter, not the agent** — corrections typed in chat
+evaporate; a sentence added to a charter or the slice persists.
+
+**Weekly:** read one night's actual output end-to-end (not the logs), check the KILL/
+block log still has teeth, and re-issue any charter the org or tools have outgrown.
