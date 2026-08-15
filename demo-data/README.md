@@ -52,5 +52,9 @@ up-and-comer, and a closing table of verified benchmark variables.
    companies — by design. The auto-draw-from-URL wow moment is best demoed on a real
    company via the public-data path; these packs demo the *interview-fed* waterfall.
 2. Paste buckets in any order; the biz bucket is the one that gates the BMC.
-3. The BIC profiles are also the first fixtures for benchmark/delta features: their
+3. Dev shortcut (no new UI): open `/?demo=driftline` to write all four fictional
+   files into `lf:bucket:*`. Same for `/?demo=ironwood` and `/?demo=quartermast`.
+   Folder names work too: `coffee`, `garage-doors`, `saas`. Unknown slugs do
+   nothing. A visitor who never adds `?demo=` sees the normal first-run.
+4. The BIC profiles are also the first fixtures for benchmark/delta features: their
    "Benchmark variables" tables are typed units ready for a future comparison surface.
