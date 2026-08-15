@@ -16,7 +16,7 @@ import {
 import { INTAKE } from "../lib/frameworks.js";
 import { validateApiKey } from "../lib/apiKey.js";
 import { getArtifactJsonSchema } from "../lib/frameworkArtifacts.js";
-import { hasHomeCanvas, resolveHomeMode, shouldShowNewCompany } from "../lib/homeMode.js";
+import { autorunReplaceUrl, hasHomeCanvas, resolveHomeMode, shouldShowNewCompany } from "../lib/homeMode.js";
 import { interpretRunEvent } from "../lib/frameworkRunClient.js";
 
 function sampleFromSchema(schema) {
@@ -320,6 +320,23 @@ test("home is the canvas after a complete BMC, unless New company", () => {
   assert.equal(resolveHomeMode({ ready: true, autorun: true, hasCanvas: false, wantNew: false }), "canvas");
   assert.equal(resolveHomeMode({ ready: true, autorun: false, hasCanvas: true, wantNew: false }), "canvas");
   assert.equal(resolveHomeMode({ ready: true, autorun: false, hasCanvas: true, wantNew: true }), "intake");
+});
+
+test("first-run autorun must not unmount-abort before a BMC exists", () => {
+  // Losing ?autorun=1 before a canvas sends HomeGate to intake, which
+  // unmounts FrameworkWorkspace and abort()s as “Cancelled by user.”
+  assert.equal(homeMode({ artifact: null, autorun: true }), "canvas");
+  assert.equal(homeMode({ artifact: null, autorun: false }), "intake");
+  assert.equal(homeMode({ artifact: { frameworkId: "bmc", status: "needs_input" }, autorun: true }), "canvas");
+  assert.equal(autorunReplaceUrl({ home: true, hasCanvas: false }), null);
+  assert.equal(autorunReplaceUrl({ home: true, hasCanvas: true }), "/");
+  assert.equal(autorunReplaceUrl({ home: false, hasCanvas: false }), "/framework/bmc");
+  assert.equal(autorunReplaceUrl({ home: false, hasCanvas: true }), "/framework/bmc");
+
+  const workspace = readFileSync("components/FrameworkWorkspace.jsx", "utf8");
+  assert.match(workspace, /autorunReplaceUrl/);
+  assert.match(workspace, /clearAutorunIfSafe/);
+  assert.match(workspace, /useEffect\(\(\) => \(\) => abortRef\.current\?\.abort\(\), \[\]\)/);
 });
 
 test("stale BMC keeps home on the canvas; empty and ?new=1 go to intake", () => {

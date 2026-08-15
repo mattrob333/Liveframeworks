@@ -11,6 +11,7 @@ import {
   setSelectedSection,
 } from "@/lib/store";
 import { artifactIsComplete } from "@/lib/agentContext";
+import { autorunReplaceUrl, hasHomeCanvas } from "@/lib/homeMode";
 import {
   FIRST_RUN_EMPTY_COPY,
   NEEDS_INPUT_COPY,
@@ -196,15 +197,24 @@ export default function FrameworkWorkspace({ id, home = false, orgInstall = "" }
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
+  function clearAutorunIfSafe() {
+    const nextUrl = autorunReplaceUrl({
+      home,
+      hasCanvas: hasHomeCanvas(getArtifact("bmc")),
+    });
+    if (nextUrl && `${window.location.pathname}${window.location.search}` !== nextUrl) {
+      window.history.replaceState(null, "", nextUrl);
+    }
+  }
+
   useEffect(() => {
     if (!hydrated || id !== "bmc" || !FW[id]) return;
     const autorun = new URLSearchParams(window.location.search).get("autorun");
     if (autorun !== "1" || autorunStartedRef.current) return;
     autorunStartedRef.current = true;
-    const nextUrl = home ? "/" : `/framework/${id}`;
-    if (`${window.location.pathname}${window.location.search}` !== nextUrl) {
-      window.history.replaceState(null, "", nextUrl);
-    }
+    // Do not strip ?autorun=1 on first-run home until a BMC exists.
+    // HomeGate would drop to intake, unmount this workspace, and abort().
+    clearAutorunIfSafe();
     if (artifactIsComplete(getArtifact("bmc"), "bmc")) return;
     void startCanvasRun();
   }, [hydrated, id, home]);
@@ -237,6 +247,7 @@ export default function FrameworkWorkspace({ id, home = false, orgInstall = "" }
     setLatestRun(getLatestRun(id));
     if (!result.ok) setRunMessage(result.error);
     else if (result.message) setRunMessage(result.message);
+    clearAutorunIfSafe();
   }
 
   if (!framework) {
