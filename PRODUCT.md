@@ -90,6 +90,46 @@ On a filled framework: body 14px, chrome / labels 12px minimum, dim ink no light
 
 ---
 
+## Tonight's slice (2026-08-15) — in priority order, stop when out of night
+
+Context first, code second: this repo is now registered canon in the Instinct design repo
+([source-repos](https://github.com/mattrob333/instinct/blob/main/docs/source-repos.md),
+[ADR-0016](https://github.com/mattrob333/instinct/blob/main/docs/adr/0016-engagement-seeds-the-framework-stack.md),
+[component page](https://github.com/mattrob333/instinct/blob/main/docs/components/liveframeworks.md)).
+Read ADR-0016 before working. The `docs/ideas/` directory there is **context, not backlog** —
+build nothing from it tonight.
+
+1. **Drive Driftline end-to-end and fix what breaks.** `demo-data/coffee/` holds four files
+   that map to the four intake buckets (see `demo-data/README.md`). Paste all four, run the
+   full waterfall BMC → … → ToC → RACI, argue with at least one map in chat, then produce
+   both exports. Fix every crash, truncation, mis-rendered artifact section, dead link, or
+   wrong next-move encountered — each fix its own commit. **Done:** a full clean run
+   exists; the exported Driftline brief (`.md` download) is checked in as
+   `demo-data/coffee/driftline-brief-reference.md`; a run log of what broke and what was
+   fixed is in the PR/commit messages. The seeded constraint (wholesale bottlenecked
+   through the founder) should surface in the ToC artifact without being told — if it
+   doesn't, that is a finding to record, not a prompt to hand-edit.
+2. **One-click demo load (dev ergonomics).** A quiet way to load a demo pack into all four
+   buckets at once (e.g. a dev-only control on Pipeline or a `/?demo=driftline` param that
+   fills `lf:bucket:*` from `demo-data/`). Must not appear in the client-facing brief or
+   first-run surfaces. **Done:** one action fills all four buckets; works for all three
+   packs; nothing visible changes for a normal user.
+3. **Stale canvas keeps home.** `HomeGate` routes `/` back to the intake form when the BMC
+   is stale (it checks complete-only). A stale canvas should render as the canvas with its
+   existing stale note, not vanish into the landing form. **Done:** mark canvas stale →
+   `/` still shows the map + stale note; `?new=1` still forces intake; tests cover
+   `resolveHomeMode`.
+4. **(Stretch) "Today's limiting factor."** Only if 1–3 are done: when a ToC artifact
+   exists, the canvas header (under the company name) and the brief's lede carry one line —
+   the current constraint in plain words. No new agents, no new surfaces; it is a rendering
+   of the existing ToC artifact.
+
+Tonight's don't-touch: no acquirer mode, no cartridges, no BIC comparison UI, no daily
+brief, no persistence layer, no new frameworks or agents, nothing merged to `main`.
+Run `npm test` and `npx next build` before every push.
+
+---
+
 ## What is still a tool (on purpose, for now)
 
 - BYO Anthropic key in `localStorage`. No accounts, no database.
