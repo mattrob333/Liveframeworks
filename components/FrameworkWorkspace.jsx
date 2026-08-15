@@ -20,7 +20,7 @@ import {
   resolveFrameworkWorkspaceView,
 } from "@/lib/frameworkWorkspaceView";
 import { normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
-import { orgInstallRoster, tocConstraintHero } from "@/lib/tocPayoff";
+import { orgInstallRoster, showTocStaleBannerBetweenHeroAndRoster, tocConstraintHero } from "@/lib/tocPayoff";
 import { playerLinkUrl } from "@/lib/playerLinks";
 import { companyHostname, parseBizIntake } from "@/lib/intake";
 import { agentOneLiner, filledCanvasNextMove } from "@/lib/nextSteps";
@@ -297,7 +297,9 @@ export default function FrameworkWorkspace({ id, home = false, orgInstall = "" }
               {needsInput && <p className="framework-state-note">This run is waiting on clarifying questions.</p>}
             </header>
           )}
-          {tocHero && stale && <p className="framework-state-note">This map is stale. Review it, or regenerate from the pipeline.</p>}
+          {showTocStaleBannerBetweenHeroAndRoster({ stale, hero: tocHero, roster: tocRoster }) && (
+            <p className="framework-state-note">This map is stale. Review it, or regenerate from the pipeline.</p>
+          )}
           {tocHero && needsInput && <p className="framework-state-note">This run is waiting on clarifying questions.</p>}
           {tocHero && <TocRoster roster={tocRoster} />}
 

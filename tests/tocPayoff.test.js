@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createFrameworkArtifact } from "../lib/frameworkArtifacts.js";
-import { orgInstallRoster, tocConstraintHero } from "../lib/tocPayoff.js";
+import { isSignedOrgInstallRoster, orgInstallRoster, showTocStaleBannerBetweenHeroAndRoster, tocConstraintHero } from "../lib/tocPayoff.js";
 import { TocConstraintHero, TocRoster } from "../components/TocPayoff.jsx";
 import FrameworkArtifact from "../components/FrameworkArtifact.jsx";
 
@@ -186,4 +186,35 @@ test("workspace wires hero then roster then the existing ToC argument", () => {
   assert.match(ARTIFACT, /section\.id !== "constraint"/);
   assert.match(PAGE, /readSignedOrgInstall/);
   assert.match(PAGE, /id === "toc"/);
+});
+
+test("signed org-install roster on ToC hides the stale banner between hero and roster", () => {
+  const hero = tocConstraintHero(tocWithConstraint("Maya is the sole wholesale approver."));
+  const roster = orgInstallRoster(SIGNED_ORG_INSTALL);
+  assert.equal(isSignedOrgInstallRoster(roster), true);
+  assert.equal(showTocStaleBannerBetweenHeroAndRoster({ stale: true, hero, roster }), false);
+  assert.equal(showTocStaleBannerBetweenHeroAndRoster({ stale: false, hero, roster }), false);
+  assert.match(WORKSPACE, /showTocStaleBannerBetweenHeroAndRoster\(\{ stale, hero: tocHero, roster: tocRoster \}\)/);
+  assert.match(WORKSPACE, /<TocConstraintHero hero=\{tocHero\} \/>/);
+  assert.match(WORKSPACE, /<TocRoster roster=\{tocRoster\} \/>/);
+});
+
+test("other maps and an unsigned ToC roster keep today's stale banner", () => {
+  const hero = tocConstraintHero(tocWithConstraint("Maya is the sole wholesale approver."));
+  const emptyRoster = orgInstallRoster("");
+  const noGlance = orgInstallRoster("## Org at a glance\n\nNo fence.");
+
+  assert.equal(isSignedOrgInstallRoster(emptyRoster), false);
+  assert.equal(isSignedOrgInstallRoster(noGlance), false);
+  assert.equal(isSignedOrgInstallRoster({ router: null, teams: [] }), false);
+  assert.equal(showTocStaleBannerBetweenHeroAndRoster({ stale: true, hero, roster: emptyRoster }), true);
+  assert.equal(showTocStaleBannerBetweenHeroAndRoster({ stale: true, hero, roster: noGlance }), true);
+  assert.equal(showTocStaleBannerBetweenHeroAndRoster({ stale: true, hero: null, roster: orgInstallRoster(SIGNED_ORG_INSTALL) }), false);
+
+  // Other maps still use the header stale note, not the ToC hero/roster slot.
+  assert.match(
+    WORKSPACE,
+    /<h1>\{pageTitle\}<\/h1>[\s\S]*?\{stale && <p className="framework-state-note">This map is stale\. Review it, or regenerate from the pipeline\.<\/p>\}/,
+  );
+  assert.match(WORKSPACE, /showTocStaleBannerBetweenHeroAndRoster\(\{ stale, hero: tocHero, roster: tocRoster \}\)/);
 });
