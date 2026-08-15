@@ -320,15 +320,16 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
 .artifact-force-map{grid-template-columns:repeat(3,minmax(0,1fr))}
 .artifact-timeline{grid-template-columns:repeat(3,minmax(0,1fr))}
 .artifact-scorecard{grid-template-columns:repeat(4,minmax(0,1fr))}
-/* 7S: seven columns at ~1280. Same lock as BMC — shrink, wrap, rows may grow. */
-[data-framework="sevens"] .artifact-scorecard{grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;align-items:stretch}
+/* 7S: do not keep seven ~87px 1fr tracks at 1280+chat (~657px).
+   auto-fit min holds STRATEGY / STRUCTURE as whole words; extra S-elements wrap to the next row. */
+[data-framework="sevens"] .artifact-scorecard{grid-template-columns:repeat(auto-fit,minmax(148px,1fr));min-width:0;align-items:stretch}
 [data-framework="sevens"] .artifact-section{overflow:visible;min-width:0;height:auto}
-[data-framework="sevens"] .artifact-section-title{overflow-wrap:break-word;word-break:normal;min-width:0}
-[data-framework="sevens"] .artifact-section-content{min-width:0;max-width:100%;overflow:visible;overflow-wrap:break-word;word-break:normal}
+[data-framework="sevens"] .artifact-section-title{overflow-wrap:normal;word-break:normal;min-width:0}
+[data-framework="sevens"] .artifact-section-content{min-width:0;max-width:100%;overflow:visible;overflow-wrap:normal;word-break:normal}
 [data-framework="sevens"] .artifact-item,[data-framework="sevens"] .artifact-item-text,[data-framework="sevens"] .artifact-details,[data-framework="sevens"] .artifact-nested,[data-framework="sevens"] .artifact-findings{min-width:0;max-width:100%;overflow:visible}
 [data-framework="sevens"] .artifact-details{grid-template-columns:minmax(0,1fr);min-width:0}
-[data-framework="sevens"] .artifact-details span{min-width:0;max-width:100%;overflow:visible;overflow-wrap:break-word;word-break:normal}
-[data-framework="sevens"] .artifact-findings li{min-width:0;max-width:100%;overflow:visible;overflow-wrap:break-word;word-break:normal}
+[data-framework="sevens"] .artifact-details span{min-width:0;max-width:100%;overflow:visible;overflow-wrap:normal;word-break:normal}
+[data-framework="sevens"] .artifact-findings li{min-width:0;max-width:100%;overflow:visible;overflow-wrap:normal;word-break:normal}
 .artifact-paired-canvas{grid-template-columns:repeat(2,minmax(0,1fr))}
 .artifact-section{min-width:0;min-height:132px;border:1px solid var(--faint);background:var(--panel);padding:12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;align-items:stretch;gap:8px;transition:border-color .18s,background .18s}
 .artifact-section:hover{border-color:var(--dim)}
