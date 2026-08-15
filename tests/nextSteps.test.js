@@ -66,14 +66,13 @@ test("no recommended ready framework means no next move", () => {
   assert.equal(resolveNextMove({ frameworkId: "industrymap", artifacts: {}, buckets: {} }), null);
 });
 
-// These five have feeds, but in sequential waterfall none of those feeds are
-// ready when the map itself is first filled. Same one-line + one-button as BMC.
-const FEED_FALLBACK_FRAMEWORKS = [
-  { id: "fiveforces", nextId: "swot" },
-  { id: "swot", nextId: "ansoff" },
-  { id: "threehorizons", nextId: "bsc" },
-  { id: "blueocean", nextId: "kano" },
-  { id: "sevens", nextId: "toc" },
+// Next chapter in ORDER. Same one-line + one-button as BMC.
+const WATERFALL_NEXT = [
+  { id: "fiveforces", nextId: "pestle" },
+  { id: "swot", nextId: "vrio" },
+  { id: "threehorizons", nextId: "blueocean" },
+  { id: "blueocean", nextId: "jtbd" },
+  { id: "sevens", nextId: "bsc" },
 ];
 
 function renderNextMove(nextMove) {
@@ -89,7 +88,7 @@ function renderNextMove(nextMove) {
 }
 
 test("Five Forces, SWOT, Three Horizons, Blue Ocean, and 7S show one next move when filled, none when not", () => {
-  for (const { id, nextId } of FEED_FALLBACK_FRAMEWORKS) {
+  for (const { id, nextId } of WATERFALL_NEXT) {
     const filledArtifacts = { [id]: completeArtifact(id) };
     const expected = {
       href: `/pipeline?select=${nextId}`,
