@@ -200,19 +200,28 @@ test("Download for an agent click path creates a named markdown blob and clicks 
   };
   const expectedName = agentDownloadName(engagementMeta(state.buckets));
   const expectedMarkdown = buildAgentMarkdown(state);
-  const blobUrl = "blob:liveframeworks-agent-brief";
+  const blobUrl = "blob:https://liveframeworks.example/2ef60c74-fa8d-4ce3-9261-3e7ec496b415";
   const clicks = [];
   const attached = [];
   const created = [];
+  const revoked = [];
+  const scheduled = [];
   let capturedBlob = null;
 
   const originalCreate = URL.createObjectURL;
   const originalRevoke = URL.revokeObjectURL;
+  const originalSetTimeout = globalThis.setTimeout;
   URL.createObjectURL = blob => {
     capturedBlob = blob;
     return blobUrl;
   };
-  URL.revokeObjectURL = () => {};
+  URL.revokeObjectURL = url => {
+    revoked.push(url);
+  };
+  globalThis.setTimeout = (fn, ms) => {
+    scheduled.push({ fn, ms: Number(ms) || 0 });
+    return 0;
+  };
 
   const previousDocument = globalThis.document;
   globalThis.document = {
@@ -248,14 +257,26 @@ test("Download for an agent click path creates a named markdown blob and clicks 
     assert.equal(clicks[0].attached, true);
     assert.equal(clicks[0].href, blobUrl);
     assert.equal(clicks[0].download, expectedName);
+    assert.equal(expectedName, "example.com-brief.md");
     assert.match(clicks[0].download, /\.md$/);
+    assert.doesNotMatch(clicks[0].download, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
     assert.ok(capturedBlob);
     assert.equal(capturedBlob.type, "text/markdown");
     assert.equal(await capturedBlob.text(), expectedMarkdown);
     assert.match(expectedMarkdown, /## Business Model Canvas/);
+
+    // Loop 1: revoke in the same turn as click → detached/revoked UUID, no .md.
+    // Loop 2: setTimeout(revoke, 0) still races Chrome → UUID then Deleted.
+    assert.deepEqual(revoked, []);
+    assert.equal(scheduled.length, 1);
+    assert.ok(scheduled[0].ms > 0, "setTimeout(0) still revokes before Chrome copies the blob");
+    assert.ok(scheduled[0].ms >= 1000, "Chrome needs the blob URL alive past the next tick");
+    scheduled[0].fn();
+    assert.deepEqual(revoked, [blobUrl]);
   } finally {
     URL.createObjectURL = originalCreate;
     URL.revokeObjectURL = originalRevoke;
+    globalThis.setTimeout = originalSetTimeout;
     globalThis.document = previousDocument;
   }
 
