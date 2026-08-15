@@ -386,6 +386,47 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
   .industry-map-band{grid-template-columns:1fr}
   .industry-map-cell{grid-column:auto!important}}
 
+/* Ansoff payoff: one 2×2, not a 2-col stack of findings cards. */
+.ansoff-matrix{min-width:0}
+.ansoff-matrix-frame{
+  display:grid;
+  grid-template-columns:minmax(40px,auto) minmax(0,1fr) minmax(0,1fr);
+  grid-template-rows:auto minmax(148px,auto) minmax(148px,auto);
+  border:1px solid var(--faint);
+  background:var(--panel);
+}
+.ansoff-axis{
+  color:var(--amber);
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  padding:10px 12px;
+}
+.ansoff-axis-col{text-align:center;border-left:1px solid var(--faint);border-bottom:1px solid var(--faint)}
+.ansoff-axis-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-top:1px solid var(--faint);
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+}
+.ansoff-axis-corner{border-bottom:1px solid var(--faint)}
+.ansoff-cell.panel,.ansoff-cell.artifact-section{
+  min-width:0;
+  min-height:148px;
+  margin:0;
+  border:0;
+  border-top:1px solid var(--faint);
+  border-left:1px solid var(--faint);
+  border-radius:0;
+  background:var(--panel);
+  padding:12px;
+}
+.ansoff-vector{margin-top:8px}
+.ansoff-vector .artifact-section{min-height:0}
+
 .muted-copy{color:var(--dim);font-size:12px}
 
 .next-move{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;color:var(--line);font-size:14px}

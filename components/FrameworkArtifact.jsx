@@ -302,6 +302,57 @@ const INDUSTRY_MAP_BANDS = [
   { id: "time", label: "Time", items: ["history", "future"] },
 ];
 
+// Classic Ansoff geometry: existing/new products × existing/new markets.
+// Cells read payload.quadrants.* only — empty arrays stay empty.
+const ANSOFF_ROWS = [
+  {
+    market: "Existing markets",
+    cells: ["marketPenetration", "productDevelopment"],
+  },
+  {
+    market: "New markets",
+    cells: ["marketDevelopment", "diversification"],
+  },
+];
+
+function AnsoffView({ artifact, definition, onSelect, selectedSectionId }) {
+  const byId = Object.fromEntries(definition.sections.map(section => [section.id, section]));
+  const selectedVector = byId.selectedVector;
+  return (
+    <div className="ansoff-matrix">
+      <div className="ansoff-matrix-frame" role="grid" aria-label="Ansoff Matrix">
+        <span className="ansoff-axis ansoff-axis-corner" aria-hidden="true" />
+        <span className="ansoff-axis ansoff-axis-col">Existing products</span>
+        <span className="ansoff-axis ansoff-axis-col">New products</span>
+        {ANSOFF_ROWS.flatMap(row => [
+          <span key={row.market} className="ansoff-axis ansoff-axis-row">{row.market}</span>,
+          ...row.cells.map(id => byId[id] && (
+            <SelectableSection
+              key={id}
+              artifact={artifact}
+              section={byId[id]}
+              onSelect={onSelect}
+              selectedSectionId={selectedSectionId}
+              className={`ansoff-cell ansoff-${id}`}
+              digest
+            />
+          )),
+        ])}
+      </div>
+      {selectedVector && (
+        <div className="ansoff-vector">
+          <SelectableSection
+            artifact={artifact}
+            section={selectedVector}
+            onSelect={onSelect}
+            selectedSectionId={selectedSectionId}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function IndustryMapView({ artifact, definition, onSelect, selectedSectionId }) {
   const byId = Object.fromEntries(definition.sections.map(section => [section.id, section]));
   return (
@@ -487,6 +538,7 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
   else if (normalized.frameworkId === "industrymap") view = <IndustryMapView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;
   else if (normalized.frameworkId === "raci") view = <RaciView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} selectedRowId={internalRowId} />;
   else if (definition.view === "table" && definition.table) view = <TableView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} selectedRowId={internalRowId} />;
+  else if (normalized.frameworkId === "ansoff") view = <AnsoffView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;
   else if (normalized.frameworkId === "toc") {
     const argument = definition.sections.filter(section => section.id !== "constraint");
     view = (
