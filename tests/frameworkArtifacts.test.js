@@ -6,6 +6,7 @@ import { INTAKE, ORDER } from "../lib/frameworks.js";
 import {
   ARTIFACT_SCHEMA_VERSION,
   createFrameworkArtifact,
+  currentConstraintLine,
   getArtifactDefinition,
   getArtifactJsonSchema,
   getArtifactSections,
@@ -380,4 +381,33 @@ test("brief BMC keeps the nine-box and drops handbook chrome", () => {
   assert.doesNotMatch(html, /Current position/);
   assert.doesNotMatch(html, /Gaps/);
   assert.doesNotMatch(html, /Evidence used/);
+});
+
+test("currentConstraintLine reads ToC payload.constraint.text and is blank without it", () => {
+  const toc = createFrameworkArtifact("toc", {
+    payload: {
+      constraint: {
+        text: "Wholesale quotes bottleneck through the founder.",
+        type: "capacity",
+        location: "Founder desk",
+        throughputMetric: "quotes per week",
+        basis: "known",
+        confidence: "high",
+        evidenceRefs: [],
+      },
+    },
+  });
+
+  assert.equal(
+    currentConstraintLine(toc),
+    "Wholesale quotes bottleneck through the founder.",
+  );
+  assert.equal(currentConstraintLine(null), "");
+  assert.equal(currentConstraintLine(undefined), "");
+  assert.equal(currentConstraintLine(createFrameworkArtifact("toc")), "");
+  assert.equal(currentConstraintLine(createFrameworkArtifact("bmc")), "");
+  assert.equal(currentConstraintLine({
+    frameworkId: "toc",
+    payload: { constraint: { text: "   " } },
+  }), "");
 });
