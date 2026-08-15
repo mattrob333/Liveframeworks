@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import {
+  currentConstraintLine,
   getArtifactDefinition,
   getArtifactValue,
   normalizeFrameworkArtifact,
@@ -276,10 +277,11 @@ function CanvasView({ artifact, definition, onSelect, selectedSectionId }) {
   );
 }
 
-function SectionView({ artifact, definition, onSelect, selectedSectionId }) {
+function SectionView({ artifact, definition, onSelect, selectedSectionId, sections }) {
+  const shown = sections || definition.sections;
   return (
     <div className={`artifact-sections artifact-${definition.view} grid2`}>
-      {definition.sections.map((section, index) => (
+      {shown.map((section, index) => (
         <SelectableSection
           key={section.id}
           artifact={artifact}
@@ -485,6 +487,18 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
   else if (normalized.frameworkId === "industrymap") view = <IndustryMapView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;
   else if (normalized.frameworkId === "raci") view = <RaciView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} selectedRowId={internalRowId} />;
   else if (definition.view === "table" && definition.table) view = <TableView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} selectedRowId={internalRowId} />;
+  else if (normalized.frameworkId === "toc") {
+    const argument = definition.sections.filter(section => section.id !== "constraint");
+    view = (
+      <SectionView
+        artifact={normalized}
+        definition={definition}
+        onSelect={select}
+        selectedSectionId={activeSectionId}
+        sections={currentConstraintLine(normalized) ? argument : definition.sections}
+      />
+    );
+  }
   else view = <SectionView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;
 
   return (

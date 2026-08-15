@@ -20,9 +20,11 @@ import {
   resolveFrameworkWorkspaceView,
 } from "@/lib/frameworkWorkspaceView";
 import { normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
+import { orgInstallRoster, tocConstraintHero } from "@/lib/tocPayoff";
 import { playerLinkUrl } from "@/lib/playerLinks";
 import { companyHostname, parseBizIntake } from "@/lib/intake";
 import { agentOneLiner, filledCanvasNextMove } from "@/lib/nextSteps";
+import { TocConstraintHero, TocRoster } from "@/components/TocPayoff";
 import {
   executeFrameworkRun,
   hasApiKey,
@@ -145,7 +147,7 @@ function RegionInspector({ artifact, section, onDiscuss }) {
   );
 }
 
-export default function FrameworkWorkspace({ id, home = false }) {
+export default function FrameworkWorkspace({ id, home = false, orgInstall = "" }) {
   const framework = FW[id];
   const [artifact, setArtifactState] = useState(null);
   const [latestRun, setLatestRun] = useState(null);
@@ -269,6 +271,8 @@ export default function FrameworkWorkspace({ id, home = false }) {
     view,
     id === "toc" ? artifact : getArtifact("toc"),
   );
+  const tocHero = id === "toc" && viewable ? tocConstraintHero(artifact) : null;
+  const tocRoster = tocHero ? orgInstallRoster(orgInstall) : { router: null, teams: [] };
   const questions = collectArtifactQuestions(artifact);
   const running = busy || (latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status));
   const pageTitle = hostname || "LiveFrameworks";
@@ -282,13 +286,20 @@ export default function FrameworkWorkspace({ id, home = false }) {
     <main className="framework-page">
       <div className="framework-workspace">
         <div className="artifact-column">
-          <header className="framework-header">
-            <h1>{pageTitle}</h1>
-            {constraintLine && <p className="framework-constraint">{constraintLine}</p>}
-            <p className="framework-map-label">{framework.name}</p>
-            {stale && <p className="framework-state-note">This map is stale. Review it, or regenerate from the pipeline.</p>}
-            {needsInput && <p className="framework-state-note">This run is waiting on clarifying questions.</p>}
-          </header>
+          {tocHero ? (
+            <TocConstraintHero hero={tocHero} />
+          ) : (
+            <header className="framework-header">
+              <h1>{pageTitle}</h1>
+              {constraintLine && <p className="framework-constraint">{constraintLine}</p>}
+              <p className="framework-map-label">{framework.name}</p>
+              {stale && <p className="framework-state-note">This map is stale. Review it, or regenerate from the pipeline.</p>}
+              {needsInput && <p className="framework-state-note">This run is waiting on clarifying questions.</p>}
+            </header>
+          )}
+          {tocHero && stale && <p className="framework-state-note">This map is stale. Review it, or regenerate from the pipeline.</p>}
+          {tocHero && needsInput && <p className="framework-state-note">This run is waiting on clarifying questions.</p>}
+          {tocHero && <TocRoster roster={tocRoster} />}
 
           {running && (
             <div className="i-sec">

@@ -4,6 +4,9 @@ export default {
   // Keep the fictional intake files in the `/` server bundle so `/?demo=`
   // can read them on Vercel. BIC profiles and brief fixtures stay out.
   outputFileTracingIncludes: {
+    "/framework/[id]": [
+      "./demo-data/coffee/driftline-org-install.md",
+    ],
     "/": [
       "./demo-data/coffee/driftline-biz.md",
       "./demo-data/coffee/driftline-leadership-interviews.md",
