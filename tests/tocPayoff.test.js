@@ -56,9 +56,12 @@ test("hero is present when ToC + constraint exist, and reads constraint.text plu
   const html = renderToStaticMarkup(React.createElement(TocConstraintHero, { hero }));
   assert.match(html, /toc-constraint-lockup/);
   assert.match(html, /All wholesale approval is restricted to Maya/);
-  assert.match(html, /known/);
-  assert.match(html, /high/);
-  assert.match(html, /2 sources/);
+  assert.match(html, /toc-proof-chips/);
+  assert.match(html, /KNOWN/);
+  assert.match(html, /HIGH/);
+  assert.match(html, /2 SOURCES/);
+  assert.doesNotMatch(html, /artifact-basis/);
+  assert.doesNotMatch(html, /2 sources/);
 });
 
 test("hero is absent without a ToC constraint", () => {
