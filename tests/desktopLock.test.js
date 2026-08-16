@@ -237,6 +237,8 @@ test("Industry Map markup is Terrain / Players / Flows / Time — nine cells, fo
   assert.match(html, /industry-map-band-label">Players</);
   assert.match(html, /industry-map-band-label">Flows</);
   assert.match(html, /industry-map-band-label">Time</);
+  assert.match(html, /industry-map-band-subtitle">The parts of the market/);
+  assert.match(html, /industry-map-band-subtitle">The companies standing on that ground/);
   assert.match(html, /industry-map-terrain/);
   assert.match(html, /industry-map-players/);
   assert.match(html, /industry-map-flows/);

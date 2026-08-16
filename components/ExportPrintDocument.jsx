@@ -93,6 +93,7 @@ function PrintFramework({ frameworkId, artifact }) {
   return (
     <section className="export-print-fw">
       <h2>{FW[frameworkId]?.name || frameworkId}</h2>
+      {FW[frameworkId]?.out && <p className="export-print-subtitle">{FW[frameworkId].out}</p>}
       {normalized.summary && <p>{normalized.summary}</p>}
       {sections.map(section => {
         const isPlayers = section.id === "players" || section.kind === "players";

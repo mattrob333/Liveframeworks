@@ -42,6 +42,7 @@ export default function ExportBrief({
           <section key={id} className={`export-fw${isBmc ? " export-fw-bmc" : ""}`}>
             {/* BMC is the map. Later completed frameworks get a section title. */}
             {!isBmc && <h2>{FW[id]?.name || id}</h2>}
+            {!isBmc && FW[id]?.out && <p className="export-fw-subtitle">{FW[id].out}</p>}
             {!isBmc && normalized.summary && (
               <p className="export-prose">{normalized.summary}</p>
             )}

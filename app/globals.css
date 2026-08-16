@@ -54,8 +54,8 @@ h1{font-size:clamp(22px,4vw,36px);font-weight:600;margin:12px 0 10px;line-height
   display:flex;align-items:center;justify-content:center;z-index:1}
 .stage::after{content:"";position:absolute;left:13px;top:34px;bottom:-32px;border-left:1px dashed var(--faint)}
 .stage:last-of-type::after{bottom:0}
-.stage-title{font-size:var(--type-label);letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:2px}
-.stage-role{font-size:var(--type-label);color:var(--dim);margin-bottom:12px}
+.stage-title{font-size:var(--type-header);font-weight:var(--type-header-weight);letter-spacing:.02em;color:var(--line);margin-bottom:4px;line-height:1.3}
+.stage-role{font-size:var(--type-subtitle);color:var(--dim);margin-bottom:12px;line-height:1.5}
 .nodes{display:flex;flex-wrap:wrap;gap:12px}
 
 .node{background:var(--panel);border:1px solid var(--faint);padding:11px 14px;min-width:200px;transition:border-color .15s,background .15s;display:block;text-align:left;cursor:pointer}
@@ -184,8 +184,8 @@ footer b{color:var(--line)}
 .landing-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:46px;border:1px solid var(--faint);background:var(--faint)}
 .landing-step{background:var(--panel);padding:22px 22px 24px;position:relative}
 .landing-step::before{content:attr(data-num);position:absolute;top:18px;right:18px;color:var(--dim);font-size:var(--type-label);border:1px solid var(--faint);padding:2px 6px}
-.landing-step h2{font-size:var(--type-label);letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 44px 10px 0}
-.landing-step p{color:var(--dim);font-size:var(--type-body);line-height:1.7}
+.landing-step h2{font-size:var(--type-header);font-weight:var(--type-header-weight);letter-spacing:.02em;color:var(--line);margin:0 44px 10px 0;line-height:1.3}
+.landing-step p{color:var(--dim);font-size:var(--type-subtitle);line-height:1.5;margin-top:6px}
 .landing-roster{margin:34px 0 20px;border-top:1px dashed var(--faint);padding-top:18px}
 .landing-roster-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
 .landing-roster-chips span{border:1px solid var(--faint);padding:5px 10px;font-size:var(--type-label);color:var(--dim)}
@@ -256,7 +256,8 @@ footer b{color:var(--line)}
 .export-constraint{margin-top:12px;font-size:var(--type-body);line-height:var(--type-body-lh);max-width:var(--type-measure);color:var(--amber)}
 .export-empty{margin-top:24px;color:var(--dim);font-size:var(--type-body)}
 .export-fw{margin-top:28px}
-.export-fw h2{font-size:16px;font-weight:600;margin:0 0 12px;color:var(--line)}
+.export-fw h2{font-size:var(--type-header);font-weight:var(--type-header-weight);margin:0 0 6px;color:var(--line);line-height:1.3}
+.export-fw-subtitle{margin:0 0 12px;color:var(--dim);font-size:var(--type-subtitle);line-height:1.5;max-width:var(--type-measure)}
 .export-prose{margin-top:16px;font-size:var(--type-body);line-height:var(--type-body-lh);max-width:var(--type-measure);color:var(--line)}
 .export-fw-bmc .export-prose{margin-top:18px}
 .export-brief .framework-artifact{pointer-events:none}
@@ -395,7 +396,8 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
    display:contents flattened nine cards into one 12-col grid — a 3-up tile. */
 .industry-map{display:flex;flex-direction:column;gap:12px;min-width:0}
 .industry-map-band{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px;align-items:stretch;min-width:0}
-.industry-map-band-label{grid-column:1/-1;color:var(--line);font-size:var(--type-label);font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.industry-map-band-label{grid-column:1/-1;color:var(--line);font-size:var(--type-header);font-weight:var(--type-header-weight);letter-spacing:.02em;line-height:1.3}
+.industry-map-band-subtitle{grid-column:1/-1;color:var(--dim);font-size:var(--type-subtitle);line-height:1.5;margin:0 0 2px}
 .industry-map-cell{min-width:0;min-height:132px}
 .industry-map-segments,.industry-map-technologyFlows{grid-column:1/5}
 .industry-map-glossary,.industry-map-economicFlows{grid-column:5/9}
@@ -608,7 +610,8 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
   .export-print-date{font-size:13px;color:#111;margin:0}
   .export-print-lede{margin:12px 0 0;color:#111}
   .export-print-fw{margin-top:22px}
-  .export-print-fw h2{font-size:16px;font-weight:600;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid #111;color:#111}
+  .export-print-fw h2{font-size:24px;font-weight:600;margin:0 0 6px;padding-bottom:6px;border-bottom:1px solid #111;color:#111}
+  .export-print-subtitle{margin:0 0 12px;color:#111;font-size:15px}
   .export-print-fw > p{margin:0 0 12px;color:#111}
   .export-print-sec{margin-top:14px}
   .export-print-sec h3{font-size:13px;font-weight:600;margin:0 0 6px;color:#111;overflow-wrap:normal;word-break:normal}

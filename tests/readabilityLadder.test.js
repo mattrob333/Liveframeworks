@@ -79,6 +79,16 @@ test("nothing below 13px in app type CSS", () => {
   assert.deepEqual(tooSmall, [], "sub-13px font-size is a Phase 1a defect");
 });
 
+test("section and band headers are 24px / 600 with 15px subtitles", () => {
+  assert.match(screenCss, /\.stage-title\{[^}]*font-size:var\(--type-header\)/);
+  assert.match(screenCss, /\.stage-title\{[^}]*font-weight:var\(--type-header-weight\)/);
+  assert.match(screenCss, /\.stage-role\{[^}]*font-size:var\(--type-subtitle\)/);
+  assert.match(screenCss, /\.industry-map-band-label\{[^}]*font-size:var\(--type-header\)/);
+  assert.match(screenCss, /\.industry-map-band-subtitle\{[^}]*font-size:var\(--type-subtitle\)/);
+  assert.match(screenCss, /\.export-fw h2\{[^}]*font-size:var\(--type-header\)/);
+  assert.match(screenCss, /\.export-fw-subtitle\{[^}]*font-size:var\(--type-subtitle\)/);
+});
+
 test("print block stays hardcoded white paper / #111 ink", () => {
   assert.match(printCss, /html,body\{background:#fff;color:#111\}/);
   assert.match(printCss, /\.export-print-doc\{display:block;background:#fff;color:#111/);

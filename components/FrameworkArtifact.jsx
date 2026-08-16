@@ -317,10 +317,10 @@ function SectionView({ artifact, definition, onSelect, selectedSectionId, sectio
 }
 
 const INDUSTRY_MAP_BANDS = [
-  { id: "terrain", label: "Terrain", items: ["segments", "glossary", "expertsAndSources"] },
-  { id: "players", label: "Players", items: ["players"] },
-  { id: "flows", label: "Flows", items: ["technologyFlows", "economicFlows", "personnelFlows"] },
-  { id: "time", label: "Time", items: ["history", "future"] },
+  { id: "terrain", label: "Terrain", subtitle: "The parts of the market, and the words people use for them.", items: ["segments", "glossary", "expertsAndSources"] },
+  { id: "players", label: "Players", subtitle: "The companies standing on that ground.", items: ["players"] },
+  { id: "flows", label: "Flows", subtitle: "How technology, money, and people move through the market.", items: ["technologyFlows", "economicFlows", "personnelFlows"] },
+  { id: "time", label: "Time", subtitle: "What the ground looked like, and where it is heading.", items: ["history", "future"] },
 ];
 
 // Classic Ansoff geometry: existing/new products × existing/new markets.
@@ -453,6 +453,7 @@ function IndustryMapView({ artifact, definition, onSelect, selectedSectionId }) 
       {INDUSTRY_MAP_BANDS.map(band => (
         <div key={band.id} className={`industry-map-band industry-map-${band.id}`}>
           <span className="industry-map-band-label">{band.label}</span>
+          {band.subtitle && <p className="industry-map-band-subtitle">{band.subtitle}</p>}
           {band.items.map(id => byId[id] && (
             <SelectableSection
               key={id}
