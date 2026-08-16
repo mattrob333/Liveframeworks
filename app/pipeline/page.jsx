@@ -22,6 +22,7 @@ import {
   interruptInFlightRuns,
   markDependentArtifactsStale,
   RUN_PHASES,
+  runEventLine,
 } from "@/lib/frameworkRunClient";
 import {
   applyUploadedFiles,
@@ -347,13 +348,14 @@ export default function Pipeline() {
       onStart() {
         setBusyFramework(frameworkId);
         setPhase(0);
-        setRunDetail("Snapshotting evidence and opening the run…");
+        setRunDetail("");
         setStartedAt(Date.now());
         refresh();
       },
-      onProgress({ phase, detail }) {
-        if (phase != null) setPhase(phase);
-        if (detail) setRunDetail(detail);
+      onProgress(event) {
+        if (event.phase != null) setPhase(event.phase);
+        const line = runEventLine(event);
+        if (line) setRunDetail(line);
       },
     });
     abortRef.current = null;
