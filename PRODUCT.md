@@ -4,8 +4,9 @@ Read this before changing UX, copy, or first-run flow.
 This is the shared reasoning behind the `dev/first-run` work (PR #1) and the next slices.
 Do not treat production (`https://liveframeworks.vercel.app`) as this direction until this branch is merged.
 
-**Branch:** `dev/first-run` · **PR:** https://github.com/mattrob333/Liveframeworks/pull/1  
-**Do not push to `main` unless Matthew says so.**
+**Branch:** `dev/first-run` (working) · **`main` is the released line as of 2026-08-16**
+— Matt authorized the merge (PR #1). Continue developing on `dev/first-run`; releases to
+`main` remain Matt's explicit call, never part of exploratory work.
 
 ---
 
@@ -110,6 +111,24 @@ receipts, and the honest missing-data table are exactly what this product is for
 "Not staffed: MKT" section — declining to build what the founder asked for because the
 evidence says otherwise — is the single best thing this codebase has produced. Work of
 this quality is why the Team Install service is now real. Well done — every seat.
+
+**2026-08-16 (Saturday) — the functional slice closed; dark shipped; RELEASED TO MAIN.**
+G2 signed (SWOT quadrants + BMC), the Maya two-pager
+(`demo-data/coffee/driftline-org-install-summary.md`), G3 Ironwood end-to-end signed
+including the company-bleed fix (ToC roster now scoped to the loaded company — a real
+bug the second vertical flushed out). The Ironwood constraint (booking capacity, not
+marketing spend) surfaced unprompted — **two verticals, two unprompted correct
+diagnoses.** Dark sweep D1–D5 complete: amber discipline merged, print verified
+diff-clean, empty states clean, maps re-signed in dark, LoadingState fixed (#28). G1
+export overhaul merged (#29): the client brief leads with the constraint and drops all
+tool chrome. Everything merged to `main` on Matt's order — 150/150 tests, clean build.
+
+**Parked, honestly:** G4 — the Ironwood org-install draft exists only on the Floor
+Lead's runner disk (payload limit; two-strike rule correctly invoked; needs a human
+commit path). G5 — a defect list of agent-voice issues on the reference briefs, filed
+unfixed. Quartermast never started. Partner sign-off on real `/export` renders is
+blocked by login-walled Vercel previews — either drop preview protection or attach one
+saved render per vertical.
 
 ## Current slice (2026-08-16) — in priority order
 
