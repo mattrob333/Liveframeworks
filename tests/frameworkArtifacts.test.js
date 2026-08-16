@@ -47,11 +47,13 @@ function sampleFromSchema(schema) {
   if (schema.enum) return schema.enum[0];
   const type = Array.isArray(schema.type) ? schema.type.find(value => value !== "null") : schema.type;
   if (type === "object") {
-    return Object.fromEntries(Object.entries(schema.properties || {}).map(([key, value]) => [key, sampleFromSchema(value)]));
+    const keys = Array.isArray(schema.required) ? schema.required : Object.keys(schema.properties || {});
+    return Object.fromEntries(keys.filter(key => schema.properties?.[key]).map(key => [key, sampleFromSchema(schema.properties[key])]));
   }
   if (type === "array") return [sampleFromSchema(schema.items)];
   if (type === "number") return schema.minimum ?? 1;
   if (type === "string") return "x";
+  if (type === "boolean") return false;
   return null;
 }
 
