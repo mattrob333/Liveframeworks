@@ -416,10 +416,15 @@ test("pipeline select slugs resolve to a known framework or unknown", () => {
 });
 
 test("run progress events map to the same phase labels the pipeline uses", () => {
-  assert.equal(interpretRunEvent({ type: "phase", phase: "research" }).phase, 1);
-  assert.match(interpretRunEvent({ type: "phase", phase: "research" }).detail, /planning searches/);
+  const research = interpretRunEvent({ type: "phase", phase: "research" });
+  assert.equal(research.type, "phase");
+  assert.equal(research.phase, 1);
+  assert.match(research.detail, /planning searches/);
   const search = interpretRunEvent({ type: "search_query", query: "acme competitors" }, 0);
+  assert.equal(search.type, "search_query");
   assert.equal(search.searchCount, 1);
   assert.match(search.detail, /acme competitors/);
-  assert.equal(interpretRunEvent({ type: "result", status: "complete" }).result.status, "complete");
+  const result = interpretRunEvent({ type: "result", status: "complete" });
+  assert.equal(result.type, "result");
+  assert.equal(result.result.status, "complete");
 });

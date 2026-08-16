@@ -31,6 +31,7 @@ import {
   hasApiKey,
   interruptInFlightRuns,
   RUN_PHASES,
+  runEventLine,
 } from "@/lib/frameworkRunClient";
 import FrameworkArtifact from "@/components/FrameworkArtifact";
 import Chat from "@/components/Chat";
@@ -230,12 +231,13 @@ export default function FrameworkWorkspace({ id, home = false, orgInstalls = {} 
       onStart() {
         setBusy(true);
         setPhase(0);
-        setRunDetail("Snapshotting evidence and opening the run…");
+        setRunDetail("");
         setStartedAt(Date.now());
       },
-      onProgress({ phase, detail }) {
-        if (phase != null) setPhase(phase);
-        if (detail) setRunDetail(detail);
+      onProgress(event) {
+        if (event.phase != null) setPhase(event.phase);
+        const line = runEventLine(event);
+        if (line) setRunDetail(line);
       },
     });
     abortRef.current = null;
