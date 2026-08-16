@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   currentConstraintLine,
   getArtifactDefinition,
@@ -21,6 +21,10 @@ const BMC_CLASSES = {
   costStructure: "bmc-cost",
   revenueStreams: "bmc-rev",
 };
+
+// /export document mode: the client brief, not the live map. No digest
+// chrome, evidence badges, or empty-section stubs in the DOM.
+const ExportDocument = React.createContext(false);
 
 const LABELS = {
   currentAllocationPct: "Current allocation",
@@ -71,6 +75,8 @@ const textValue = value => {
 };
 
 function Meta({ value }) {
+  const documentMode = useContext(ExportDocument);
+  if (documentMode) return null;
   if (!value || typeof value !== "object") return null;
   const basis = value.basis;
   const confidence = value.confidence;
@@ -86,6 +92,8 @@ function Meta({ value }) {
 }
 
 function EmptyFinding() {
+  const documentMode = useContext(ExportDocument);
+  if (documentMode) return null;
   return <span className="artifact-empty">No supported finding yet.</span>;
 }
 
@@ -121,18 +129,20 @@ function PlayersStrip({ players, evidence = [] }) {
 }
 
 function CompactItem({ item, evidence = [] }) {
+  const documentMode = useContext(ExportDocument);
   if (item === null || item === undefined || item === "") return <EmptyFinding />;
   if (typeof item !== "object") return <span className="artifact-item-text">{String(item)}</span>;
   if (Array.isArray(item)) {
     if (!item.length) return <EmptyFinding />;
+    const shown = documentMode ? item : item.slice(0, 5);
     return (
       <ul className="artifact-findings">
-        {item.slice(0, 5).map((entry, index) => (
+        {shown.map((entry, index) => (
           <li key={entry?.id || `${textValue(entry)}-${index}`}>
             <CompactItem item={entry} evidence={evidence} />
           </li>
         ))}
-        {item.length > 5 && <li className="artifact-more">+{item.length - 5} more</li>}
+        {!documentMode && item.length > 5 && <li className="artifact-more">+{item.length - 5} more</li>}
       </ul>
     );
   }
@@ -196,7 +206,7 @@ function CompactItem({ item, evidence = [] }) {
       {Array.isArray(item.initiatives) && <CompactItem item={item.initiatives} />}
       {Array.isArray(item.measures) && item.measures.length > 0 && <div className="artifact-nested"><b>Measures</b><CompactItem item={item.measures} /></div>}
       {Array.isArray(item.keyResults) && item.keyResults.length > 0 && <div className="artifact-nested"><b>Key results</b><CompactItem item={item.keyResults} /></div>}
-      {Array.isArray(item.gaps) && item.gaps.length > 0 && <div className="artifact-nested"><b>Gaps</b><CompactItem item={item.gaps} /></div>}
+      {!documentMode && Array.isArray(item.gaps) && item.gaps.length > 0 && <div className="artifact-nested"><b>Gaps</b><CompactItem item={item.gaps} /></div>}
       {Array.isArray(item.actions) && item.actions.length > 0 && <div className="artifact-nested"><b>Actions</b><CompactItem item={item.actions} /></div>}
       <Meta value={item} />
     </div>
@@ -206,17 +216,18 @@ function CompactItem({ item, evidence = [] }) {
 // Canvas cells stay a fixed shape: a few plain bullets, no metadata badges or
 // nested detail. The full readout lives in the detail region below on click.
 function DigestItem({ item }) {
+  const documentMode = useContext(ExportDocument);
   if (item === null || item === undefined || item === "") return <EmptyFinding />;
   const entries = Array.isArray(item) ? item : [item];
   if (!entries.length) return <EmptyFinding />;
-  const shown = entries.slice(0, 3);
+  const shown = documentMode ? entries : entries.slice(0, 3);
   return (
     <ul className="artifact-findings artifact-digest">
       {shown.map((entry, index) => {
         const text = textValue(entry);
         return <li key={entry?.id || `${text}-${index}`}>{text === "-" ? <EmptyFinding /> : text}</li>;
       })}
-      {entries.length > 3 && <li className="artifact-more">+{entries.length - 3} more — open for the full readout</li>}
+      {!documentMode && entries.length > 3 && <li className="artifact-more">+{entries.length - 3} more — open for the full readout</li>}
     </ul>
   );
 }
@@ -230,11 +241,19 @@ function rowSelectionId(section, row, index) {
   return `${section?.id || "rows"}:${stableId}${row?.id ? "" : `:${index}`}`;
 }
 
-function SelectableSection({ artifact, section, onSelect, selectedSectionId, className = "", digest = false }) {
+function sectionIsEmpty(data, players) {
+  if (players) return !Array.isArray(data) || !data.some(player => player?.name);
+  if (Array.isArray(data)) return data.length === 0;
+  if (data == null || data === "") return true;
+  return false;
+}
+
+function SelectableSection({ artifact, section, onSelect, selectedSectionId, className = "", digest = false, omitIfEmpty = false }) {
   const data = sectionPayload(artifact, section);
   const choose = () => onSelect({ ...section, frameworkId: artifact.frameworkId, data });
   const selected = selectedSectionId === section.id;
   const players = section.kind === "players" || section.id === "players";
+  if (omitIfEmpty && sectionIsEmpty(data, players)) return null;
   return (
     <div
       role="button"
@@ -278,6 +297,7 @@ function CanvasView({ artifact, definition, onSelect, selectedSectionId }) {
 }
 
 function SectionView({ artifact, definition, onSelect, selectedSectionId, sections }) {
+  const documentMode = useContext(ExportDocument);
   const shown = sections || definition.sections;
   return (
     <div className={`artifact-sections artifact-${definition.view} grid2`}>
@@ -289,6 +309,7 @@ function SectionView({ artifact, definition, onSelect, selectedSectionId, sectio
           onSelect={onSelect}
           selectedSectionId={selectedSectionId}
           className={`artifact-section-${section.kind} artifact-section-${index + 1}`}
+          omitIfEmpty={documentMode}
         />
       ))}
     </div>
@@ -449,16 +470,18 @@ function IndustryMapView({ artifact, definition, onSelect, selectedSectionId }) 
 }
 
 function TableView({ artifact, definition, onSelect, selectedSectionId, selectedRowId }) {
+  const documentMode = useContext(ExportDocument);
   const rows = getArtifactValue(artifact, definition.table.path);
   const primarySection = definition.sections.find(section => section.path === definition.table.path) || definition.sections[0];
   const otherSections = definition.sections.filter(section => section !== primarySection);
+  const extraCols = documentMode ? 0 : 1;
   return (
     <div className="artifact-table-wrap panel">
       <table role="grid" aria-label={primarySection.label} className={`artifact-table ${selectedSectionId === primarySection.id ? "is-selected" : ""}`.trim()}>
         <thead>
           <tr>
             {definition.table.columns.map(([, label]) => <th key={label} scope="col">{label}</th>)}
-            <th scope="col">Grounding</th>
+            {!documentMode && <th scope="col">Grounding</th>}
           </tr>
         </thead>
         <tbody>
@@ -477,17 +500,26 @@ function TableView({ artifact, definition, onSelect, selectedSectionId, selected
                 }}
               >
                 {definition.table.columns.map(([key]) => <td key={key}>{textValue(row?.[key])}</td>)}
-                <td><Meta value={row} /></td>
+                {!documentMode && <td><Meta value={row} /></td>}
               </tr>
             );
           }) : (
-            <tr><td colSpan={definition.table.columns.length + 1}><EmptyFinding /></td></tr>
+            <tr><td colSpan={definition.table.columns.length + extraCols}><EmptyFinding /></td></tr>
           )}
         </tbody>
       </table>
       {otherSections.length > 0 && (
         <div className="artifact-table-supporting">
-          {otherSections.map(section => <SelectableSection key={section.id} artifact={artifact} section={section} onSelect={onSelect} selectedSectionId={selectedSectionId} />)}
+          {otherSections.map(section => (
+            <SelectableSection
+              key={section.id}
+              artifact={artifact}
+              section={section}
+              onSelect={onSelect}
+              selectedSectionId={selectedSectionId}
+              omitIfEmpty={documentMode}
+            />
+          ))}
         </div>
       )}
     </div>
@@ -495,6 +527,7 @@ function TableView({ artifact, definition, onSelect, selectedSectionId, selected
 }
 
 function RaciView({ artifact, definition, onSelect, selectedSectionId, selectedRowId }) {
+  const documentMode = useContext(ExportDocument);
   const roles = Array.isArray(artifact.payload.roles) ? artifact.payload.roles : [];
   const workItems = Array.isArray(artifact.payload.workItems) ? artifact.payload.workItems : [];
   const rolesSection = definition.sections.find(section => section.id === "roles");
@@ -509,11 +542,12 @@ function RaciView({ artifact, definition, onSelect, selectedSectionId, selectedR
             section={rolesSection}
             onSelect={onSelect}
             selectedSectionId={selectedSectionId}
+            omitIfEmpty={documentMode}
           />
         </div>
       )}
       <table role="grid" aria-label={workSection?.label || "RACI work matrix"} className={`artifact-table artifact-raci-table ${selectedSectionId === workSection?.id ? "is-selected" : ""}`.trim()}>
-        <thead><tr><th scope="col">Work</th>{roles.map(role => <th key={role.id} scope="col">{role.name}</th>)}<th scope="col">Grounding</th></tr></thead>
+        <thead><tr><th scope="col">Work</th>{roles.map(role => <th key={role.id} scope="col">{role.name}</th>)}{!documentMode && <th scope="col">Grounding</th>}</tr></thead>
         <tbody>
           {workItems.length > 0 ? workItems.map((item, index) => {
             const selectionId = rowSelectionId(workSection, item, index);
@@ -538,14 +572,23 @@ function RaciView({ artifact, definition, onSelect, selectedSectionId, selectedR
                   )}
                 </th>
                 {roles.map(role => <td key={role.id}>{(item.assignments || []).find(assignment => assignment.roleId === role.id)?.code || "-"}</td>)}
-                <td><Meta value={item} /></td>
+                {!documentMode && <td><Meta value={item} /></td>}
               </tr>
             );
-          }) : <tr><td colSpan={roles.length + 2}><EmptyFinding /></td></tr>}
+          }) : <tr><td colSpan={roles.length + (documentMode ? 1 : 2)}><EmptyFinding /></td></tr>}
         </tbody>
       </table>
       <div className="artifact-table-supporting">
-        {supporting.map(section => <SelectableSection key={section.id} artifact={artifact} section={section} onSelect={onSelect} selectedSectionId={selectedSectionId} />)}
+        {supporting.map(section => (
+          <SelectableSection
+            key={section.id}
+            artifact={artifact}
+            section={section}
+            onSelect={onSelect}
+            selectedSectionId={selectedSectionId}
+            omitIfEmpty={documentMode}
+          />
+        ))}
       </div>
     </div>
   );
@@ -579,7 +622,7 @@ function SafeFallback({ normalized, frameworkId }) {
   );
 }
 
-export default function FrameworkArtifact({ artifact, frameworkId, selectedSectionId, onSelect = () => {}, brief = false }) {
+export default function FrameworkArtifact({ artifact, frameworkId, selectedSectionId, onSelect = () => {}, brief = false, document = false }) {
   const normalized = normalizeFrameworkArtifact(artifact, frameworkId);
   const definition = getArtifactDefinition(normalized.frameworkId);
   const validation = validateFrameworkArtifact(artifact, frameworkId);
@@ -597,6 +640,7 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
   }, [normalized.frameworkId, activeSectionId]);
 
   if (!definition || normalized.legacyText || normalized.rawArtifact || emptyInput) {
+    if (document) return null;
     return <SafeFallback normalized={normalized} frameworkId={frameworkId} />;
   }
 
@@ -627,6 +671,7 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
   else view = <SectionView artifact={normalized} definition={definition} onSelect={select} selectedSectionId={activeSectionId} />;
 
   return (
+    <ExportDocument.Provider value={document}>
     <section className={`framework-artifact framework-artifact-${definition.view}${brief ? " is-brief" : ""}`} data-framework={normalized.frameworkId}>
       {!brief && (
         <header className="artifact-header">
@@ -650,7 +695,7 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
           })()}
         </header>
       )}
-      {!validation.valid && (
+      {!document && !validation.valid && (
         <div className="artifact-warning" role="status">
           Showing the safe normalized view. {validation.errors.length} contract {validation.errors.length === 1 ? "issue was" : "issues were"} detected.
         </div>
@@ -665,5 +710,6 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
         </div>
       )}
     </section>
+    </ExportDocument.Provider>
   );
 }
