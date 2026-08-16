@@ -7,16 +7,15 @@ const CSS = readFileSync(fileURLToPath(new URL("../app/globals.css", import.meta
 const [screenCss, printCss = ""] = CSS.split("@media print");
 const LOADER = readFileSync(fileURLToPath(new URL("../components/LoadingState.module.css", import.meta.url)), "utf8");
 
-test("ToC proof chips stay amber; artifact-meta chips do not", () => {
+test("ToC proof chips stay amber; artifact-meta and source-kind are dim only", () => {
   assert.match(
     screenCss,
     /\.toc-proof-chips \.basis-inferred,\.toc-proof-chips \.basis-assumed,\.toc-proof-chips \.confidence-medium\{color:var\(--amber\)\}/,
   );
-  assert.doesNotMatch(
-    screenCss,
-    /\.artifact-meta \.basis-inferred,\.artifact-meta \.basis-assumed,\.artifact-meta \.confidence-medium\{[^}]*var\(--amber\)/,
-  );
-  assert.match(screenCss, /\.artifact-meta>span\{[^}]*color:var\(--dim\)/);
+  assert.match(screenCss, /\.artifact-meta\{[^}]*color:var\(--dim\)/);
+  assert.match(screenCss, /\.artifact-source-kind\{[^}]*color:var\(--dim\)/);
+  assert.doesNotMatch(screenCss, /\.artifact-meta[^{;\n]*\{[^}]*(?:--ok|--amber)/);
+  assert.doesNotMatch(screenCss, /\.artifact-source-kind[^{;\n]*\{[^}]*(?:--ok|--amber)/);
 });
 
 test("constraint lines are amber; export engagement stays ink", () => {

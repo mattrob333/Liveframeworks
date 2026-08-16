@@ -11,6 +11,8 @@ import {
   formatSourceCount,
 } from "../lib/apparatus.js";
 import Apparatus from "../components/Apparatus.jsx";
+import FrameworkArtifact from "../components/FrameworkArtifact.jsx";
+import { createFrameworkArtifact } from "../lib/frameworkArtifacts.js";
 
 test("known / high / computed source counts become the caps line", () => {
   assert.deepEqual(formatBasis("known"), { type: "caps", text: "KNOWN" });
@@ -114,4 +116,46 @@ test("Apparatus renders middots, italic hedges, and computed counts", () => {
     basis: "missing",
     sourceCount: 0,
   })), "");
+});
+
+test("artifact-meta and source-kind call sites use Apparatus, not colored chips", () => {
+  const html = renderToStaticMarkup(React.createElement(FrameworkArtifact, {
+    artifact: createFrameworkArtifact("fiveforces", {
+      payload: {
+        forces: {
+          rivalry: {
+            score: 3,
+            direction: "rising",
+            findings: [{
+              text: "Price pressure from regional rivals",
+              basis: "known",
+              confidence: "high",
+              evidenceRefs: ["E1", "E2"],
+            }],
+          },
+        },
+      },
+      evidence: [{
+        id: "E1",
+        kind: "web",
+        title: "Industry note",
+        sourceKey: null,
+        artifactRevision: null,
+        messageId: null,
+        url: "https://example.com/note",
+        retrievedAt: null,
+      }],
+    }),
+  }));
+  assert.match(html, /artifact-meta/);
+  assert.match(html, /KNOWN/);
+  assert.match(html, /HIGH/);
+  assert.match(html, /2 SOURCES/);
+  assert.match(html, /artifact-source-kind/);
+  assert.match(html, /WEB/);
+  assert.doesNotMatch(html, /artifact-basis/);
+  assert.doesNotMatch(html, /basis-known/);
+  assert.doesNotMatch(html, /confidence-high/);
+  assert.doesNotMatch(html, /source-web/);
+  assert.doesNotMatch(html, />web</);
 });
