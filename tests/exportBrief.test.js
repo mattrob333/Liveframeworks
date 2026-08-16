@@ -503,10 +503,12 @@ test("brief order puts ToC first and keeps each framework once", () => {
   assert.deepEqual(orderBriefFrameworks(["bmc", "swot"]), ["bmc", "swot"]);
   assert.deepEqual(orderBriefFrameworks([]), []);
 
+  const toc = completeArtifact("toc");
+  toc.payload.constraint.text = "Quotes stall at the founder.";
   const artifacts = {
     bmc: completeBmcArtifact(),
     swot: { ...completeArtifact("swot"), status: "stale" },
-    toc: tocWithConstraint("Quotes stall at the founder."),
+    toc,
   };
   assert.deepEqual(listCompleteFrameworks(artifacts), ["bmc", "swot", "toc"]);
   assert.deepEqual(listBriefFrameworks(artifacts), ["toc", "bmc", "swot"]);

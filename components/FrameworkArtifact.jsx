@@ -243,12 +243,8 @@ function rowSelectionId(section, row, index) {
 
 function sectionIsEmpty(data, players) {
   if (players) return !Array.isArray(data) || !data.some(player => player?.name);
-  if (data == null || data === "") return true;
   if (Array.isArray(data)) return data.length === 0;
-  if (typeof data === "object") {
-    const primary = textValue(data);
-    return primary === "-" || primary === "";
-  }
+  if (data == null || data === "") return true;
   return false;
 }
 
