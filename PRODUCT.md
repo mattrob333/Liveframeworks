@@ -349,6 +349,81 @@ PRs; a parked gauntlet with an honest defect list beats a quietly lowered bar; n
 acquirer mode, no cartridges, no persistence layer, no new frameworks or agents;
 releases to `main` only on Matt's explicit order.
 
+### Appended 2026-08-16: SPEC AMENDMENTS from the measurement-page design study
+
+An eight-agent design study for the engine's own surface (the Measurement Record page —
+unit of measure, candidate docket, metric contracts, acquisition ledger, kill condition)
+stress-tested the CIE spec's data contracts against a real page render and found holes
+the page cannot render honestly without. These are **contract amendments to build E2/E3
+against** — the spec document stays as accepted; where this section conflicts with it,
+this section wins.
+
+**Two blocking fixes (the page cannot render without them):**
+
+1. **targetBasis ↔ tier mismatch.** Spec §7.2's `targetBasis` enum has six values while
+   §7.3's benchmark hierarchy has seven tiers — `internal observed baseline` (tier 1)
+   and `measurement-first` (tier 7) are not legal values, and `experiment` maps to no
+   tier. Fix: the enum IS the seven tiers, verbatim — `internal observed baseline |
+   internal historical best | contractual SLA | capacity model | external peer benchmark
+   | expert heuristic | measurement-first`. Every rendered target label carries
+   `TIER n OF 7`, computed from this enum, never typed.
+2. **The acquisition step has no schema.** §14 says missing data "generates a concrete
+   acquisition step" but never shapes it — and it is the load-bearing object of the
+   measurement surface. Fix: per-metric nullable
+   `acquisition: { method, estCostUsd, costNote, owner, window }`. `estCostUsd` is
+   numeric so the "total cost to instrument this business" line can be summed, never
+   hand-typed.
+
+**Contract extensions (all land in the companion `diagnosticState` schema via the 1c
+optional-properties pattern — the ToC payload itself gains exactly one optional field,
+`diagnosticStateRef`, mirroring the playerSchema logo pattern):**
+
+- Top-level `throughputUnit` on `diagnosticState` — the unit is per-candidate in §6.2,
+  but the page needs one resolved page-level unit. Render it only when all leading
+  candidates agree; otherwise the page shows the designed UNIT-NOT-YET-DECLARED state.
+- `signingCriteria: [{ id, met, note }]` — §6.5's seven criteria are evaluated in code
+  but never persisted, so "7/7 CRITERIA MET" and the hypothesis state's "6/7 · MISSING:
+  X" would be hand-typed, violating the computed-counts law. Persist per-criterion
+  results.
+- `discriminator: { question, metricRef, acquisition }` (nullable) — §6.5 says the
+  engine "returns the one discriminating measurement" but no field carries it. This is
+  MVP-blocking: it is the hero object of the `insufficient_evidence` launch state.
+- Candidate status enum gains `secondary` and `in_waiting` — both exist as prose
+  concepts in the spec (§6.5, §10) and both render as first-class verdicts on the page;
+  the current enum cannot represent them.
+- Metric contracts gain `class` (one of §7.1's seven classes) — every rendered contract
+  carries its class token, and no field holds it today. Note: **guardrail is not a
+  class** — it is §7.2's cross-reference field. Customer rating is a quality metric
+  *serving as* a guardrail; render the relationship (nested under the metric it
+  protects), never a `GUARDRAIL` class label.
+- Nullable `owner / source / cadence / target` on metric contracts — §7.2 marks all
+  fields required, so one missing owner would hard-fail the whole artifact. A null
+  owner renders as `OWNER — TO BE ASSIGNED · blocking` and routes the metric to the
+  acquisition ledger; a blank cell is a rendering defect, a null with a plan is the
+  product.
+- E3's done-criterion ("≥1 outcome metric and ≥1 leading metric") plus §7.1's
+  in-waiting rule, made explicit for fixtures: the throughput unit's own metric may
+  carry `outcome` and `throughput` class jointly (say so on the card), and a signed
+  diagnosis with a constraint-in-waiting always contracts a capacity metric at that
+  candidate (Ironwood: install-crew utilization).
+
+**Event allowlist additions (Design Phase 1d discipline — deliberate, named):**
+`candidate_generated`, `falsification_tested`, `measurement_planned`. Do **not** add
+`acquisition_ordered` until a real write path for it exists — a line the wire cannot
+emit does not render.
+
+**The page itself (order 2d, queued after E3, before 2b's implementation if sequencing
+forces a choice):** the Measurement Record is a **new route** (`/diagnosis`) — it does
+not fit `FrameworkWorkspace`'s section-inspector model; budget it as a new shell that
+reuses the chat rail and WhyThisStep. The paste-able Claude Design spec was delivered
+to Matt 2026-08-16 (prototype lands in `design/reference/` when approved). Its
+adjudicated laws bind the implementation: rejections are client-shareable proof chain,
+scores are expert-only collapsed apparatus; amber marks the next discriminating
+measurement (a computable function of state — never the verdict); candidates render in
+elimination order, survivor last; no flow graphic on this page (the chain graphic is
+the reveal's signature object); danger-ink stays reserved for product errors — bad news
+from reality renders in cream with a form change, never in red.
+
 ### Appended 2026-08-16: THE DARK SWEEP (takes priority over remaining orders above)
 
 Matt reversed the visual doctrine: warm-dark is now the app's default (see Visual
