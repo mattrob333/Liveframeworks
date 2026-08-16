@@ -72,21 +72,28 @@ These were product bugs, not polish:
 
 ---
 
-## Visual direction (now on this branch)
+## Visual direction (REVERSED by Matt, 2026-08-16 — dark is the default)
 
-**Light is the default.** Dark tokens stay unused for a later operator toggle.
+**Warm-dark field manual is the app's default surface.** The constraint-reveal design
+study proved it: char and tobacco with cream ink and one glowing amber reads as MORE
+premium on a screenshare, not less — because it is the same paper with the lights off,
+never a navy SaaS console. The old cool-blue `--dark-*` tokens were wrong and are gone.
 
-Keep the field-manual identity on paper:
-- IBM Plex Mono
-- square corners
-- amber
-- 1px rules
-- quiet grid
+The palette (now live in `globals.css :root`): bg `#211D15` · panel `#282318` · panel2
+`#322C1E` · ink `#E9E2CF` · dim `#9C927C` (no darker — it must hold 4.5:1 on bg) ·
+faint `#403927` · amber `#E39A2B` + `--amber-dim` wash · ok `#8FBF6F` · danger `#C96A6A`.
 
-**Invert the paper. Do not invent a new look.** Not generic SaaS gray.
-The working surface (landing, canvas, pipeline, settings, export, 404, nav) matches a printed brief.
-
-On a filled framework: body 14px, chrome / labels 12px minimum, dim ink no lighter than about `#5A5548`. Labels are ink, not faint orange-on-cream.
+Unchanged laws:
+- IBM Plex Mono, square corners, 1px rules, quiet grid — the identity survives the flip
+- Body 14px, labels 12px minimum
+- Amber is reserved for the constraint and its argument chain — the flip makes this
+  MORE important: on dark, amber genuinely glows, so a second glowing element is twice
+  the crime
+- **Print is white paper, black ink, always.** The `@media print` block is hardcoded to
+  `#fff`/`#111` and must stay hardcoded — physical paper has no dark mode. The on-screen
+  `/export` preview renders dark like the rest of the app; the printed page does not.
+- Light-paper palette is preserved in a comment block in `:root` for a later
+  client-light toggle. Do not delete it.
 
 ---
 
@@ -140,6 +147,34 @@ context, not backlog).
 
 Don't-touch, unchanged: no acquirer mode, no cartridges, no BIC comparison UI, no daily
 brief, no persistence layer, no new frameworks or agents, nothing merged to `main`.
+
+### Appended 2026-08-16: THE DARK SWEEP (takes priority over remaining orders above)
+
+Matt reversed the visual doctrine: warm-dark is now the app's default (see Visual
+direction). The base token flip is already committed — every surface now inherits the
+warm-dark palette. Your job is the sweep and the judgment:
+
+D1. **Audit every surface at 1280 in dark**: landing/first-run, canvas + inspector,
+    pipeline (all 16 node states), every framework page, settings, export preview,
+    404, loading states, chat rail. Hunt: illegible dim-on-dark text (dim is `#9C927C`,
+    never darker), washed-out 1px rules, amber-wash blocks that now vanish or now
+    scream, hover states that lost contrast, any surface that accidentally kept a
+    light-paper assumption (hardcoded light color, wrong-direction shadow, etc.).
+    Each fix its own commit.
+D2. **Print integrity**: `window.print()` from /export must produce the identical
+    white-letter document as before the flip — zero visual diff. The `@media print`
+    block is hardcoded and should already guarantee this; verify, don't assume.
+D3. **G2 gauntlet re-run in dark**: the nine-box, Industry Map, SWOT quadrants, 7S at
+    1280 — same Strategyzer-grade bar, new surface. The Inspector signs each.
+D4. **Amber discipline audit**: on dark, amber glows for real. Sweep every surface for
+    amber that is now doing decoration rather than marking the constraint/argument
+    chain; demote to ink/dim. The reveal design's law is now app law.
+D5. Loading/LoadingState module: verify the amber-wash grid and shimmer read correctly
+    on dark panels (module uses tokens with light fallbacks — fallbacks never fire,
+    but the wash opacities may need a nudge).
+
+Done for the sweep = every page signed in dark at G2, print diff-clean, and one
+screenshot set (all pages, 1280) in the PR for Matt's morning read.
 
 ---
 

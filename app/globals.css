@@ -1,18 +1,22 @@
 :root{
-  /* Light paper — field manual on a desk, not a dark console inverted sloppily. */
-  --bg:#F4F0E6; --panel:#FBF8F1; --panel2:#EBE6D8; --line:#1C1A14;
-  --dim:#5A5548; --faint:#D4CDBB; --amber:#C47A08; --amber-dim:rgba(196,122,8,.10);
-  --ok:#3D7A38; --danger:#A33A3A; --danger-ink:#8B2E2E;
+  /* Warm-dark field manual — char and tobacco, never console navy (Matt, 2026-08-16).
+     Same paper, lights off: cream ink on warm char, amber brighter to hold its glow.
+     The print brief stays white paper / #111 ink — hardcoded in @media print, immune. */
+  --bg:#211D15; --panel:#282318; --panel2:#322C1E; --line:#E9E2CF;
+  --dim:#9C927C; --faint:#403927; --amber:#E39A2B; --amber-dim:rgba(227,154,43,.12);
+  --ok:#8FBF6F; --danger:#C96A6A; --danger-ink:#E08A8A;
+  --grid-line:rgba(233,226,207,.045); --amber-line:rgba(227,154,43,.45);
   --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  /* Reserved for a later operator dark toggle. Unused by the default surface. */
-  --dark-bg:#0B0D10; --dark-panel:#101318; --dark-panel2:#171B24; --dark-line:#E8E6E1;
-  --dark-dim:#8A919E; --dark-faint:#2A2F3A; --dark-amber:#FFB020; --dark-ok:#7BC96F;
+  /* Light paper, preserved for the client-light toggle (later):
+     bg #F4F0E6 · panel #FBF8F1 · panel2 #EBE6D8 · line #1C1A14 · dim #5A5548
+     faint #D4CDBB · amber #C47A08 · amber-dim rgba(196,122,8,.10)
+     ok #3D7A38 · danger #A33A3A · danger-ink #8B2E2E · grid rgba(28,26,20,.045) */
 }
-html{color-scheme:light;scroll-behavior:smooth}
+html{color-scheme:dark;scroll-behavior:smooth}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--line);font-family:var(--mono);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:linear-gradient(rgba(28,26,20,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(28,26,20,.045) 1px,transparent 1px);
+  background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
   background-size:48px 48px}
 a{color:inherit;text-decoration:none}
 button,input,textarea{font-family:var(--mono)}
@@ -37,7 +41,7 @@ h1{font-size:clamp(22px,4vw,36px);font-weight:600;margin:12px 0 10px;line-height
 .stage::before{content:attr(data-num);position:absolute;left:0;top:2px;width:22px;height:22px;
   border:1px solid var(--amber);color:var(--amber);background:var(--bg);font-size:10px;
   display:flex;align-items:center;justify-content:center;z-index:1}
-.stage::after{content:"";position:absolute;left:11px;top:30px;bottom:-32px;border-left:1px dashed rgba(196,122,8,.45)}
+.stage::after{content:"";position:absolute;left:11px;top:30px;bottom:-32px;border-left:1px dashed var(--amber-line)}
 .stage:last-of-type::after{bottom:0}
 .stage-title{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:2px}
 .stage-role{font-size:11px;color:var(--dim);margin-bottom:12px}
@@ -190,7 +194,7 @@ footer b{color:var(--amber)}
 .node-ready::after{content:"▲ ENABLED";position:absolute;top:-8px;right:12px;padding:0 6px;background:var(--bg);color:var(--amber);font-size:8px;letter-spacing:.18em}
 .node-ready .n-status{color:var(--ok)}
 .node-ready .n-status::before{content:"● ";color:var(--ok)}
-.node-complete{border-color:rgba(196,122,8,.55)}
+.node-complete{border-color:var(--amber-line)}
 .node-running .n-status{color:var(--amber)}
 .node-running .n-status::before{content:"◌ ";color:var(--amber)}
 .node-complete .n-status{color:var(--ok)}
