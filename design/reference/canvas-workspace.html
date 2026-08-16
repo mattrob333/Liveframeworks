@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background-color:#1C1812;background-image:linear-gradient(rgba(233,226,207,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(233,226,207,.045) 1px,transparent 1px);background-size:48px 48px;color:#E9E2CF;font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;-webkit-font-smoothing:antialiased}
+a{color:#E9E2CF;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#403927}
+a:hover{text-decoration-color:#E9E2CF}
+::selection{background:#403927}
+[data-op]{cursor:pointer}
+[data-op]:hover{background:#3A3325!important}
+input::placeholder{color:#9C927C}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:#403927}
+::-webkit-scrollbar-track{background:transparent}
+@supports not selector(::-webkit-scrollbar){*{scrollbar-width:thin;scrollbar-color:#403927 transparent}}
+</style>
+</helmet>
+<!-- DEMO: Driftline Coffee Roasters is a fictional company. The state switcher row is DEV ONLY and not part of the product UI. -->
+<div style="min-height:100vh">
+
+<div style="max-width:1304px;margin:0 auto;padding:16px 24px 0;display:flex;gap:20px;align-items:baseline;font-size:13px;letter-spacing:.08em;color:#9C927C">
+  <span style="font-weight:600;letter-spacing:.14em">DEV ONLY</span>
+  <span onClick="{{ dv.a }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#403927">A — THE DRAW</span>
+  <span onClick="{{ dv.af }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#403927">A — FAILED</span>
+  <span onClick="{{ dv.b }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#403927">B — FIRST REVEAL</span>
+  <span onClick="{{ dv.c }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#403927">C — DAILY HOME</span>
+  <span onClick="{{ dv.cs }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#403927">C — STALE</span>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center">
+<div style="flex:1 1 480px;min-width:0;max-width:1200px">
+<sc-if value="{{ stDraw }}" hint-placeholder-val="{{ true }}">
+<div style="max-width:1080px;margin:0 auto;padding:32px 24px 64px" data-screen-label="State A — The Draw">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+    <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em"><span style="color:#E39A2B">FIRST SURVEY</span><span style="color:#9C927C"> · RUN 1</span></div>
+    <div style="font-size:13px;line-height:1.45;color:#9C927C;letter-spacing:.1em">BUSINESS MODEL CANVAS</div>
+  </div>
+  <div style="font-size:36px;line-height:1.15;font-weight:600;margin-top:12px">DRIFTLINE COFFEE ROASTERS</div>
+  <div style="height:2px;background:#E39A2B;margin-top:14px"></div>
+  <div style="font-size:13px;line-height:1.6;color:#9C927C;margin-top:8px">driftline.example · one page: how this business makes, delivers, and keeps money — drawn from live research.</div>
+
+  <div style="margin-top:24px;background:#282318;border:1px solid #403927;padding:12px">
+  <div style="display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:290px 290px 190px;gap:8px">
+    <div style="grid-column:1/3;grid-row:1/3;border:1px dashed #403927;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden"><div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">KEY PARTNERS</div><div style="margin-top:2px"><em>who you can't run without</em></div></div><div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;color:#9C927C"><em>unsurveyed</em></div></div>
+    <div style="grid-column:3/5;grid-row:1/2;border:1px dashed #403927;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden"><div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">KEY ACTIVITIES</div><div style="margin-top:2px"><em>the work the model depends on</em></div></div><div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;color:#9C927C"><em>unsurveyed</em></div></div>
+    <div style="grid-column:3/5;grid-row:2/3;border:1px dashed #403927;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden"><div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">KEY RESOURCES</div><div style="margin-top:2px"><em>what the work runs on</em></div></div><div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;color:#9C927C"><em>unsurveyed</em></div></div>
+    <div style="grid-column:5/7;grid-row:1/3;border:1px dashed #403927;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden"><div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">VALUE PROPOSITIONS</div><div style="margin-top:2px"><em>why anyone pays you</em></div></div><div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;color:#9C927C"><em>unsurveyed</em></div></div>
+    <div style="grid-column:7/9;grid-row:1/2;border:1px dashed #403927;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden"><div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">CUSTOMER RELATIONSHIPS</div><div style="margin-top:2px"><em>how it feels to be your customer</em></div></div><div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;color:#9C927C"><em>unsurveyed</em></div></div>
+    <div style="grid-column:7/9;grid-row:2/3;border:1px dashed #403927;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden"><div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">CHANNELS</div><div style="margin-top:2px"><em>how customers reach you</em></div></div><div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;color:#9C927C"><em>unsurveyed</em></div></div>
+    <div style="grid-column:9/11;grid-row:1/3;border:1px dashed #403927;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden"><div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">CUSTOMER SEGMENTS</div><div style="margin-top:2px"><em>who you serve</em></div></div><div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;color:#9C927C"><em>unsurveyed</em></div></div>
+    <div style="grid-column:1/6;grid-row:3/4;border:1px dashed #403927;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden"><div style="font-size:13px;line-height:1.5;color:#9C927C"><span style="font-weight:600;letter-spacing:.1em">COST STRUCTURE</span> — <em>where the money goes</em></div><div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;color:#9C927C"><em>unsurveyed</em></div></div>
+    <div style="grid-column:6/11;grid-row:3/4;border:1px dashed #403927;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden"><div style="font-size:13px;line-height:1.5;color:#9C927C"><span style="font-weight:600;letter-spacing:.1em">REVENUE STREAMS</span> — <em>where the money comes from</em></div><div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;color:#9C927C"><em>unsurveyed</em></div></div>
+  </div>
+  </div>
+  <div style="font-size:14px;line-height:1.6;color:#9C927C;margin-top:10px"><em>How to read this — every line in the log below is a real step, printed the moment it happens. Nothing is animated for show.</em></div>
+
+  <div style="margin-top:20px;background:#282318;border:1px solid #403927">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 16px;border-bottom:1px solid #403927">
+      <div style="font-size:13px;font-weight:600;letter-spacing:.14em;color:#E39A2B">FIELD LOG</div>
+      <div style="font-size:14px;font-variant-numeric:tabular-nums"><span style="color:#9C927C;letter-spacing:.1em;font-size:13px">ELAPSED </span>{{ elapsed }}</div>
+    </div>
+    <div ref="{{ logRef }}" style="max-height:260px;overflow-y:auto;padding:12px 16px;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 14px);mask-image:linear-gradient(180deg,transparent 0,#000 14px)">
+      <sc-for list="{{ loglines }}" as="ln" hint-placeholder-count="1">
+        <div style="display:grid;grid-template-columns:52px 1fr;gap:10px;padding:3px 0">
+          <sc-if value="{{ ln.live }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#E39A2B;font-variant-numeric:tabular-nums">▸ {{ ln.stamp }}</div></sc-if>
+          <sc-if value="{{ ln.old }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;color:#9C927C;font-variant-numeric:tabular-nums">{{ ln.stamp }}</div></sc-if>
+          <sc-if value="{{ ln.danger }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#E08A8A;font-variant-numeric:tabular-nums">{{ ln.stamp }}</div></sc-if>
+          <sc-if value="{{ ln.plain }}" hint-placeholder-val="{{ true }}"><div style="font-size:14px;line-height:1.6">{{ ln.msg }}</div></sc-if>
+          <sc-if value="{{ ln.danger }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px;line-height:1.6;color:#E08A8A">{{ ln.msg }}</div></sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+    <div style="font-size:13px;color:#9C927C;letter-spacing:.14em;font-weight:600">{{ phase }}</div>
+    <sc-if value="{{ running }}" hint-placeholder-val="{{ true }}"><div onClick="{{ cancelRun }}" style="font-size:13px;border:1px solid #403927;padding:6px 12px;cursor:pointer;user-select:none">Cancel run</div></sc-if>
+    <sc-if value="{{ failed }}" hint-placeholder-val="{{ false }}"><div onClick="{{ retryRun }}" style="font-size:13px;border:1px solid #403927;padding:6px 12px;cursor:pointer;user-select:none">Retry run</div></sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ stMap }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:1080px;margin:0 auto;padding:32px 24px 64px" data-screen-label="States B/C — Canvas Home">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+    <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em"><span style="color:#E39A2B">FIRST SURVEY</span><span style="color:#9C927C"> · RUN 1</span></div>
+    <div style="font-size:13px;line-height:1.45;color:#9C927C;letter-spacing:.1em">BUSINESS MODEL CANVAS</div>
+  </div>
+  <div style="font-size:36px;line-height:1.15;font-weight:600;margin-top:12px">DRIFTLINE COFFEE ROASTERS</div>
+  <div style="height:2px;background:#E39A2B;margin-top:14px"></div>
+
+  <sc-if value="{{ stB }}" hint-placeholder-val="{{ false }}">
+    <div style="font-size:15px;line-height:1.6;margin-top:14px">First survey complete · 3m 26s · 11 sources · 34 claims mapped, 6 marked <em>[inferred]</em>.</div>
+  </sc-if>
+
+  <sc-if value="{{ stC }}" hint-placeholder-val="{{ false }}">
+    <sc-if value="{{ thesisOn }}" hint-placeholder-val="{{ true }}">
+      <div style="font-size:20px;line-height:1.45;margin-top:14px;max-width:62ch;text-wrap:pretty">A healthy subscription business funding a wholesale channel that still runs through one person's phone.</div>
+    </sc-if>
+    <div style="margin-top:14px">
+      <div style="font-size:13px;font-weight:600;letter-spacing:.14em;color:#E39A2B">LIMITING FACTOR</div>
+      <div style="font-size:16px;line-height:1.65;margin-top:4px;max-width:62ch">Wholesale throughput — every sample, quote, and reorder waits on Maya.</div>
+    </div>
+    <div style="font-size:13px;line-height:1.45;color:#9C927C;letter-spacing:.1em;margin-top:12px">BUSINESS MODEL CANVAS · REVISION 3 · SURVEYED AUG 15 · 11 SOURCES</div>
+  </sc-if>
+
+  <div style="margin-top:8px"><span onClick="{{ toggleRecord }}" style="font-size:13px;color:#9C927C;cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#403927">How this was built ›</span></div>
+  <sc-if value="{{ showRecord }}" hint-placeholder-val="{{ false }}">
+    <div style="margin-top:10px;background:#282318;border:1px solid #403927;max-height:220px;overflow-y:auto;padding:12px 16px;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 14px);mask-image:linear-gradient(180deg,transparent 0,#000 14px)">
+      <div style="font-size:13px;font-weight:600;letter-spacing:.14em;color:#9C927C;margin-bottom:8px">FIELD LOG — RECORD OF RUN 1</div>
+      <sc-for list="{{ recordLines }}" as="rl" hint-placeholder-count="3">
+        <div style="display:grid;grid-template-columns:52px 1fr;gap:10px;padding:2px 0"><div style="font-size:13px;color:#9C927C;font-variant-numeric:tabular-nums">{{ rl.stamp }}</div><div style="font-size:14px;line-height:1.6;color:#9C927C">{{ rl.msg }}</div></div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ stStale }}" hint-placeholder-val="{{ false }}">
+    <div style="margin-top:16px;border:1px solid #403927;border-left:2px solid #E39A2B;padding:12px 16px;font-size:14px;line-height:1.6;color:#9C927C">This map predates newer work — the intake changed Aug 16. The map below is still readable.</div>
+  </sc-if>
+
+  <div style="margin-top:20px;background:#282318;border:1px solid #403927;padding:12px">
+  <div style="display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:290px 290px 190px;gap:8px">
+    <div data-op="" onClick="{{ ib.kp }}" style="position:relative;grid-column:1/3;grid-row:1/3;background:#322C1E;border:1px solid #4A4230;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden">
+      <sc-if value="{{ sel.kp }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;border:1px solid #E39A2B;pointer-events:none"></div></sc-if>
+      <div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">KEY PARTNERS</div><div style="margin-top:2px"><em>who you can't run without</em></div></div>
+      <div style="border-top:1px solid #403927;margin-top:8px"></div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:14px;line-height:1.5;font-weight:500"><span style="color:#E39A2B">·</span> Two importers, annual contracts.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Cold-brew co-packed locally. <em style="font-size:13px;color:#9C927C">[inferred]</em></div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Metro couriers for drops.</div>
+      </div>
+    </div>
+    <div data-op="" onClick="{{ ib.ka }}" style="position:relative;grid-column:3/5;grid-row:1/2;background:#322C1E;border:1px solid #4A4230;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden">
+      <sc-if value="{{ sel.ka }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;border:1px solid #E39A2B;pointer-events:none"></div></sc-if>
+      <sc-if value="{{ stC }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;border:1px solid #E39A2B;background:rgba(227,154,43,.05);pointer-events:none"></div></sc-if>
+      <div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">KEY ACTIVITIES</div><div style="margin-top:2px"><em>the work the model depends on</em></div></div>
+      <div style="border-top:1px solid #403927;margin-top:8px"></div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:14px;line-height:1.5;font-weight:500"><span style="color:#E39A2B">·</span> Roast + QC, 3 days a week.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> All wholesale runs through Maya.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Subscriptions automated.</div>
+      </div>
+      <div style="margin-top:auto;padding-top:10px;font-size:13px;color:#9C927C">+ 1 more — open the box</div>
+    </div>
+    <div data-op="" onClick="{{ ib.kr }}" style="position:relative;grid-column:3/5;grid-row:2/3;background:#322C1E;border:1px solid #4A4230;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden">
+      <sc-if value="{{ sel.kr }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;border:1px solid #E39A2B;pointer-events:none"></div></sc-if>
+      <div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">KEY RESOURCES</div><div style="margin-top:2px"><em>what the work runs on</em></div></div>
+      <div style="border-top:1px solid #403927;margin-top:8px"></div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:14px;line-height:1.5;font-weight:500"><span style="color:#E39A2B">·</span> 25kg roaster at ~60% capacity.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Maya's palate + relationships.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Subscriber list — 410 active.</div>
+      </div>
+      <div style="margin-top:auto;padding-top:10px;font-size:13px;color:#9C927C">+ 1 more — open the box</div>
+    </div>
+    <div data-op="" onClick="{{ ib.vp }}" style="position:relative;grid-column:5/7;grid-row:1/3;background:#322C1E;border:1px solid #4A4230;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden">
+      <sc-if value="{{ sel.vp }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;border:1px solid #E39A2B;pointer-events:none"></div></sc-if>
+      <div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">VALUE PROPOSITIONS</div><div style="margin-top:2px"><em>why anyone pays you</em></div></div>
+      <div style="border-top:1px solid #403927;margin-top:8px"></div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:14px;line-height:1.5;font-weight:500"><span style="color:#E39A2B">·</span> Fresh-roast subscriptions.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Founder-grade QC wholesale.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Shipped within 48h of roast.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Tastings convert cafés. <em style="font-size:13px;color:#9C927C">[inferred]</em></div>
+      </div>
+      <div style="margin-top:auto;padding-top:10px;font-size:13px;color:#9C927C">+ 2 more — open the box</div>
+    </div>
+    <div data-op="" onClick="{{ ib.cr }}" style="position:relative;grid-column:7/9;grid-row:1/2;background:#322C1E;border:1px solid #4A4230;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden">
+      <sc-if value="{{ sel.cr }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;border:1px solid #E39A2B;pointer-events:none"></div></sc-if>
+      <div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">CUSTOMER RELATIONSHIPS</div><div style="margin-top:2px"><em>how it feels to be your customer</em></div></div>
+      <div style="border-top:1px solid #403927;margin-top:8px"></div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:14px;line-height:1.5;font-weight:500"><span style="color:#E39A2B">·</span> Subs: automated, healthy.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Wholesale: personal.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> No CRM — Maya's phone. <em style="font-size:13px;color:#9C927C">[inferred]</em></div>
+      </div>
+      <div style="margin-top:auto;padding-top:10px;font-size:13px;color:#9C927C">+ 1 more — open the box</div>
+    </div>
+    <div data-op="" onClick="{{ ib.ch }}" style="position:relative;grid-column:7/9;grid-row:2/3;background:#322C1E;border:1px solid #4A4230;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden">
+      <sc-if value="{{ sel.ch }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;border:1px solid #E39A2B;pointer-events:none"></div></sc-if>
+      <div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">CHANNELS</div><div style="margin-top:2px"><em>how customers reach you</em></div></div>
+      <div style="border-top:1px solid #403927;margin-top:8px"></div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:14px;line-height:1.5;font-weight:500"><span style="color:#E39A2B">·</span> Direct site checkout.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Founder outreach + samples.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Farmers-market stall. <em style="font-size:13px;color:#9C927C">[inferred]</em></div>
+      </div>
+      <div style="margin-top:auto;padding-top:10px;font-size:13px;color:#9C927C">+ 1 more — open the box</div>
+    </div>
+    <div data-op="" onClick="{{ ib.cs }}" style="position:relative;grid-column:9/11;grid-row:1/3;background:#322C1E;border:1px solid #4A4230;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden">
+      <sc-if value="{{ sel.cs }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;border:1px solid #E39A2B;pointer-events:none"></div></sc-if>
+      <div style="font-size:13px;line-height:1.5;color:#9C927C"><div style="font-weight:600;letter-spacing:.1em">CUSTOMER SEGMENTS</div><div style="margin-top:2px"><em>who you serve</em></div></div>
+      <div style="border-top:1px solid #403927;margin-top:8px"></div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:14px;line-height:1.5;font-weight:500"><span style="color:#E39A2B">·</span> 410 subscribers — ~38%.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> 26 café accounts — ~45%.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Events/retail — ~17%.</div>
+      </div>
+      <div style="margin-top:auto;padding-top:10px;font-size:13px;color:#9C927C">+ 1 more — open the box</div>
+    </div>
+    <div data-op="" onClick="{{ ib.cost }}" style="position:relative;grid-column:1/6;grid-row:3/4;border:1px dashed #403927;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden">
+      <sc-if value="{{ sel.cost }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;border:1px solid #E39A2B;pointer-events:none"></div></sc-if>
+      <div style="font-size:13px;line-height:1.5;color:#9C927C"><span style="font-weight:600;letter-spacing:.1em">COST STRUCTURE</span> — <em>where the money goes</em></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"><em style="font-size:13px;color:#9C927C">unsurveyed</em><div style="font-size:14px;line-height:1.6;color:#9C927C">No cost data was provided or found.</div></div>
+    </div>
+    <div data-op="" onClick="{{ ib.rev }}" style="position:relative;grid-column:6/11;grid-row:3/4;background:#322C1E;border:1px solid #4A4230;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden">
+      <sc-if value="{{ sel.rev }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;border:1px solid #E39A2B;pointer-events:none"></div></sc-if>
+      <div style="font-size:13px;line-height:1.5;color:#9C927C"><span style="font-weight:600;letter-spacing:.1em">REVENUE STREAMS</span> — <em>where the money comes from</em></div>
+      <div style="border-top:1px solid #403927;margin-top:8px"></div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:14px;line-height:1.5;font-weight:500"><span style="color:#E39A2B">·</span> Subscriptions — ~38%, recurring and automated.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Wholesale — ~45%, concentrated in 26 accounts.</div>
+        <div style="font-size:14px;line-height:1.5"><span style="color:#E39A2B">·</span> Events and retail — ~17%, seasonal cash.</div>
+      </div>
+      <div style="margin-top:auto;padding-top:10px;font-size:13px;color:#9C927C">+ 2 more — open the box</div>
+    </div>
+  </div>
+  </div>
+
+  <div style="margin-top:24px;background:#282318;border:1px solid #403927;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap">
+    <div style="font-size:14px;line-height:1.6;color:#9C927C;max-width:56ch">Next: map the industry around Driftline — the canvas says what you are; the map says who else is on the field.</div>
+    <a href="Industry Map.dc.html" style="font-size:14px;font-weight:600;border:1px solid #E9E2CF;padding:10px 16px;text-decoration:none;white-space:nowrap">Draw Industry Map</a>
+  </div>
+
+  <sc-if value="{{ inspOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="margin-top:20px;background:#282318;border:1px solid #403927;padding:16px 18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:16px">
+        <div style="font-size:15px;font-weight:600;letter-spacing:.1em">{{ insp.title }}</div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span title="Opens chat on this box in the product" style="font-size:13px;border:1px solid #403927;padding:5px 10px;cursor:pointer;user-select:none">Discuss</span>
+          <span onClick="{{ closeInsp }}" style="font-size:14px;border:1px solid #403927;padding:5px 9px;cursor:pointer;user-select:none">×</span>
+        </div>
+      </div>
+      <div style="border-top:1px solid #403927;margin-top:10px"></div>
+      <sc-if value="{{ inspEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:16px;line-height:1.65;color:#9C927C;margin-top:12px">No cost data was provided or found. Share a P&amp;L line or a monthly spend range in chat and this box redraws on the next run.</div>
+      </sc-if>
+      <div style="margin-top:6px">
+        <sc-for list="{{ insp.claims }}" as="c" hint-placeholder-count="2">
+          <div style="padding:10px 0;border-bottom:1px solid #403927">
+            <div style="font-size:16px;line-height:1.65;max-width:62ch;text-wrap:pretty">{{ c.t }}</div>
+            <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:4px">{{ c.ap }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <!-- DEMO-ONLY flourish: leadership-split marker, Customer Segments inspector only -->
+      <sc-if value="{{ csSplit }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:12px;font-size:14px;line-height:1.6;color:#9C927C"><span style="letter-spacing:.1em;font-weight:600">◆ LEADERSHIP SPLIT</span> — Maya cites subscriptions as what pays the bills; Priya cites wholesale — the call record sides with throughput. Both framings are legitimate; the disagreement is data.</div>
+      </sc-if>
+      <div style="font-size:13px;font-weight:600;letter-spacing:.14em;color:#9C927C;margin-top:16px">SOURCES</div>
+      <div style="margin-top:6px">
+        <sc-for list="{{ insp.sources }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:#9C927C">{{ s.id }} · {{ s.kind }} · <a href="#" style="color:#9C927C">{{ s.title }}</a> · {{ s.date }}</div></sc-for>
+      </div>
+      <div style="font-size:13px;font-weight:600;letter-spacing:.14em;color:#9C927C;margin-top:16px">OPEN QUESTIONS ON THIS MAP</div>
+      <div style="font-size:14px;line-height:1.6;color:#9C927C;margin-top:6px">
+        <div style="padding:2px 0">— Costs are unmapped: no cost data was provided or found; the box says so.</div>
+        <div style="padding:2px 0">— Wholesale margin uses an external benchmark, not Driftline's books.</div>
+        <div style="padding:2px 0">— Churn is read from list size over time, not a subscriber export.</div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{ railOn }}" hint-placeholder-val="{{ true }}">
+<div style="flex:0 1 428px;min-width:344px;padding:0 24px;box-sizing:border-box" data-screen-label="Chat rail — Business Model Canvas Agent">
+  <div style="position:sticky;top:5vh;height:90vh;box-sizing:border-box;display:flex;flex-direction:column;background:#282318;border:1px solid #403927">
+    <div style="display:flex;align-items:baseline;gap:10px;padding:14px 16px;border-bottom:1px solid #403927">
+      <span style="font-size:13px;color:#E39A2B">●</span>
+      <span style="font-size:13px;font-weight:600;letter-spacing:.14em">BUSINESS MODEL CANVAS AGENT</span>
+    </div>
+    <div data-op="" onClick="{{ togSettings }}" style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 16px;border-bottom:1px solid #403927;user-select:none">
+      <span style="font-size:13px;font-weight:600;letter-spacing:.14em;color:#9C927C">SETTINGS</span>
+      <span style="font-size:13px;color:#9C927C">{{ setCaret }}</span>
+    </div>
+    <sc-if value="{{ setOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:12px 16px;border-bottom:1px solid #403927;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;gap:12px"><span style="font-size:13px;color:#9C927C;letter-spacing:.08em">SURVEY DEPTH</span><span style="font-size:14px">Standard</span></div>
+        <div style="display:flex;justify-content:space-between;gap:12px"><span style="font-size:13px;color:#9C927C;letter-spacing:.08em">WEB RESEARCH</span><span style="font-size:14px">On</span></div>
+        <div style="display:flex;justify-content:space-between;gap:12px"><span style="font-size:13px;color:#9C927C;letter-spacing:.08em">REDRAW</span><span style="font-size:14px">On new evidence</span></div>
+      </div>
+    </sc-if>
+    <div data-op="" onClick="{{ togInputs }}" style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 16px;border-bottom:1px solid #403927;user-select:none">
+      <span style="font-size:13px;font-weight:600;letter-spacing:.14em;color:#9C927C">INPUTS</span>
+      <span style="font-size:13px;color:#9C927C">{{ inpCaret }}</span>
+    </div>
+    <sc-if value="{{ inpOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:12px 16px;border-bottom:1px solid #403927;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:14px;line-height:1.5">driftline.example <span style="font-size:13px;color:#9C927C">· SITE</span></div>
+        <div style="font-size:14px;line-height:1.5">Founder intake — Maya R. <span style="font-size:13px;color:#9C927C">· AUG 2026</span></div>
+        <div style="font-size:14px;line-height:1.5">Founder call record <span style="font-size:13px;color:#9C927C">· AUG 2026</span></div>
+        <div style="font-size:14px;line-height:1.5">Subscriber + account exports <span style="font-size:13px;color:#9C927C">· AUG 2026</span></div>
+      </div>
+    </sc-if>
+    <div style="flex:1;overflow-y:auto;padding:14px 16px">
+      <div style="background:#322C1E;border:1px solid #403927;padding:12px 14px;font-size:14px;line-height:1.6;color:#9C927C">{{ railMsg }}</div>
+    </div>
+    <div style="padding:0 16px 16px">
+      <div style="display:flex;gap:8px">
+        <input type="text" placeholder="Ask anything" style="flex:1;min-width:0;box-sizing:border-box;background:#1C1812;border:1px solid #403927;color:#E9E2CF;font-family:inherit;font-size:14px;padding:10px 12px;outline:none">
+        <div title="Send" style="border:1px solid #403927;background:#322C1E;color:#E39A2B;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;width:42px;cursor:pointer;user-select:none">→</div>
+      </div>
+      <sc-if value="{{ running }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;line-height:1.5;color:#9C927C;margin-top:8px">Answers come when the survey lands.</div></sc-if>
+    </div>
+  </div>
+</div>
+</sc-if>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;chatRail&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;State A&quot;},
+  &quot;thesis&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;State C&quot;},
+  &quot;demoSplit&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;State C&quot;}
+}">
+class Component extends DCLogic {
+  state = { mode: 'a', t: 0, failMsg: null, insp: null, showRecord: false, railSet: false, railInp: false };
+  SCRIPT = [
+    { t: 0, m: 'Phase 1 of 4 — reading the company.' },
+    { t: 14, m: 'Phase 2 of 4 — researching the field.' },
+    { t: 18, m: 'Search 1: "driftline coffee roasters"' },
+    { t: 25, m: 'Reading 6 search results.' },
+    { t: 28, m: 'Search 2: "specialty coffee roaster subscription churn benchmark"' },
+    { t: 36, m: 'Reading 5 search results.' },
+    { t: 39, m: 'Search 3: "wholesale coffee program founder-led sales bottleneck"' },
+    { t: 47, m: 'Reading 4 search results.' },
+    { t: 50, m: 'Search 4: "coffee roaster wholesale margin vs direct subscription margin"' },
+    { t: 58, m: 'Reading 6 search results.' },
+    { t: 98, m: 'Search 5: "cafe wholesale reorder cadence small roaster"' },
+    { t: 105, m: 'Reading 5 search results.' },
+    { t: 108, m: 'Search 6: "coffee subscription pause skip retention"' },
+    { t: 115, m: 'Reading 3 search results.' },
+    { t: 118, m: 'Search 7: "farmers market stall coffee wholesale pipeline"' },
+    { t: 124, m: 'Reading 4 search results.' },
+    { t: 127, m: 'Search 8: "25kg coffee roaster capacity utilization"' },
+    { t: 133, m: 'Reading 2 search results.' },
+    { t: 136, m: 'Search 9: "coffee roaster events retail revenue seasonality"' },
+    { t: 141, m: 'Reading 3 search results.' },
+    { t: 145, m: 'Research done — 9 searches, 11 sources.' },
+    { t: 149, m: 'Phase 3 of 4 — structuring the framework.' },
+    { t: 152, tok: true },
+    { t: 186, m: 'Tightening the artifact to fit the schema.' },
+    { t: 192, m: 'Phase 4 of 4 — attaching evidence.' }
+  ];
+  SRC = [
+    { id: 'S01', kind: 'SITE', title: 'driftline.example — site copy, subscriptions + wholesale pages', date: '2026' },
+    { id: 'S02', kind: 'INTAKE', title: 'Founder intake paragraph — Maya R.', date: 'AUG 2026' },
+    { id: 'S03', kind: 'CALL', title: 'Founder call record — revenue mix and wholesale process', date: 'AUG 2026' },
+    { id: 'S04', kind: 'REPORT', title: 'Specialty-coffee subscription retention ranges', date: '2025' },
+    { id: 'S05', kind: 'FORUM', title: 'Roaster wholesale ops thread — sample-to-account cycle', date: '2025' },
+    { id: 'S06', kind: 'SITE', title: 'Subscription checkout flow — plan tiers', date: '2026' },
+    { id: 'S07', kind: 'SITE', title: 'Wholesale inquiry form + sample request page', date: '2026' },
+    { id: 'S08', kind: 'DOC', title: 'Subscriber export summary — 410 active', date: 'AUG 2026' },
+    { id: 'S09', kind: 'DOC', title: 'Wholesale account list — 26 active', date: 'AUG 2026' },
+    { id: 'S10', kind: 'REPORT', title: 'Wholesale vs DTC margin benchmarks, roasters', date: '2024' },
+    { id: 'S11', kind: 'PRESS', title: 'Local feature — Driftline events program', date: '2025' }
+  ];
+  INSP = {
+    kp: { title: 'KEY PARTNERS', srcs: ['S03', 'S01'], claims: [
+      { t: 'Two green-coffee importers on annual contracts — pricing locked each harvest.', ap: 'KNOWN · HIGH · 1 SOURCE' },
+      { t: 'A local kitchen co-packs the cold-brew line.', ap: '[inferred] · MED · 1 SOURCE' },
+      { t: 'Metro couriers handle wholesale drops twice a week.', ap: 'KNOWN · MED · 1 SOURCE' }
+    ]},
+    ka: { title: 'KEY ACTIVITIES', srcs: ['S02', 'S03'], claims: [
+      { t: 'Roasting and QC run three production days a week.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: 'Every wholesale sample, quote, and reorder runs through Maya personally.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: 'Subscription fulfillment is batched and automated.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: 'Green buying trips happen twice a year.', ap: 'KNOWN · LOW · 1 SOURCE' }
+    ]},
+    kr: { title: 'KEY RESOURCES', srcs: ['S03', 'S08', 'S01'], claims: [
+      { t: 'A 25kg roaster running at roughly 60% capacity.', ap: 'KNOWN · MED · 1 SOURCE' },
+      { t: "Maya's palate and her account relationships.", ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: 'The subscriber list — 410 active, an owned channel.', ap: 'KNOWN · HIGH · 1 SOURCE' },
+      { t: 'Brand voice — site copy converts without discounting.', ap: '[inferred] · MED · 1 SOURCE' }
+    ]},
+    vp: { title: 'VALUE PROPOSITIONS', srcs: ['S01', 'S06', 'S04', 'S11'], claims: [
+      { t: 'Fresh-roast subscription coffee on a schedule you never think about.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: 'A wholesale program with founder-grade quality control on every account.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: 'Roast-date transparency — shipped within 48 hours of roast.', ap: 'KNOWN · MED · 1 SOURCE' },
+      { t: 'Events and tastings that convert cafés into accounts.', ap: '[inferred] · MED · 2 SOURCES' },
+      { t: 'Pause-and-skip flexibility keeps subscription churn low.', ap: 'KNOWN · MED · 2 SOURCES' },
+      { t: "Local identity — 'roasted here' carries weight with cafés.", ap: 'KNOWN · LOW · 1 SOURCE' }
+    ]},
+    cr: { title: 'CUSTOMER RELATIONSHIPS', srcs: ['S03', 'S06', 'S08'], claims: [
+      { t: 'Subscriptions: automated, low-touch, healthy.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: 'Wholesale: personal, founder-dependent, slow to scale.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: "No CRM — relationships live in Maya's phone.", ap: '[inferred] · MED · 1 SOURCE' },
+      { t: 'Lapsed subscribers are never contacted — no win-back exists.', ap: 'KNOWN · MED · 1 SOURCE' }
+    ]},
+    ch: { title: 'CHANNELS', srcs: ['S01', 'S07', 'S11'], claims: [
+      { t: 'Direct site checkout for subscriptions.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: 'Founder-led outreach and samples for wholesale.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: 'A farmers-market stall works as the discovery channel.', ap: '[inferred] · MED · 1 SOURCE' },
+      { t: 'Instagram drives subscription trials.', ap: '[assumed] · LOW · NO SOURCE ON FILE' }
+    ]},
+    cs: { title: 'CUSTOMER SEGMENTS', srcs: ['S08', 'S09', 'S03'], claims: [
+      { t: '410 home subscribers — about 38% of revenue, healthy and automated.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: '26 wholesale café accounts — about 45% and growing.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: 'Events and retail walk-up — about 17%, seasonal.', ap: 'KNOWN · MED · 1 SOURCE' },
+      { t: 'No single café account exceeds roughly 6% of revenue.', ap: 'KNOWN · MED · 1 SOURCE' }
+    ]},
+    cost: { title: 'COST STRUCTURE', srcs: [], claims: [] },
+    rev: { title: 'REVENUE STREAMS', srcs: ['S03', 'S09', 'S10'], claims: [
+      { t: 'Subscriptions — about 38%, recurring and automated.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: 'Wholesale — about 45%, concentrated in 26 accounts.', ap: 'KNOWN · HIGH · 2 SOURCES' },
+      { t: 'Events and retail — about 17%, seasonal cash.', ap: 'KNOWN · MED · 1 SOURCE' },
+      { t: "Wholesale margin runs thinner than DTC — benchmark, not Driftline's books.", ap: '[inferred] · MED · 1 SOURCE' },
+      { t: 'Events cash is Q4-heavy.', ap: 'KNOWN · LOW · 1 SOURCE' }
+    ]}
+  };
+  fmt(s) { const m = Math.floor(s / 60), ss = s % 60; return m + ':' + (ss < 10 ? '0' : '') + ss; }
+  tokMsg(t) { const tok = Math.min(1840, Math.max(30, Math.round((t - 152) * 5.75) * 10)); return 'Writing the canvas… ~' + tok.toLocaleString('en-US') + ' tokens'; }
+  componentDidMount() {
+    this._iv = setInterval(() => {
+      if (this.state.mode !== 'a') return;
+      const t = this.state.t + 1;
+      if (t > 207) { this.setState({ mode: 'b', t: 206 }); return; }
+      this.setState({ t });
+    }, 1000);
+    this._onKey = (e) => { if (e.key === 'Escape' && this.state.insp) this.setState({ insp: null }); };
+    window.addEventListener('keydown', this._onKey);
+  }
+  componentDidUpdate() { if (this._log && this.state.mode === 'a') this._log.scrollTop = this._log.scrollHeight; }
+  componentWillUnmount() { clearInterval(this._iv); window.removeEventListener('keydown', this._onKey); }
+  renderVals() {
+    const st = this.state, mode = st.mode;
+    const landed = this.SCRIPT.filter(e => e.t <= st.t);
+    const loglines = landed.map((e, i) => ({
+      stamp: this.fmt(e.t), msg: e.tok ? this.tokMsg(st.t) : e.m,
+      live: mode === 'a' && i === landed.length - 1,
+      old: !(mode === 'a' && i === landed.length - 1),
+      danger: false, plain: true
+    }));
+    if (mode === 'af' && st.failMsg) loglines.push({ stamp: this.fmt(st.t), msg: st.failMsg, live: false, old: false, danger: true, plain: false });
+    let phase = 'PHASE 1 OF 4 · READING THE COMPANY';
+    if (st.t >= 14) phase = 'PHASE 2 OF 4 · RESEARCHING THE FIELD';
+    if (st.t >= 149) phase = 'PHASE 3 OF 4 · STRUCTURING THE FRAMEWORK';
+    if (st.t >= 192) phase = 'PHASE 4 OF 4 · ATTACHING EVIDENCE';
+    if (mode === 'af') phase += ' — stopped at ' + this.fmt(st.t);
+    if (!this._h) {
+      const set = (p) => () => this.setState(p);
+      this._h = {
+        dv: {
+          a: set({ mode: 'a', t: 0, failMsg: null, insp: null }),
+          af: set({ mode: 'af', t: 128, failMsg: 'RUN FAILED — provider timeout · your saved context was not changed', insp: null }),
+          b: set({ mode: 'b', insp: null }),
+          c: set({ mode: 'c', insp: null }),
+          cs: set({ mode: 'cs', insp: null })
+        },
+        cancelRun: () => this.setState(s => ({ mode: 'af', failMsg: 'RUN CANCELLED — your saved context was not changed' })),
+        retryRun: set({ mode: 'a', t: 0, failMsg: null }),
+        closeInsp: set({ insp: null }),
+        toggleRecord: () => this.setState(s => ({ showRecord: !s.showRecord })),
+        togSettings: () => this.setState(s => ({ railSet: !s.railSet })),
+        togInputs: () => this.setState(s => ({ railInp: !s.railInp })),
+        logRef: (el) => { this._log = el; },
+        ib: {}
+      };
+      for (const k of Object.keys(this.INSP)) this._h.ib[k] = () => this.setState(s => ({ insp: s.insp === k ? null : k }));
+    }
+    const byId = {}; for (const s of this.SRC) byId[s.id] = s;
+    const ik = st.insp;
+    const insp = ik ? { title: this.INSP[ik].title, claims: this.INSP[ik].claims, sources: this.INSP[ik].srcs.map(id => byId[id]) } : { title: '', claims: [], sources: [] };
+    const sel = {}; for (const k of Object.keys(this.INSP)) sel[k] = ik === k;
+    let railMsg = 'The Cartographer is in the field. When the map is drawn, this is where you argue with it — challenge any box, ask where a claim came from, tell it what it got wrong.';
+    if (mode === 'af') railMsg = 'The run stopped and your saved context was not changed. The ledger keeps what already happened — retry when ready.';
+    if (mode === 'b' || mode === 'c') railMsg = 'The map is drawn. Challenge any box, ask where a claim came from, tell it what it got wrong — every answer cites its source.';
+    if (mode === 'cs') railMsg = 'The intake changed Aug 16 — this map predates it. Ask what a redraw would touch, or challenge any box as it stands.';
+    return {
+      stDraw: mode === 'a' || mode === 'af',
+      running: mode === 'a', failed: mode === 'af',
+      stMap: mode === 'b' || mode === 'c' || mode === 'cs',
+      stB: mode === 'b', stC: mode === 'c' || mode === 'cs', stStale: mode === 'cs',
+      loglines, elapsed: this.fmt(st.t), phase,
+      recordLines: this.SCRIPT.map(e => ({ stamp: this.fmt(e.t), msg: e.tok ? this.tokMsg(206) : e.m })),
+      showRecord: st.showRecord,
+      inspOpen: !!ik, insp, sel, inspEmpty: ik === 'cost',
+      csSplit: ik === 'cs' && (this.props.demoSplit ?? true),
+      railOn: this.props.chatRail ?? true,
+      railMsg, setOpen: st.railSet, inpOpen: st.railInp,
+      setCaret: st.railSet ? '▾' : '▸', inpCaret: st.railInp ? '▾' : '▸',
+      togSettings: this._h.togSettings, togInputs: this._h.togInputs,
+      thesisOn: this.props.thesis ?? true,
+      dv: this._h.dv, ib: this._h.ib,
+      cancelRun: this._h.cancelRun, retryRun: this._h.retryRun,
+      closeInsp: this._h.closeInsp, toggleRecord: this._h.toggleRecord, logRef: this._h.logRef
+    };
+  }
+}
+</script>
+</body>
+</html>

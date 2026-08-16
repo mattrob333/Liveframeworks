@@ -1,7 +1,14 @@
 # Design reference prototypes
 
-The Claude Design HTML prototypes for the three approved page designs land here, one
-file each, named:
+**Landed 2026-08-17.** These are Claude Design exports (`.dc.html` format — they
+reference a `support.js` runtime and use `sc-if`/`sc-for` template tags, so they don't
+render standalone in a plain browser). Read them as the source of truth for **markup
+structure, exact copy, colors/sizes, and the interaction script** — the embedded
+`SCRIPT`/state logic at the bottom of each file documents intended behavior, including
+the canvas prototype's honest event-class ledger script. Matt can screen-record the
+live versions from Claude Design for side-by-side gauntlet judging.
+
+The three approved page designs, one file each:
 
 - `constraint-reveal.html` — the Theory of Constraints payoff page (final revision:
   marquee verdict, chain graphic, stakes band, value equation)

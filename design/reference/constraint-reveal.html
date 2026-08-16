@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+html{scroll-padding-top:56px}
+body{margin:0;background:#F4F0E6;font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;-webkit-font-smoothing:antialiased}
+body:has([data-theme="dark"]){background:#161410}
+[data-cf-root]{--amber:#C47A08;--ink:#1C1A14;--dim:#5A5548;--line:#D4CDBB;--bg:#F4F0E6;--panel:#FBF8F1;--field:#EBE6D8;--wash:rgba(196,122,8,.10);--gridline:rgba(28,26,20,.045)}
+[data-cf-root][data-theme="dark"]{--amber:#D9921F;--ink:#E9E2D0;--dim:#A39B86;--line:#3B362B;--bg:#161410;--panel:#1C1915;--field:#2A251C;--wash:rgba(217,146,31,.14);--gridline:rgba(233,226,208,.05)}
+a{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)}
+a:hover{text-decoration-color:var(--ink)}
+::selection{background:var(--field)}
+@keyframes omTargetFlash{from{background-color:var(--field)}to{background-color:transparent}}
+section:target{animation:omTargetFlash 1.2s ease-out}
+@media (prefers-reduced-motion: reduce){section:target{animation:none}}
+</style>
+</helmet>
+<!-- DEMO: Ironwood Door Co. is a fictional company. All names, figures, and sources on this page are demonstration content. -->
+<div data-cf-root="" data-theme="{{ theme }}" style="min-height:100vh;color:var(--ink);background-color:var(--bg);background-image:linear-gradient(var(--gridline) 1px,transparent 1px),linear-gradient(90deg,var(--gridline) 1px,transparent 1px);background-size:48px 48px">
+
+<div onClick="{{ toggleTheme }}" style="position:fixed;top:12px;right:16px;z-index:60;border:1px solid var(--line);background:var(--panel);color:var(--dim);font-size:13px;font-weight:600;letter-spacing:.1em;padding:6px 10px;cursor:pointer;user-select:none">{{ themeLabel }}</div>
+
+<sc-if value="{{ showBar }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;top:0;left:0;right:0;height:40px;background:var(--bg);border-bottom:1px solid var(--line);z-index:50">
+  <div style="max-width:880px;margin:0 auto;padding:0 24px;height:40px;display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:13px;font-weight:600;letter-spacing:.14em">CONSTRAINT · PHONE/DISPATCH</div>
+    <div style="display:flex;gap:24px;font-size:13px;letter-spacing:.1em">
+      <a href="#finding" style="color:var(--dim);text-decoration:none">FINDING</a>
+      <a href="#argument" style="color:var(--dim);text-decoration:none">ARGUMENT</a>
+      <a href="#plan" style="color:var(--dim);text-decoration:none">PLAN</a>
+      <a href="#team" style="color:var(--dim);text-decoration:none">TEAM</a>
+      <a href="#sources" style="color:var(--dim);text-decoration:none">SOURCES</a>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<div style="max-width:880px;margin:0 auto;padding:40px 24px 64px;box-sizing:content-box">
+
+<section id="finding" data-screen-label="Act 1 — The Finding">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+    <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em"><span style="color:var(--amber)">THE CONSTRAINT</span><span style="color:var(--dim)"> · CAPACITY</span></div>
+    <div style="font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em">IRONWOOD DOOR CO. · REV 4 · AUG 2026</div>
+  </div>
+  <div style="font-size:48px;line-height:1.1;font-weight:600;letter-spacing:-0.01em;margin-top:12px;white-space:nowrap">The phones are the constraint.</div>
+  <div style="height:2px;background:var(--amber);margin-top:14px"></div>
+  <div style="font-size:17px;line-height:1.55;color:var(--dim);margin-top:12px;text-wrap:pretty">The system-wide constraint is the unbuffered phone/dispatch layer — one generalist and two overloaded CSRs with no after-hours coverage — which throttles volume into both repair and install revenue before any other resource even gets a chance to work.</div>
+  <div style="font-size:13px;line-height:1.45;color:var(--dim);font-weight:600;letter-spacing:.14em;margin-top:10px"><span style="color:var(--ink)">LOCATION:</span> INBOUND PHONE &amp; DISPATCH · <span style="color:var(--ink)">THROUGHPUT GATED:</span> BOOKED, INVOICED JOBS PER WEEK</div>
+  <div style="font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em;margin-top:6px">[<em>inferred</em>] · HIGH · <span onClick="{{ tog.hero }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">5 SOURCES</span></div>
+  <div style="font-size:13px;line-height:1.45;color:var(--dim);margin-top:4px"><em>inferred</em>: assembled from staff accounts and industry evidence — the week-one call log converts it to measured.</div>
+  <sc-if value="{{ open.hero }}" hint-placeholder-val="{{ false }}">
+    <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+      <sc-for list="{{ srcs.hero }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+    </div>
+  </sc-if>
+
+  <div style="margin-top:20px">
+    <svg viewBox="0 0 880 196" style="display:block;width:100%;height:auto" role="img" aria-label="Ironwood's value chain drawn as six steps; the booking and dispatch step is flagged in amber as the constraint, with the flow channel pinching through it, a voicemail leak dripping below it, and the planned ad-spend inlet held upstream">
+      <rect x="1" y="58" width="138" height="68" fill="none" stroke="var(--ink)" stroke-width="1"></rect>
+      <rect x="149" y="58" width="138" height="68" fill="none" stroke="var(--ink)" stroke-width="1"></rect>
+      <rect x="297" y="58" width="138" height="68" fill="var(--wash)" stroke="var(--amber)" stroke-width="2"></rect>
+      <rect x="445" y="58" width="138" height="68" fill="none" stroke="var(--ink)" stroke-width="1"></rect>
+      <rect x="593" y="58" width="138" height="68" fill="none" stroke="var(--ink)" stroke-width="1"></rect>
+      <rect x="741" y="58" width="138" height="68" fill="none" stroke="var(--ink)" stroke-width="1"></rect>
+      <path d="M139,87 L149,87 M139,97 L149,97" stroke="var(--ink)" stroke-width="1" fill="none"></path>
+      <path d="M141.5,89 l4,3 l-4,3" stroke="var(--ink)" stroke-width="1" fill="none"></path>
+      <path d="M287,87 L297,90 M287,97 L297,94" stroke="var(--ink)" stroke-width="1" fill="none"></path>
+      <path d="M289.5,90 l3,2 l-3,2" stroke="var(--ink)" stroke-width="1" fill="none"></path>
+      <path d="M435,90 L445,87 M435,94 L445,97" stroke="var(--ink)" stroke-width="1" fill="none"></path>
+      <path d="M437.5,90 l3,2 l-3,2" stroke="var(--ink)" stroke-width="1" fill="none"></path>
+      <path d="M583,87 L593,87 M583,97 L593,97" stroke="var(--ink)" stroke-width="1" fill="none"></path>
+      <path d="M585.5,89 l4,3 l-4,3" stroke="var(--ink)" stroke-width="1" fill="none"></path>
+      <path d="M731,87 L741,87 M731,97 L741,97" stroke="var(--ink)" stroke-width="1" fill="none"></path>
+      <path d="M733.5,89 l4,3 l-4,3" stroke="var(--ink)" stroke-width="1" fill="none"></path>
+      <path d="M366,16 L354,38 L378,38 Z" fill="none" stroke="var(--amber)" stroke-width="1.5"></path>
+      <text x="366" y="35" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">!</text>
+      <text x="386" y="31" font-size="13" font-weight="600" fill="var(--ink)">THE CONSTRAINT</text>
+      <path d="M292,26 L292,85" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 3" fill="none"></path>
+      <circle cx="292" cy="48" r="7" fill="none" stroke="var(--ink)" stroke-width="1.25"></circle>
+      <path d="M287,53 L297,43" stroke="var(--ink)" stroke-width="1.25"></path>
+      <text x="280" y="52" text-anchor="end" font-size="13" fill="var(--dim)">planned ad-spend increase — held</text>
+      <path d="M366,126 L366,158" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 3" fill="none"></path>
+      <path d="M362,157 L370,157 L366,165 Z" fill="var(--ink)"></path>
+      <text x="366" y="182" text-anchor="middle" font-size="13" fill="var(--dim)">after-hours &amp; overflow → voicemail — the leak</text>
+      <text x="70" y="88" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">MARKETING &amp;</text>
+      <text x="70" y="104" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">REFERRALS</text>
+      <text x="218" y="96" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">CALLS COME IN</text>
+      <text x="366" y="76" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">BOOKING &amp;</text>
+      <text x="366" y="92" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">DISPATCH</text>
+      <text x="366" y="106" text-anchor="middle" font-size="13" fill="var(--dim)">1 generalist</text>
+      <text x="366" y="120" text-anchor="middle" font-size="13" fill="var(--dim)">+ 2 CSRs</text>
+      <text x="514" y="88" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">REPAIR JOBS /</text>
+      <text x="514" y="104" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">INSTALL QUOTES</text>
+      <text x="662" y="88" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">WORK PERFORMED</text>
+      <text x="662" y="106" text-anchor="middle" font-size="13" fill="var(--dim)">8 techs + 4-crew</text>
+      <text x="810" y="88" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">INVOICE &amp;</text>
+      <text x="810" y="104" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">FOLLOW-UP</text>
+    </svg>
+    <div style="font-size:13px;line-height:1.45;color:var(--dim);margin-top:6px">Your value chain, from your own interviews. One step gates the rest — every improvement elsewhere waits behind it.</div>
+  </div>
+
+  <div style="margin-top:20px;background:var(--panel);border:1px solid var(--line);padding:20px"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+    <div style="background:var(--field);border:1px solid var(--line);padding:18px 16px;text-align:left">
+      <div style="font-size:13px;line-height:1.45;font-weight:600;color:var(--ink);letter-spacing:.14em;text-align:center">COST OF DOING NOTHING</div><div style="display:flex;align-items:baseline;justify-content:center;gap:8px;margin-top:12px"><span style="font-size:44px;line-height:1;font-weight:600">~$126K</span><span style="font-size:16px;font-weight:600;color:var(--dim)">/ YR</span></div>
+      <div style="font-size:13px;line-height:1.45;color:var(--dim);margin-top:8px">what doing nothing costs — every year you wait</div>
+      <div style="font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em;margin-top:2px"><span style="color:var(--ink);font-weight:600">EXTERNAL BENCHMARK</span> · <span onClick="{{ tog.stakes1 }}" style="white-space:nowrap;cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">2 SOURCES</span></div>
+      <div style="font-size:13px;line-height:1.45;color:var(--dim);margin-top:2px">your measured number: 30 days away — the call log is step one</div>
+      <sc-if value="{{ open.stakes1 }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px;text-align:left">
+          <sc-for list="{{ srcs.stakes1 }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+        </div>
+      </sc-if>
+    </div>
+    <div style="background:var(--field);border:1px solid var(--line);padding:18px 16px;text-align:left">
+      <div style="font-size:13px;line-height:1.45;font-weight:600;color:var(--ink);letter-spacing:.14em;text-align:center">COST OF THE FIX</div><div style="display:flex;align-items:baseline;justify-content:center;gap:8px;margin-top:12px"><span style="font-size:44px;line-height:1;font-weight:600">≤ $500</span><span style="font-size:16px;font-weight:600;color:var(--dim)">/ MO</span></div>
+      <div style="font-size:13px;line-height:1.45;color:var(--dim);margin-top:8px">cost of the first fix</div>
+      <div style="font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em;margin-top:2px"><span style="color:var(--ink);font-weight:600">SOURCED VENDOR RANGE</span> · <span onClick="{{ tog.stakes2 }}" style="white-space:nowrap;cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">1 SOURCE</span></div>
+      <sc-if value="{{ open.stakes2 }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px;text-align:left">
+          <sc-for list="{{ srcs.stakes2 }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+        </div>
+      </sc-if>
+    </div>
+    <div style="background:var(--field);border:1px solid var(--line);padding:18px 16px;text-align:left">
+      <div style="font-size:13px;line-height:1.45;font-weight:600;color:var(--ink);letter-spacing:.14em;text-align:center">TIME TO PAYBACK</div><div style="display:flex;align-items:baseline;justify-content:center;gap:8px;margin-top:12px"><span style="font-size:44px;line-height:1;font-weight:600">&lt; 1</span><span style="font-size:16px;font-weight:600;color:var(--dim)">MO</span></div>
+      <div style="font-size:13px;line-height:1.45;color:var(--dim);margin-top:8px">payback if the benchmark holds</div>
+      <div style="font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em;margin-top:2px">[<em>inferred</em>] · MED</div>
+    </div>
+  </div></div>
+
+  <div style="margin-top:24px;border-bottom:1px solid var(--line);padding-bottom:24px">
+    <div style="font-size:14px;line-height:1.45;font-weight:600;letter-spacing:.14em">THE VALUE EQUATION</div>
+    <div style="font-size:13px;line-height:1.6;color:var(--dim);letter-spacing:.08em;margin-top:4px">HORMOZI: VALUE = (DREAM OUTCOME × LIKELIHOOD) ÷ (TIME DELAY × EFFORT). A GRAND-SLAM FIX SCORES HUGE ON TOP, TINY ON BOTTOM. HERE'S THIS ONE'S READING.</div>
+    <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:14px">
+      <div style="font-size:13px;line-height:1.45;font-weight:600;color:var(--dim);letter-spacing:.14em">NUMERATOR — WHAT YOU GET</div>
+      <div style="display:grid;grid-template-columns:1fr 40px 1fr;margin-top:12px">
+        <div>
+          <div style="font-size:14px;line-height:1.45;font-weight:600;letter-spacing:.14em">DREAM OUTCOME</div>
+          <div style="font-size:16px;line-height:1.6;margin-top:6px;text-wrap:pretty">Every call answered. The revenue you already generate, captured instead of leaked — benchmark says ~$10,500/month walks out today.</div>
+          <div style="font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em;margin-top:8px"><span style="color:var(--ink);font-weight:600">EXTERNAL BENCHMARK</span> · <span onClick="{{ tog.veq1 }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">2 SOURCES</span></div>
+          <sc-if value="{{ open.veq1 }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+              <sc-for list="{{ srcs.veq1 }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <div style="font-size:24px;font-weight:600;color:var(--dim);display:flex;align-items:flex-start;justify-content:center;padding-top:24px">×</div>
+        <div>
+          <div style="font-size:14px;line-height:1.45;font-weight:600;letter-spacing:.14em">LIKELIHOOD IT WORKS</div>
+          <div style="font-size:16px;line-height:1.6;margin-top:6px;text-wrap:pretty">This isn't a bet on a new strategy. It's answering a phone that's already ringing. Two named losses and a 27–62% industry miss rate say the calls exist; the 30-day log proves it either way.</div>
+          <div style="font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em;margin-top:8px">KNOWN · HIGH · <span onClick="{{ tog.veq2 }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">5 SOURCES</span></div>
+          <sc-if value="{{ open.veq2 }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+              <sc-for list="{{ srcs.veq2 }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--ink);margin-top:18px"></div>
+    <div style="margin-top:14px">
+      <div style="font-size:13px;line-height:1.45;font-weight:600;color:var(--dim);letter-spacing:.14em">DENOMINATOR — WHAT IT COSTS YOU</div>
+      <div style="display:grid;grid-template-columns:1fr 40px 1fr;margin-top:12px">
+        <div>
+          <div style="font-size:14px;line-height:1.45;font-weight:600;letter-spacing:.14em">TIME TO RESULT</div>
+          <div style="font-size:16px;line-height:1.6;margin-top:6px;text-wrap:pretty">Pilot live in week one. Payback inside the first month if the benchmark holds.</div>
+          <div style="font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em;margin-top:8px">[<em>inferred</em>] · MED</div>
+        </div>
+        <div style="font-size:24px;font-weight:600;color:var(--dim);display:flex;align-items:flex-start;justify-content:center;padding-top:24px">×</div>
+        <div>
+          <div style="font-size:14px;line-height:1.45;font-weight:600;letter-spacing:.14em">EFFORT &amp; SACRIFICE</div>
+          <div style="font-size:16px;line-height:1.6;margin-top:6px;text-wrap:pretty">≤$500/month. No new hires. No software migration. Nobody's job changes — the phones just get answered.</div>
+          <div style="font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em;margin-top:8px"><span style="color:var(--ink);font-weight:600">SOURCED VENDOR RANGE</span> · <span onClick="{{ tog.veq3 }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">1 SOURCE</span></div>
+          <sc-if value="{{ open.veq3 }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+              <sc-for list="{{ srcs.veq3 }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:24px;line-height:1.45;font-weight:600;margin-top:20px;text-wrap:pretty">Doing nothing costs ~21× what the fix costs. Every month.</div>
+    <div style="font-size:13px;line-height:1.6;color:var(--dim);margin-top:6px">ratio = benchmark leak ($10.5K/mo) ÷ fix ceiling ($500/mo) · your measured ratio arrives with the week-one call log.</div>
+  </div>
+
+  <div style="margin-top:16px;display:flex;gap:10px;align-items:flex-start">
+    <svg width="14" height="14" viewBox="0 0 14 14" style="flex:none;margin-top:1px"><path d="M7,1 a4,4 0 0 1 4,4 c0,1.8 -1.2,2.6 -1.6,3.4 -0.2,0.4 -0.4,0.9 -0.4,1.6 h-4 c0,-0.7 -0.2,-1.2 -0.4,-1.6 C4.2,7.6 3,6.8 3,5 a4,4 0 0 1 4,-4 z M5.5,12 h3 M6,13.5 h2" fill="none" stroke="var(--dim)" stroke-width="1"></path></svg>
+    <div style="font-size:13px;line-height:1.6;color:var(--dim)"><span style="font-weight:600;letter-spacing:.14em">WHY THIS STEP</span> — the log precedes the spend: a $200 measurement settles a $30K argument, and every later decision on this page keys to the live-answer rate it produces.</div>
+  </div>
+
+  <div style="margin-top:24px;border-left:1px solid var(--ink);padding-left:16px">
+    <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em;color:var(--dim)">YOUR STATED PRIORITY</div>
+    <div style="font-size:16px;line-height:1.6;margin-top:8px">Derek's stated priority is increasing marketing spend <span style="color:var(--dim)">— owner interview.</span></div>
+    <div style="font-size:16px;line-height:1.6;margin-top:12px;text-wrap:pretty">The instinct is not wrong: the visibility threat is real — PE-backed competitors are raising the digital bar <span style="font-size:13px;color:var(--dim);letter-spacing:.1em">(KNOWN · HIGH · <span onClick="{{ tog.threat }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">2 SOURCES</span>)</span>. It is early. More inbound calls into an intake that already overflows produce voicemails, not revenue — roughly 60% of ad-driven calls into an unanswered line are wasted budget <span style="font-size:13px;color:var(--dim);letter-spacing:.1em">([<em>inferred</em>] · MED · <span onClick="{{ tog.waste }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">1 SOURCE</span>)</span>. So the increase is held, not cancelled — and the release trigger below is owned by Derek.</div>
+    <sc-if value="{{ open.threat }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+        <sc-for list="{{ srcs.threat }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{ open.waste }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+        <sc-for list="{{ srcs.waste }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+      </div>
+    </sc-if>
+    <div style="font-size:16px;line-height:1.6;margin-top:12px;text-wrap:pretty">This is not one employee's account adjudicated over another's: the finding was tested against external benchmarks and two named losses.</div>
+  </div>
+</section>
+
+<section id="argument" data-screen-label="Act 2 — The Argument" style="border-top:1px solid var(--line);margin-top:24px;padding-top:23px">
+  <div style="font-size:24px;line-height:1.45;font-weight:500;text-wrap:pretty">How the logic runs — five steps, in Goldratt's order.</div>
+
+  <svg viewBox="0 0 880 156" style="display:block;width:100%;height:auto;margin-top:20px" role="img" aria-label="Five-step rail: find the choke point, free capacity first, everything else defers, then buy capacity, re-run the diagnosis — with a loop-back arrow from step five to step one">
+    <path d="M800,50 C800,20 80,20 80,46" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 3" fill="none"></path>
+    <path d="M76,43 L84,43 L80,51 Z" fill="var(--ink)"></path>
+    <text x="440" y="14" text-anchor="middle" font-size="13" fill="var(--dim)">when the metrics hold, re-run — the constraint moves</text>
+    <rect x="58" y="52" width="44" height="44" fill="var(--wash)" stroke="var(--amber)" stroke-width="2"></rect>
+    <rect x="238" y="52" width="44" height="44" fill="none" stroke="var(--ink)" stroke-width="1"></rect>
+    <rect x="418" y="52" width="44" height="44" fill="none" stroke="var(--ink)" stroke-width="1"></rect>
+    <rect x="598" y="52" width="44" height="44" fill="none" stroke="var(--ink)" stroke-width="1"></rect>
+    <rect x="778" y="52" width="44" height="44" fill="none" stroke="var(--ink)" stroke-width="1"></rect>
+    <text x="80" y="80" text-anchor="middle" font-size="20" font-weight="600" fill="var(--ink)">1</text>
+    <text x="260" y="80" text-anchor="middle" font-size="20" font-weight="600" fill="var(--ink)">2</text>
+    <text x="440" y="80" text-anchor="middle" font-size="20" font-weight="600" fill="var(--ink)">3</text>
+    <text x="620" y="80" text-anchor="middle" font-size="20" font-weight="600" fill="var(--ink)">4</text>
+    <text x="800" y="80" text-anchor="middle" font-size="20" font-weight="600" fill="var(--ink)">5</text>
+    <path d="M102,74 L238,74 M282,74 L418,74 M462,74 L598,74 M642,74 L778,74" stroke="var(--ink)" stroke-width="1" fill="none"></path>
+    <path d="M167,70 l5,4 l-5,4 M347,70 l5,4 l-5,4 M527,70 l5,4 l-5,4 M707,70 l5,4 l-5,4" stroke="var(--ink)" stroke-width="1" fill="none"></path>
+    <text x="80" y="118" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">Find the choke point</text>
+    <text x="80" y="136" text-anchor="middle" font-size="13" fill="var(--dim)">IDENTIFY</text>
+    <text x="260" y="118" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">Free capacity first</text>
+    <text x="260" y="136" text-anchor="middle" font-size="13" fill="var(--dim)">EXPLOIT</text>
+    <text x="440" y="118" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">Everything else defers</text>
+    <text x="440" y="136" text-anchor="middle" font-size="13" fill="var(--dim)">SUBORDINATE</text>
+    <text x="620" y="118" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">Then buy capacity</text>
+    <text x="620" y="136" text-anchor="middle" font-size="13" fill="var(--dim)">ELEVATE</text>
+    <text x="800" y="118" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">Re-run the diagnosis</text>
+    <text x="800" y="136" text-anchor="middle" font-size="13" fill="var(--dim)">REPEAT</text>
+  </svg>
+
+  <div style="margin-top:16px;display:flex;gap:10px;align-items:flex-start">
+    <svg width="14" height="14" viewBox="0 0 14 14" style="flex:none;margin-top:1px"><path d="M7,1 a4,4 0 0 1 4,4 c0,1.8 -1.2,2.6 -1.6,3.4 -0.2,0.4 -0.4,0.9 -0.4,1.6 h-4 c0,-0.7 -0.2,-1.2 -0.4,-1.6 C4.2,7.6 3,6.8 3,5 a4,4 0 0 1 4,-4 z M5.5,12 h3 M6,13.5 h2" fill="none" stroke="var(--dim)" stroke-width="1"></path></svg>
+    <div style="font-size:13px;line-height:1.6;color:var(--dim)"><span style="font-weight:600;letter-spacing:.14em">WHY THIS STEP</span> — free moves come before paid ones: exploit and subordinate cost nothing and start Monday; elevate spends money only where the constraint proves it is needed.</div>
+  </div>
+
+  <div style="margin-top:32px">
+
+    <div style="display:grid;grid-template-columns:96px 1fr;padding-bottom:40px">
+      <div style="display:flex;flex-direction:column;align-items:flex-start">
+        <div style="width:22px;height:22px;border:1px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;line-height:1">1</div>
+        <div style="flex:1 1 auto;width:0;border-left:1px dashed var(--ink);margin:8px 0 0 11px"></div>
+      </div>
+      <div>
+        <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em;color:var(--dim)">1 · IDENTIFY</div>
+        <div style="font-size:16px;line-height:1.6;font-weight:600;margin-top:8px">One choke point gates both revenue lines: the phones.</div>
+        <div style="margin-top:12px">
+          <div style="padding:12px 0 0">
+            <div style="font-size:16px;line-height:1.6;text-wrap:pretty">Every inbound dollar — emergency repair, install inquiry, referral — must pass through one generalist and two overloaded CSRs. Repair techs and install crews sit downstream with idle capacity; the schedule is gated by what the phones can catch, not by what the market sends.</div>
+            <div style="margin-top:8px;font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · HIGH · <span onClick="{{ tog.s1 }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">5 SOURCES</span></div>
+            <sc-if value="{{ open.s1 }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+                <sc-for list="{{ srcs.s1 }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:96px 1fr;padding-bottom:40px">
+      <div style="display:flex;flex-direction:column;align-items:flex-start">
+        <div style="width:22px;height:22px;border:1px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;line-height:1">2</div>
+        <div style="flex:1 1 auto;width:0;border-left:1px dashed var(--ink);margin:8px 0 0 11px"></div>
+      </div>
+      <div>
+        <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em;color:var(--dim)">2 · EXPLOIT</div>
+        <div style="font-size:16px;line-height:1.6;font-weight:600;margin-top:8px">Get more from the calls already being answered — at zero new spend.</div>
+        <div style="margin-top:12px">
+          <div style="padding:12px 0">
+            <div style="font-size:16px;line-height:1.6;text-wrap:pretty">Route overflow to whoever is free: any idle tech — or the owner — takes the third ring before voicemail does.</div>
+            <div style="margin-top:8px;font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · HIGH · <span onClick="{{ tog.x2a }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">2 SOURCES</span></div>
+            <sc-if value="{{ open.x2a }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+                <sc-for list="{{ srcs.x2a }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <div style="padding:12px 0;border-top:1px solid var(--line)">
+            <div style="font-size:16px;line-height:1.6;text-wrap:pretty">Add a standing referral-credit ask to every closed ticket — the cheapest demand channel is already in the truck.</div>
+            <div style="margin-top:8px;font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em">[<em>assumed</em>] · LOW · UNSOURCED</div>
+          </div>
+          <div style="padding:12px 0 0;border-top:1px solid var(--line)">
+            <div style="font-size:16px;line-height:1.6;text-wrap:pretty">Keep the senior tech covering install quotes until the estimator lands — it is working; formalize it.</div>
+            <div style="margin-top:8px;font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em">KNOWN · HIGH · <span onClick="{{ tog.x2c }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">2 SOURCES</span></div>
+            <sc-if value="{{ open.x2c }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+                <sc-for list="{{ srcs.x2c }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:96px 1fr;padding-bottom:40px">
+      <div style="display:flex;flex-direction:column;align-items:flex-start">
+        <div style="width:22px;height:22px;border:1px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;line-height:1">3</div>
+        <div style="flex:1 1 auto;width:0;border-left:1px dashed var(--ink);margin:8px 0 0 11px"></div>
+      </div>
+      <div>
+        <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em;color:var(--dim)">3 · SUBORDINATE</div>
+        <div style="font-size:16px;line-height:1.6;font-weight:600;margin-top:8px">Everything else defers to the phones until they're fed.</div>
+        <div style="margin-top:12px">
+          <div style="padding:12px 0">
+            <div style="font-size:16px;line-height:1.6;text-wrap:pretty"><span style="display:inline-block;background:var(--ink);color:var(--bg);font-size:13px;font-weight:600;letter-spacing:.08em;padding:2px 8px;margin-right:8px;vertical-align:baseline">HOLD</span>The planned ad-spend increase is held. Release condition: live-answer rate holds at target for four consecutive weeks — earliest realistic window ~10–12 weeks.</div>
+            <div style="margin-top:8px;font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · HIGH · <span onClick="{{ tog.s3a }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">3 SOURCES</span></div>
+            <sc-if value="{{ open.s3a }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+                <sc-for list="{{ srcs.s3a }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <div style="padding:12px 0 0;border-top:1px solid var(--line)">
+            <div style="font-size:16px;line-height:1.6;text-wrap:pretty"><span style="display:inline-block;background:var(--ink);color:var(--bg);font-size:13px;font-weight:600;letter-spacing:.08em;padding:2px 8px;margin-right:8px;vertical-align:baseline">HOLD</span>A second install crew is held. Release condition: quote-to-close volume after the estimator lands proves the demand is real, not refracted.</div>
+            <div style="margin-top:8px;font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · MED · <span onClick="{{ tog.s3b }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">2 SOURCES</span></div>
+            <sc-if value="{{ open.s3b }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+                <sc-for list="{{ srcs.s3b }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:96px 1fr;padding-bottom:40px">
+      <div style="display:flex;flex-direction:column;align-items:flex-start">
+        <div style="width:22px;height:22px;border:1px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;line-height:1">4</div>
+        <div style="flex:1 1 auto;width:0;border-left:1px dashed var(--ink);margin:8px 0 0 11px"></div>
+      </div>
+      <div>
+        <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em;color:var(--dim)">4 · ELEVATE</div>
+        <div style="font-size:16px;line-height:1.6;font-weight:600;margin-top:8px">Then buy capacity at the constraint, in this order.</div>
+        <div style="margin-top:12px">
+          <div style="padding:12px 0">
+            <div style="font-size:16px;line-height:1.6;text-wrap:pretty">After-hours and overflow answering coverage — close the voicemail gap first; it is the cheapest capacity on the page.</div>
+            <div style="margin-top:8px;font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · HIGH · <span onClick="{{ tog.e4a }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">3 SOURCES</span></div>
+            <sc-if value="{{ open.e4a }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+                <sc-for list="{{ srcs.e4a }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <div style="padding:12px 0;border-top:1px solid var(--line)">
+            <div style="font-size:16px;line-height:1.6;text-wrap:pretty">A cross-trained second CSR/scheduler — one person is currently a single point of failure across phones, scheduling, permits, payroll, HR.</div>
+            <div style="margin-top:8px;font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · HIGH · <span onClick="{{ tog.e4b }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">2 SOURCES</span></div>
+            <sc-if value="{{ open.e4b }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+                <sc-for list="{{ srcs.e4b }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <div style="padding:12px 0 0;border-top:1px solid var(--line)">
+            <div style="font-size:16px;line-height:1.6;text-wrap:pretty">A dedicated install estimator — quote speed is already costing named deals.</div>
+            <div style="margin-top:8px;font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em">KNOWN · HIGH · <span onClick="{{ tog.e4c }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">2 SOURCES</span></div>
+            <sc-if value="{{ open.e4c }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+                <sc-for list="{{ srcs.e4c }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:96px 1fr">
+      <div style="display:flex;flex-direction:column;align-items:flex-start">
+        <div style="width:22px;height:22px;border:1px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;line-height:1">5</div>
+      </div>
+      <div>
+        <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em;color:var(--dim)">5 · REPEAT</div>
+        <div style="font-size:16px;line-height:1.6;font-weight:600;margin-top:8px">When the metrics hold, re-run the diagnosis — the constraint moves.</div>
+        <div style="margin-top:12px">
+          <div style="padding:12px 0 0">
+            <div style="font-size:16px;line-height:1.6;text-wrap:pretty">Once live-answer rate and quote turnaround hold for four consecutive weeks, dispatch stops being the drum. Next likely constraint: install-crew capacity.</div>
+            <div style="margin-top:8px;font-size:13px;line-height:1.45;color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · MED · <span onClick="{{ tog.s5 }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">3 SOURCES</span></div>
+            <sc-if value="{{ open.s5 }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+                <sc-for list="{{ srcs.s5 }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="plan" data-screen-label="Act 3 — The Plan" style="border-top:1px solid var(--line);margin-top:24px;padding-top:23px">
+  <div style="margin-bottom:16px;display:flex;gap:10px;align-items:flex-start">
+    <svg width="14" height="14" viewBox="0 0 14 14" style="flex:none;margin-top:1px"><path d="M7,1 a4,4 0 0 1 4,4 c0,1.8 -1.2,2.6 -1.6,3.4 -0.2,0.4 -0.4,0.9 -0.4,1.6 h-4 c0,-0.7 -0.2,-1.2 -0.4,-1.6 C4.2,7.6 3,6.8 3,5 a4,4 0 0 1 4,-4 z M5.5,12 h3 M6,13.5 h2" fill="none" stroke="var(--dim)" stroke-width="1"></path></svg>
+    <div style="font-size:13px;line-height:1.6;color:var(--dim)"><span style="font-weight:600;letter-spacing:.14em">WHY THIS STEP</span> — ranked by payback at the constraint, not by size: each row states its owner, its leading metric, and its cost. The order is the argument.</div>
+  </div>
+  <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em;padding-bottom:12px;border-bottom:1px solid var(--line)">RANKED INTERVENTIONS (6)</div>
+
+  <div style="display:grid;grid-template-columns:48px 1fr;padding:16px 0;border-bottom:1px solid var(--line)">
+    <div style="font-size:22px;font-weight:600;line-height:1">1</div>
+    <div>
+      <div style="font-size:16px;line-height:1.6;font-weight:600;text-wrap:pretty">Pilot after-hours and overflow call coverage — answering service or AI receptionist — to close the voicemail gap.</div>
+      <div style="font-size:16px;line-height:1.6;color:var(--dim);margin-top:6px;text-wrap:pretty">Directly raises the live-answer rate on the binding constraint, converting currently-lost repair and install calls into booked, invoiced jobs — the fastest-payback move available.</div>
+      <div style="font-size:13px;line-height:1.7;margin-top:8px"><span style="color:var(--dim);font-weight:600;letter-spacing:.14em">OWNER</span> Derek Vance (budget) / Carla Nunez (implementation) · <span style="color:var(--dim);font-weight:600;letter-spacing:.14em">LEADING METRIC</span> live phone answer rate, weekly · <span style="color:var(--dim);font-weight:600;letter-spacing:.14em">COST</span> $150–500/mo, sourced range · <span style="color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · HIGH · <span onClick="{{ tog.r1 }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">5 SOURCES</span></span></div>
+      <sc-if value="{{ open.r1 }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+          <sc-for list="{{ srcs.r1 }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:48px 1fr;padding:16px 0;border-bottom:1px solid var(--line)">
+    <div style="font-size:22px;font-weight:600;line-height:1">2</div>
+    <div>
+      <div style="font-size:16px;line-height:1.6;font-weight:600;text-wrap:pretty">Cross-train a second CSR/scheduler to remove a single point of failure spanning phones, scheduling, permits, payroll, and HR.</div>
+      <div style="font-size:16px;line-height:1.6;color:var(--dim);margin-top:6px;text-wrap:pretty">Adds resilient capacity at the constraint and unblocks vacation, sick days, and the after-hours rota — today one absence closes the intake.</div>
+      <div style="font-size:13px;line-height:1.7;margin-top:8px"><span style="color:var(--dim);font-weight:600;letter-spacing:.14em">OWNER</span> Carla Nunez · <span style="color:var(--dim);font-weight:600;letter-spacing:.14em">LEADING METRIC</span> covered phone-hours per week · <span style="color:var(--dim);font-weight:600;letter-spacing:.14em">COST</span> ~$2–4k one-time training backfill, sourced range · <span style="color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · HIGH · <span onClick="{{ tog.r2 }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">2 SOURCES</span></span></div>
+      <sc-if value="{{ open.r2 }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+          <sc-for list="{{ srcs.r2 }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:48px 1fr;padding:16px 0;border-bottom:1px solid var(--line)">
+    <div style="font-size:22px;font-weight:600;line-height:1">3</div>
+    <div>
+      <div style="font-size:16px;line-height:1.6;font-weight:600;text-wrap:pretty">Stand up a dedicated install estimator so quotes go out in days, not weeks.</div>
+      <div style="font-size:16px;line-height:1.6;color:var(--dim);margin-top:6px;text-wrap:pretty">Quote speed is the install line's costliest delay — <span style="font-weight:600;color:var(--ink)">a named install was already lost to a competitor purely on quote speed, at a comparable price</span>. Faster quotes convert existing demand at zero ad spend.</div>
+      <div style="font-size:13px;line-height:1.7;margin-top:8px"><span style="color:var(--dim);font-weight:600;letter-spacing:.14em">OWNER</span> Nate Ferris · <span style="color:var(--dim);font-weight:600;letter-spacing:.14em">LEADING METRIC</span> quote turnaround, days · <span style="color:var(--dim);font-weight:600;letter-spacing:.14em">COST</span> $65–80k/yr fully loaded, sourced range · <span style="color:var(--dim);letter-spacing:.1em">KNOWN · HIGH · <span onClick="{{ tog.r3 }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">2 SOURCES</span></span></div>
+      <sc-if value="{{ open.r3 }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+          <sc-for list="{{ srcs.r3 }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:48px 1fr;padding:16px 0;border-bottom:1px solid var(--line)">
+    <div><span style="display:inline-block;background:var(--ink);color:var(--bg);font-size:13px;font-weight:600;letter-spacing:.06em;padding:2px 6px">HOLD</span></div>
+    <div>
+      <div style="font-size:16px;line-height:1.6;font-weight:600;text-wrap:pretty">Hold the planned ad-spend increase — release when live-answer rate holds at target for four consecutive weeks (earliest realistic window ~10–12 weeks).</div>
+      <div style="font-size:16px;line-height:1.6;color:var(--dim);margin-top:6px;text-wrap:pretty">Protects budget from converting to voicemails; the visibility threat stays on the roadmap with a trigger Derek owns — spend releases the moment the intake can catch what it buys. You're not being told to spend less on marketing. You're being told to stop paying for calls nobody answers.</div>
+      <div style="font-size:13px;line-height:1.7;margin-top:8px"><span style="color:var(--dim);font-weight:600;letter-spacing:.14em">OWNER</span> Derek Vance · <span style="color:var(--dim);font-weight:600;letter-spacing:.14em">LEADING METRIC</span> live answer rate, 4-week hold · <span style="color:var(--dim);font-weight:600;letter-spacing:.14em">COST</span> $0 now — budget reserved, not cut · <span style="color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · HIGH · <span onClick="{{ tog.r4 }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">3 SOURCES</span></span></div>
+      <sc-if value="{{ open.r4 }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+          <sc-for list="{{ srcs.r4 }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:48px 1fr;padding:16px 0;border-bottom:1px solid var(--line)">
+    <div style="font-size:22px;font-weight:600;line-height:1">5</div>
+    <div>
+      <div style="font-size:16px;line-height:1.6;font-weight:600;text-wrap:pretty">Replace the whiteboard with a digital dispatch board visible to CSRs and techs.</div>
+      <div style="font-size:16px;line-height:1.6;color:var(--dim);margin-top:6px;text-wrap:pretty">Cuts per-call handling time at the constraint — status checks stop interrupting the people answering phones — and gives the missed-call log a home.</div>
+      <div style="font-size:13px;line-height:1.7;margin-top:8px"><span style="color:var(--dim);font-weight:600;letter-spacing:.14em">OWNER</span> Carla Nunez / Nate Ferris · <span style="color:var(--dim);font-weight:600;letter-spacing:.14em">LEADING METRIC</span> jobs scheduled per CSR-hour · <span style="color:var(--dim);font-weight:600;letter-spacing:.14em">COST</span> $50–200/mo, sourced range · <span style="color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · MED · <span onClick="{{ tog.r5 }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">2 SOURCES</span></span></div>
+      <sc-if value="{{ open.r5 }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+          <sc-for list="{{ srcs.r5 }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:48px 1fr;padding:16px 0">
+    <div style="font-size:22px;font-weight:600;line-height:1">6</div>
+    <div>
+      <div style="font-size:16px;line-height:1.6;font-weight:600;text-wrap:pretty">Re-run constraint identification once live-answer rate and quote turnaround hold for four consecutive weeks.</div>
+      <div style="font-size:16px;line-height:1.6;color:var(--dim);margin-top:6px;text-wrap:pretty">The constraint moves when fed — the next binding limit is likely install-crew capacity; diagnose before buying trucks.</div>
+      <div style="font-size:13px;line-height:1.7;margin-top:8px"><span style="color:var(--dim);font-weight:600;letter-spacing:.14em">OWNER</span> Derek Vance · <span style="color:var(--dim);font-weight:600;letter-spacing:.14em">LEADING METRIC</span> both metrics at target, 4 consecutive weeks · <span style="color:var(--dim);font-weight:600;letter-spacing:.14em">COST</span> included in engagement · <span style="color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · MED · <span onClick="{{ tog.r6 }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">3 SOURCES</span></span></div>
+      <sc-if value="{{ open.r6 }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+          <sc-for list="{{ srcs.r6 }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</section>
+
+<section id="team" data-screen-label="Act 4 — Who Runs This" style="border-top:1px solid var(--line);margin-top:24px;padding-top:23px">
+  <div style="font-size:24px;line-height:1.45;font-weight:500">Three signatures start the plan.</div>
+  <div style="margin-top:20px">
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;padding:10px 0;border-bottom:1px solid var(--line)">
+      <div style="font-size:16px;line-height:1.6;font-weight:600">Derek Vance</div>
+      <div style="font-size:16px;line-height:1.6">Approve the answering-service pilot budget.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;padding:10px 0;border-bottom:1px solid var(--line)">
+      <div style="font-size:16px;line-height:1.6;font-weight:600">Carla Nunez</div>
+      <div style="font-size:16px;line-height:1.6">Select the pilot vendor; start the missed-call log on day one.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;padding:10px 0">
+      <div style="font-size:16px;line-height:1.6;font-weight:600">Nate Ferris</div>
+      <div style="font-size:16px;line-height:1.6">Formalize the senior tech's quote coverage; draft the estimator role.</div>
+    </div>
+  </div>
+  <sc-if value="{{ showDesks }}" hint-placeholder-val="{{ true }}">
+    <div style="margin-top:32px">
+      <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em;color:var(--dim)">INSTALLED AGENT DESKS · UNDER HUMAN STEWARDS</div>
+      <div style="margin-top:8px">
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;padding:10px 0;border-bottom:1px solid var(--line)">
+          <div><div style="font-size:16px;line-height:1.6;font-weight:600">INTAKE DESK</div><div style="font-size:13px;line-height:1.45;color:var(--dim)">steward: Carla Nunez</div></div>
+          <div style="font-size:16px;line-height:1.6">Log every missed call from day one; route overflow to a live voice.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;padding:10px 0;border-bottom:1px solid var(--line)">
+          <div><div style="font-size:16px;line-height:1.6;font-weight:600">QUOTE DESK</div><div style="font-size:13px;line-height:1.45;color:var(--dim)">steward: Nate Ferris</div></div>
+          <div style="font-size:16px;line-height:1.6">Hold install quote turnaround under 48 hours; flag every quote older than two days.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;padding:10px 0">
+          <div><div style="font-size:16px;line-height:1.6;font-weight:600">LEDGER DESK</div><div style="font-size:13px;line-height:1.45;color:var(--dim)">steward: Derek Vance</div></div>
+          <div style="font-size:16px;line-height:1.6">Track pilot spend against booked-job lift — weekly, one page.</div>
+        </div>
+      </div>
+      <div style="font-size:13px;line-height:1.45;color:var(--dim);margin-top:8px"><em>Demo content — in the product this block renders only when a signed org install exists.</em></div>
+    </div>
+  </sc-if>
+</section>
+
+<section id="sources" data-screen-label="Act 5 — The Record" style="border-top:1px solid var(--line);margin-top:24px;padding-top:23px">
+  <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em">SOURCES &amp; OPEN QUESTIONS</div>
+
+  <div style="margin-top:24px">
+    <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em;color:var(--dim)">EVIDENCE LIBRARY (12)</div>
+    <div style="margin-top:8px">
+      <sc-for list="{{ lib }}" as="e" hint-placeholder-count="4">
+        <div id="lib-{{ e.id }}" style="display:grid;grid-template-columns:6ch 12ch 1fr;gap:8px;font-size:13px;line-height:1.6;padding:3px 0"><div>{{ e.id }}</div><div style="color:var(--dim)">{{ e.kind }}</div><div><a href="{{ e.href }}">{{ e.title }}</a></div></div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="margin-top:32px">
+    <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em;color:var(--dim)">OPEN QUESTIONS — WHAT WOULD CHANGE THIS FINDING (4)</div>
+    <div style="margin-top:8px;font-size:16px;line-height:1.6;color:var(--dim)">
+      <div style="padding:3px 0">— Ironwood's own missed-call volume is unmeasured — no log exists; building it is the plan's first act.</div>
+      <div style="padding:3px 0">— Financials were not in evidence; ROI math uses external benchmarks until they are.</div>
+      <div style="padding:3px 0">— After-hours demand is inferred from industry norms, not Ironwood's nights — the pilot measures it directly.</div>
+      <div style="padding:3px 0">— The referral-credit step is assumed from trade practice, not evidenced — it is also free to test.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:32px">
+    <div style="font-size:13px;line-height:1.45;font-weight:600;letter-spacing:.14em;color:var(--dim)">KILL CONDITION &amp; EXPIRY</div>
+    <div style="font-size:16px;line-height:1.6;margin-top:8px;max-width:72ch;text-wrap:pretty">If the 30-day call log shows 90%+ of calls already answered live, this finding is wrong — and the log cost less than one ad campaign to find out. This finding expires: when live-answer rate and quote turnaround hold, re-run the diagnosis. Next likely constraint: install-crew capacity <span style="font-size:13px;color:var(--dim);letter-spacing:.1em">[<em>inferred</em>] · MED · <span onClick="{{ tog.kill }}" style="cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--line)">3 SOURCES</span></span>. $200 of measurement settles it either way. That's the cheapest certainty you'll ever buy.</div>
+    <sc-if value="{{ open.kill }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:8px;border-left:2px solid var(--line);padding:2px 0 2px 14px">
+        <sc-for list="{{ srcs.kill }}" as="s" hint-placeholder-count="2"><div style="font-size:13px;line-height:1.7;color:var(--dim)">{{ s.id }} · {{ s.kind }} · <span style="color:var(--ink)">{{ s.title }}</span></div></sc-for>
+      </div>
+    </sc-if>
+  </div>
+</section>
+
+<div style="border-top:1px solid var(--line);margin-top:24px;padding-top:23px;font-size:13px;line-height:1.6;color:var(--dim);letter-spacing:.1em">IRONWOOD DOOR CO. · CONSTRAINT DIAGNOSIS · REV 4 · AUG 2026 · [<em>inferred</em>] · HIGH · 5 SOURCES · EVERY CLAIM ABOVE CITES ITS EVIDENCE OR SAYS SO</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;stickyHeader&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Behavior&quot;},
+  &quot;expandAllSources&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Behavior&quot;},
+  &quot;agentDesks&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sections&quot;}
+}">
+class Component extends DCLogic {
+  state = { open: {}, stuck: false, theme: 'light' };
+  LIB = [
+    { id: 'E01', kind: 'INTERVIEW', title: 'Owner interview — Derek Vance (Aug 4, 2026)' },
+    { id: 'E02', kind: 'INTERVIEW', title: 'CSR accounts — Carla Nunez, front office (Aug 5, 2026)' },
+    { id: 'E03', kind: 'INTERVIEW', title: 'Operations walkthrough — Nate Ferris, field lead (Aug 5, 2026)' },
+    { id: 'E04', kind: 'OBSERVATION', title: 'Dispatch whiteboard photo series (Aug 4–6, 2026)' },
+    { id: 'E05', kind: 'BENCHMARK', title: 'Home-services live-answer rates — 2025 industry panel, n=1,240 shops' },
+    { id: 'E06', kind: 'BENCHMARK', title: 'Missed-call revenue loss, contractor vertical — 2024 study' },
+    { id: 'E07', kind: 'RECORD', title: 'Named install loss — quote-speed post-mortem (Jul 2026)' },
+    { id: 'E08', kind: 'RECORD', title: 'Named commercial loss — after-hours voicemail (Jun 2026)' },
+    { id: 'E09', kind: 'MARKET', title: 'Phoenix-metro digital ad activity scan — PE-backed entrants (2026)' },
+    { id: 'E10', kind: 'VENDOR', title: 'After-hours answering pricing survey — 4 vendors (Aug 2026)' },
+    { id: 'E11', kind: 'BENCHMARK', title: 'CSR cross-training cost and ramp — 2025 trade benchmark' },
+    { id: 'E12', kind: 'INTERVIEW', title: 'Senior tech quote-coverage account — install lead (Aug 6, 2026)' }
+  ];
+  SETS = {
+    hero: ['E01', 'E02', 'E03', 'E05', 'E06'],
+    stakes1: ['E05', 'E06'],
+    stakes2: ['E10'],
+    veq1: ['E05', 'E06'],
+    veq2: ['E02', 'E05', 'E06', 'E07', 'E08'],
+    veq3: ['E10'],
+    threat: ['E09', 'E01'],
+    waste: ['E06'],
+    s1: ['E01', 'E02', 'E03', 'E05', 'E06'],
+    x2a: ['E02', 'E03'],
+    x2c: ['E03', 'E12'],
+    s3a: ['E01', 'E05', 'E06'],
+    s3b: ['E03', 'E07'],
+    e4a: ['E05', 'E06', 'E10'],
+    e4b: ['E02', 'E11'],
+    e4c: ['E07', 'E12'],
+    s5: ['E03', 'E07', 'E12'],
+    r1: ['E02', 'E05', 'E06', 'E08', 'E10'],
+    r2: ['E02', 'E11'],
+    r3: ['E07', 'E12'],
+    r4: ['E01', 'E05', 'E06'],
+    r5: ['E04', 'E02'],
+    r6: ['E03', 'E07', 'E12'],
+    kill: ['E03', 'E07', 'E12']
+  };
+  componentDidMount() {
+    try { if (localStorage.getItem('cf-theme') === 'dark') this.setState({ theme: 'dark' }); } catch (e) {}
+    this._onScroll = () => {
+      const el = document.getElementById('finding');
+      if (!el) return;
+      const stuck = el.getBoundingClientRect().bottom < 0;
+      if (stuck !== this.state.stuck) this.setState({ stuck });
+    };
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+  }
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this._onScroll);
+  }
+  renderVals() {
+    const byId = {};
+    for (const e of this.LIB) byId[e.id] = e;
+    const lib = this.LIB.map(e => ({ ...e, href: '#lib-' + e.id }));
+    const all = this.props.expandAllSources ?? false;
+    const open = {}, srcs = {};
+    for (const k of Object.keys(this.SETS)) {
+      srcs[k] = this.SETS[k].map(id => byId[id]);
+      open[k] = all || !!this.state.open[k];
+    }
+    if (!this._tog) {
+      this._tog = {};
+      for (const k of Object.keys(this.SETS)) this._tog[k] = () => this.setState(s => ({ open: { ...s.open, [k]: !s.open[k] } }));
+    }
+    return {
+      lib, srcs, open, tog: this._tog,
+      theme: this.state.theme,
+      themeLabel: this.state.theme === 'dark' ? 'LIGHT' : 'DARK',
+      toggleTheme: () => {
+        const next = this.state.theme === 'dark' ? 'light' : 'dark';
+        this.setState({ theme: next });
+        try { localStorage.setItem('cf-theme', next); } catch (e) {}
+      },
+      showBar: this.state.stuck && (this.props.stickyHeader ?? true),
+      showDesks: this.props.agentDesks ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>

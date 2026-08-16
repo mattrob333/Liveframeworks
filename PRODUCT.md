@@ -135,8 +135,9 @@ saved render per vertical.
 
 Three design studies produced three signed specifications, and Claude Design built HTML
 reference prototypes: the **constraint reveal** (Theory of Constraints payoff), the
-**Industry Map**, and the **canvas workspace + draw moment**. The prototypes will land
-in `design/reference/` — they are the visual bar, NOT code to port literally: every
+**Industry Map**, and the **canvas workspace + draw moment**. The prototypes are
+**landed in `design/reference/`** (2026-08-17) — Phase 2 is unblocked. They are the
+visual bar, NOT code to port literally: every
 `DEMO-ONLY` comment marks content the app's data cannot honestly produce yet. Work the
 phases in order; each is its own slice and its own PR chain.
 

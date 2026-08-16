@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background-color:#211D15;background-image:linear-gradient(rgba(233,226,207,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(233,226,207,.045) 1px,transparent 1px);background-size:48px 48px;color:#E9E2CF;font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;-webkit-font-smoothing:antialiased}
+a{color:#E9E2CF;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#403927}
+a:hover{text-decoration-color:#E9E2CF}
+::selection{background:#403927}
+[data-op]{cursor:pointer}
+[data-op]:hover{background:#322C1E!important}
+[data-op2]{cursor:pointer}
+.oph{opacity:0}
+[data-op]:hover .oph,[data-op2]:hover .oph{opacity:1}
+[data-nd="1"] .oph{display:none}
+.tpin{cursor:pointer}
+.tpin .ph{fill:transparent}
+.tpin:hover .ph{fill:#322C1E}
+.tpin:hover .pv{stroke:#E9E2CF;stroke-width:1.5}
+</style>
+</helmet>
+<!-- DEMO: Ironwood Door Co. is a fictional client drawn onto a real industry. Player facts marked DEMO-ONLY are illustrative. Third-party marks shown as neutral placeholders. -->
+<div data-nd="{{ noDrawers }}" style="min-height:100vh">
+<div style="max-width:880px;margin:0 auto;padding:56px 24px 64px;box-sizing:content-box">
+
+<section data-screen-label="01 — Marquee">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+    <div style="font-size:13px;line-height:1.45;font-weight:500;letter-spacing:.14em"><span style="color:#E39A2B">THE SURVEYOR</span><span style="color:#9C927C"> · INDUSTRY MAP · STEP 02</span></div>
+    <div style="font-size:13px;line-height:1.45;color:#9C927C;letter-spacing:.1em">IRONWOOD DOOR CO. · REV 3 · AUG 2026</div>
+  </div>
+  <div style="font-size:clamp(34px,5.2vw,52px);line-height:1.12;font-weight:600;margin-top:14px;text-wrap:pretty">Your territory is being bought.</div>
+  <div style="height:2px;background:#E39A2B;margin-top:14px"></div>
+  <div style="font-size:15px;line-height:1.55;color:#9C927C;margin-top:12px;text-wrap:pretty">A1 Garage Door Service is consolidating Phoenix-metro independents — including a rival's workforce in Tempe, Gilbert, and Scottsdale. $16B market, 90% independents, 29 PE deals in 2024.</div>
+  <div style="font-size:13px;line-height:1.45;color:#9C927C;letter-spacing:.08em;margin-top:10px">KNOWN · MED · 5 SOURCES</div>
+  <div style="margin-top:20px;border-left:1px solid #E9E2CF;padding-left:14px;max-width:68ch">
+    <div style="font-size:14px;line-height:1.45;font-weight:600;letter-spacing:.1em;color:#9C927C">WHY THIS STEP</div>
+    <div style="font-size:15px;line-height:1.6;color:#9C927C;margin-top:6px;text-wrap:pretty">Before you position, you survey. Steve Blank's rule: map the industry before you map the company — who the players are, where money, technology, and people flow, what the ground looked like five years ago and will look like in five. Everything below was researched live from the public web this run. It is your market as of today, not a textbook's.</div>
+  </div>
+</section>
+
+<section data-screen-label="02 — The Chart" style="border-top:1px solid #403927;margin-top:72px;padding-top:20px">
+  <div style="font-size:24px;line-height:1.3;font-weight:600;letter-spacing:.02em"><span style="color:#9C927C">02 — </span>THE CHART</div>
+  <div style="font-size:15px;line-height:1.6;color:#9C927C;margin-top:6px">The parts of your market, and the companies standing on them.</div>
+  
+
+  <div style="margin-top:16px;background:#282318;border:1px solid #403927;padding:16px">
+    <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em">THE TERRITORIES — where the money is spent</div><div style="font-size:14px;line-height:1.6;color:#9C927C;margin-top:10px"><span style="font-weight:600;letter-spacing:.1em">HOW TO READ THIS</span> — <em>Each box is a part of the market where money is spent. The dashed box is a part still forming.</em></div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);border:1px solid #403927;margin-top:8px">
+      <div data-op="" onClick="{{ ok.seg1 }}" style="position:relative;background:#282318;border-right:1px solid #403927;min-height:80px;padding:8px 10px"><div style="font-size:14px;line-height:1.4">EMERGENCY / SAME-DAY REPAIR</div><div style="font-size:13px;line-height:1.35;color:#9C927C;margin-top:2px">~60% of spend</div><span class="oph" style="position:absolute;bottom:4px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span></div>
+      <div data-op="" onClick="{{ ok.seg2 }}" style="position:relative;background:#322C1E;border-right:1px solid #403927;min-height:80px;padding:8px 10px"><div style="font-size:14px;line-height:1.4">INSTALL &amp; REPLACEMENT</div><div style="font-size:13px;line-height:1.35;color:#9C927C;margin-top:2px">~$6.4B of TAM</div><span class="oph" style="position:absolute;bottom:4px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span></div>
+      <div data-op="" onClick="{{ ok.seg3 }}" style="position:relative;background:#282318;border-right:1px solid #403927;min-height:80px;padding:8px 10px"><div style="font-size:14px;line-height:1.4">MAINTENANCE &amp; PARTS</div><span class="oph" style="position:absolute;bottom:4px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span></div>
+      <div data-op="" onClick="{{ ok.seg4 }}" style="position:relative;background:#322C1E;border-right:1px solid #403927;min-height:80px;padding:8px 10px"><div style="font-size:14px;line-height:1.4">COMMERCIAL (ADJACENT)</div><span class="oph" style="position:absolute;bottom:4px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span></div>
+      <div data-op="" onClick="{{ ok.seg5 }}" style="position:relative;background:#282318;border:1px dashed #9C927C;margin:-1px;min-height:80px;padding:8px 10px"><div style="font-size:14px;line-height:1.4">CALL-INTAKE LAYER</div><div style="font-size:13px;line-height:1.35;color:#9C927C;margin-top:2px">[<em>inferred</em>] segment</div><span class="oph" style="position:absolute;bottom:4px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span></div>
+    </div>
+    <sc-if value="{{ dzShelf }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#322C1E;border:1px solid #403927;margin-top:-1px;padding:14px 16px">
+        <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+        <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+        <div style="margin-top:10px"><sc-for list="{{ drawer.sources }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:#9C927C">{{ s.id }} · {{ s.kind }} · <a href="#lib-{{ s.id }}" style="color:#9C927C">{{ s.title }}</a> · {{ s.date }}</div></sc-for></div>
+        <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+      </div>
+    </sc-if>
+    <div style="font-size:14px;color:#9C927C;margin-top:8px">cells are categories, not market shares — the numbers are in the labels.</div>
+
+    <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em;margin-top:28px">THE FIELD — the players, placed by role as researched</div><div style="font-size:14px;line-height:1.6;color:#9C927C;margin-top:10px"><span style="font-weight:600;letter-spacing:.1em">HOW TO READ THIS</span> — <em>Each card is a company on your ground. Bigger threats sit in higher rows. The glowing card is you.</em></div>
+
+    <div style="border-top:1px solid #403927;margin-top:8px;padding:10px 0 0">
+      <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em">LEADERS · 1</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">
+        <div data-op="" onClick="{{ ok.a1 }}" style="position:relative;width:224px;background:#322C1E;border:1px solid #403927;padding:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <sc-if value="{{ logoMix }}" hint-placeholder-val="{{ true }}"><div style="flex:none;width:40px;height:40px;background:#EFE9DA;display:flex;align-items:center;justify-content:center"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 26 L13 6 L23 26 H17.5 L13 16.5 L8.5 26 Z' fill='%238A2B1E'/%3E%3Crect x='25' y='6' width='4' height='20' fill='%238A2B1E'/%3E%3C/svg%3E" alt="A1 placeholder mark" style="width:32px;height:32px;object-fit:contain"></div></sc-if>
+            <sc-if value="{{ monoOnly }}" hint-placeholder-val="{{ false }}"><div style="flex:none;width:40px;height:40px;background:#322C1E;border:1px solid #403927;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">A1</div></sc-if>
+            <div style="font-size:16px;line-height:1.4;font-weight:600">A1 Garage Door Service</div>
+          </div>
+          <div style="font-size:13px;color:#9C927C;letter-spacing:.14em;margin-top:8px">LEADER</div>
+          <!-- DEMO-ONLY fact: locations/states figure is illustrative -->
+          <div style="font-size:14px;color:#9C927C;margin-top:2px">44 locations · 19 states</div>
+          <div style="font-size:13px;color:#9C927C;letter-spacing:.02em;margin-top:6px">KNOWN · HIGH · 2 SOURCES</div>
+          <span class="oph" style="position:absolute;top:8px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span>
+        </div>
+      </div>
+      <sc-if value="{{ dzLaneL }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#322C1E;border:1px solid #403927;margin-top:10px;padding:14px 16px">
+          <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+          <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+          <div style="margin-top:10px"><sc-for list="{{ drawer.sources }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:#9C927C">{{ s.id }} · {{ s.kind }} · <a href="#lib-{{ s.id }}" style="color:#9C927C">{{ s.title }}</a> · {{ s.date }}</div></sc-for></div>
+          <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="border-top:1px solid #403927;margin-top:12px;padding:10px 0 0">
+      <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em">INCUMBENTS · 1</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">
+        <div data-op="" onClick="{{ ok.chi }}" style="position:relative;width:224px;background:#322C1E;border:1px solid #403927;padding:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <sc-if value="{{ logoMix }}" hint-placeholder-val="{{ true }}"><div style="flex:none;width:40px;height:40px;background:#EFE9DA;display:flex;align-items:center;justify-content:center"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23274A73' stroke-width='5'/%3E%3C/svg%3E" alt="C.H.I. placeholder mark" style="width:32px;height:32px;object-fit:contain"></div></sc-if>
+            <sc-if value="{{ monoOnly }}" hint-placeholder-val="{{ false }}"><div style="flex:none;width:40px;height:40px;background:#322C1E;border:1px solid #403927;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">CH</div></sc-if>
+            <div style="font-size:16px;line-height:1.4;font-weight:600">C.H.I. Overhead Doors</div>
+          </div>
+          <div style="font-size:13px;color:#9C927C;letter-spacing:.14em;margin-top:8px">INCUMBENT</div>
+          <div style="font-size:14px;color:#9C927C;margin-top:2px">sold to Nucor, $3.0B, 2022</div>
+          <div style="font-size:13px;color:#9C927C;letter-spacing:.02em;margin-top:6px">KNOWN · HIGH · 1 SOURCE</div>
+          <span class="oph" style="position:absolute;top:8px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span>
+        </div>
+      </div>
+      <sc-if value="{{ dzLaneI }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#322C1E;border:1px solid #403927;margin-top:10px;padding:14px 16px">
+          <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+          <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+          <div style="margin-top:10px"><sc-for list="{{ drawer.sources }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:#9C927C">{{ s.id }} · {{ s.kind }} · <a href="#lib-{{ s.id }}" style="color:#9C927C">{{ s.title }}</a> · {{ s.date }}</div></sc-for></div>
+          <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="border-top:1px solid #403927;margin-top:12px;padding:10px 0 0">
+      <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em">ENTRANTS · 1</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">
+        <div data-op="" onClick="{{ ok.guild }}" style="position:relative;width:224px;background:#322C1E;border:1px solid #403927;padding:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="flex:none;width:40px;height:40px;background:#322C1E;border:1px solid #403927;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">GG</div>
+            <div style="font-size:16px;line-height:1.4;font-weight:600">Guild Garage Group</div>
+          </div>
+          <div style="font-size:13px;color:#9C927C;letter-spacing:.14em;margin-top:8px">ENTRANT</div>
+          <div style="font-size:14px;color:#9C927C;margin-top:2px">PE-backed platform, 2024</div>
+          <div style="font-size:13px;color:#9C927C;letter-spacing:.02em;margin-top:6px">KNOWN · MED · 1 SOURCE</div>
+          <span class="oph" style="position:absolute;top:8px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span>
+        </div>
+      </div>
+      <sc-if value="{{ dzLaneE }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#322C1E;border:1px solid #403927;margin-top:10px;padding:14px 16px">
+          <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+          <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+          <div style="margin-top:10px"><sc-for list="{{ drawer.sources }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:#9C927C">{{ s.id }} · {{ s.kind }} · <a href="#lib-{{ s.id }}" style="color:#9C927C">{{ s.title }}</a> · {{ s.date }}</div></sc-for></div>
+          <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="border-top:1px solid #403927;margin-top:12px;padding:10px 0 0">
+      <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em">NICHE · 3</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">
+        <div data-op="" onClick="{{ ok.desert }}" style="position:relative;width:224px;background:#322C1E;border:1px solid #403927;padding:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="flex:none;width:40px;height:40px;background:#322C1E;border:1px solid #403927;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">DS</div>
+            <div style="font-size:16px;line-height:1.4;font-weight:600">Desert Sky Garage Doors</div>
+          </div>
+          <div style="font-size:13px;color:#9C927C;letter-spacing:.14em;margin-top:8px">NICHE</div>
+          <div style="font-size:14px;color:#9C927C;margin-top:2px">Phoenix metro</div>
+          <div style="font-size:13px;color:#9C927C;letter-spacing:.02em;margin-top:6px">[<em>inferred</em>] · MED · 1 SOURCE</div>
+          <span class="oph" style="position:absolute;top:8px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span>
+        </div>
+        <div data-op="" onClick="{{ ok.authentic }}" style="position:relative;width:224px;background:#322C1E;border:1px solid #403927;padding:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="flex:none;width:40px;height:40px;background:#322C1E;border:1px solid #403927;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">AA</div>
+            <div style="font-size:16px;line-height:1.4;font-weight:600">A Authentic Garage Door</div>
+          </div>
+          <div style="font-size:13px;color:#9C927C;letter-spacing:.14em;margin-top:8px">NICHE</div>
+          <div style="font-size:14px;color:#9C927C;margin-top:2px">Phoenix + Tucson</div>
+          <div style="font-size:13px;color:#9C927C;letter-spacing:.02em;margin-top:6px">[<em>inferred</em>] · MED · 1 SOURCE</div>
+          <span class="oph" style="position:absolute;top:8px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span>
+        </div>
+        <div data-op2="" onClick="{{ ok.ironwood }}" style="position:relative;width:224px;background:rgba(227,154,43,.12);border:1px solid #E39A2B;padding:10px;margin-top:6px">
+          <div style="position:absolute;top:-9px;left:10px;background:#282318;padding:0 6px;font-size:13px;color:#E39A2B;letter-spacing:.14em">◉ YOU ARE HERE</div>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="flex:none;width:40px;height:40px;background:rgba(227,154,43,.12);border:1px solid #E39A2B;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#E39A2B">ID</div>
+            <div style="font-size:16px;line-height:1.4;font-weight:600">Ironwood Door Co.</div>
+          </div>
+          <div style="font-size:13px;color:#9C927C;letter-spacing:.14em;margin-top:8px">NICHE</div>
+          <div style="font-size:14px;color:#9C927C;margin-top:2px">East Valley · 27 years</div>
+          <div style="font-size:13px;color:#9C927C;letter-spacing:.02em;margin-top:6px">KNOWN · HIGH · 1 SOURCE</div>
+          <span class="oph" style="position:absolute;top:8px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span>
+        </div>
+      </div>
+      <sc-if value="{{ dzLaneN }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#322C1E;border:1px solid #403927;margin-top:10px;padding:14px 16px">
+          <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+          <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+          <div style="margin-top:10px"><sc-for list="{{ drawer.sources }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:#9C927C">{{ s.id }} · {{ s.kind }} · <a href="#lib-{{ s.id }}" style="color:#9C927C">{{ s.title }}</a> · {{ s.date }}</div></sc-for></div>
+          <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="border-top:1px solid #403927;margin-top:14px;padding-top:10px;font-size:13px;line-height:1.6;color:#9C927C;letter-spacing:.06em">MAP IS NOT EXHAUSTIVE · PLAYERS PLACED BY ROLE AS RESEARCHED · 6 PLAYERS / 14 SOURCES<br>THIRD-PARTY MARKS IDENTIFY COMPETITORS · NO AFFILIATION</div>
+  </div>
+</section>
+
+<section data-screen-label="03 — Flows" style="border-top:1px solid #403927;margin-top:72px;padding-top:20px">
+  <div style="font-size:24px;line-height:1.3;font-weight:600;letter-spacing:.02em"><span style="color:#9C927C">03 — </span>FLOWS</div>
+  <div style="font-size:15px;line-height:1.6;color:#9C927C;margin-top:6px;max-width:62ch">Markets don't attack you with competitors — they attack with flows: money, technology, and people moving in new directions. Each item below is one of those movements, graded by how sure we are.</div><div style="font-size:14px;line-height:1.6;color:#9C927C;margin-top:18px"><span style="font-weight:600;letter-spacing:.1em">HOW TO READ THIS</span> — <em>Each arrow is something moving through the market right now — read these to see the next five years early.</em></div>
+  
+  
+
+  <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em;margin-top:32px">TECHNOLOGY <span style="font-weight:400;letter-spacing:0">(what tools are changing)</span></div>
+  <div data-op="" onClick="{{ ok.t1 }}" style="position:relative;padding:16px 12px;margin:4px -12px 0">
+    <div style="display:grid;grid-template-columns:40px 1fr">
+      <svg width="24" height="12" viewBox="0 0 24 12" style="margin-top:5px"><path d="M1,6 L19,6 M15,2 L20,6 L15,10" stroke="#9C927C" stroke-width="1.5" fill="none"></path></svg>
+      <div>
+        <div style="font-size:16px;line-height:1.6;max-width:62ch;text-wrap:pretty">AI call-answering has moved from novelty to line item — answering services and AI receptionists now sell direct to home-services contractors at $150–500/mo.</div>
+        <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:6px">[<em>inferred</em>] · MED · 1 SOURCE</div>
+      </div>
+    </div>
+    <span class="oph" style="position:absolute;top:12px;right:12px;font-size:13px;color:#9C927C">→ OPEN</span>
+  </div>
+  <sc-if value="{{ dz.t1 }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#322C1E;border:1px solid #403927;padding:14px 16px">
+      <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+      <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+      <div style="margin-top:10px"><sc-for list="{{ drawer.sources }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:#9C927C">{{ s.id }} · {{ s.kind }} · <a href="#lib-{{ s.id }}" style="color:#9C927C">{{ s.title }}</a> · {{ s.date }}</div></sc-for></div>
+      <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+    </div>
+  </sc-if>
+  <div style="border-top:1px solid #403927;margin:4px 0"></div>
+  <div data-op="" onClick="{{ ok.t2 }}" style="position:relative;padding:16px 12px;margin:0 -12px">
+    <div style="display:grid;grid-template-columns:40px 1fr">
+      <svg width="24" height="12" viewBox="0 0 24 12" style="margin-top:5px"><path d="M1,6 L19,6 M15,2 L20,6 L15,10" stroke="#9C927C" stroke-width="1.5" fill="none"></path></svg>
+      <div>
+        <div style="font-size:16px;line-height:1.6;max-width:62ch;text-wrap:pretty">Smart openers and connected-door hardware pull manufacturers closer to the homeowner — service data flows to whoever owns the app.</div>
+        <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:6px">[<em>inferred</em>] · LOW · 1 SOURCE</div>
+      </div>
+    </div>
+    <span class="oph" style="position:absolute;top:12px;right:12px;font-size:13px;color:#9C927C">→ OPEN</span>
+  </div>
+  <sc-if value="{{ dz.t2 }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#322C1E;border:1px solid #403927;padding:14px 16px">
+      <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+      <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+      <div style="margin-top:10px"><sc-for list="{{ drawer.sources }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:#9C927C">{{ s.id }} · {{ s.kind }} · <a href="#lib-{{ s.id }}" style="color:#9C927C">{{ s.title }}</a> · {{ s.date }}</div></sc-for></div>
+      <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+    </div>
+  </sc-if>
+
+  <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em;margin-top:32px">ECONOMIC <span style="font-weight:400;letter-spacing:0">(where money is going)</span></div>
+  <div data-op2="" onClick="{{ ok.e1 }}" style="position:relative;border-left:2px solid #E39A2B;background:rgba(227,154,43,.12);padding:18px 18px 18px 20px;margin:4px -12px 0">
+    <div style="display:grid;grid-template-columns:40px 1fr">
+      <svg width="24" height="12" viewBox="0 0 24 12" style="margin-top:5px"><path d="M1,6 L19,6 M15,2 L20,6 L15,10" stroke="#9C927C" stroke-width="1.5" fill="none"></path></svg>
+      <div>
+        <div style="font-size:16px;line-height:1.6;max-width:62ch;text-wrap:pretty">Missed inbound calls convert directly into lost repair and install revenue — external benchmarks put small-business losses near $126,000/yr, with 78% of leads going to whoever answers first.</div>
+        <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:6px">KNOWN · MED · 2 SOURCES</div>
+        <div style="font-size:13px;color:#E39A2B;letter-spacing:.14em;margin-top:8px">→ THIS FLOW FEEDS YOUR CONSTRAINT DIAGNOSIS (STEP 03)</div>
+      </div>
+    </div>
+    <span class="oph" style="position:absolute;top:12px;right:12px;font-size:13px;color:#9C927C">→ OPEN</span>
+  </div>
+  <sc-if value="{{ dz.e1 }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#322C1E;border:1px solid #403927;padding:14px 16px">
+      <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+      <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+      <div style="margin-top:10px"><sc-for list="{{ drawer.sources }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:#9C927C">{{ s.id }} · {{ s.kind }} · <a href="#lib-{{ s.id }}" style="color:#9C927C">{{ s.title }}</a> · {{ s.date }}</div></sc-for></div>
+      <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+    </div>
+  </sc-if>
+  <div style="border-top:1px solid #403927;margin:8px 0 4px"></div>
+  <div data-op="" onClick="{{ ok.e2 }}" style="position:relative;padding:16px 12px;margin:0 -12px">
+    <div style="display:grid;grid-template-columns:40px 1fr">
+      <svg width="24" height="12" viewBox="0 0 24 12" style="margin-top:5px"><path d="M1,6 L19,6 M15,2 L20,6 L15,10" stroke="#9C927C" stroke-width="1.5" fill="none"></path></svg>
+      <div>
+        <div style="font-size:16px;line-height:1.6;max-width:62ch;text-wrap:pretty">Institutional capital keeps arriving: 29 PE deals in 2024 — and multiples paid for platforms, not tuck-ins, reprice every independent's exit.</div>
+        <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:6px">KNOWN · HIGH · 2 SOURCES</div>
+      </div>
+    </div>
+    <span class="oph" style="position:absolute;top:12px;right:12px;font-size:13px;color:#9C927C">→ OPEN</span>
+  </div>
+  <sc-if value="{{ dz.e2 }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#322C1E;border:1px solid #403927;padding:14px 16px">
+      <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+      <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+      <div style="margin-top:10px"><sc-for list="{{ drawer.sources }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:#9C927C">{{ s.id }} · {{ s.kind }} · <a href="#lib-{{ s.id }}" style="color:#9C927C">{{ s.title }}</a> · {{ s.date }}</div></sc-for></div>
+      <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+    </div>
+  </sc-if>
+
+  <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em;margin-top:32px">PERSONNEL <span style="font-weight:400;letter-spacing:0">(where people are going)</span></div>
+  <div data-op="" onClick="{{ ok.p1 }}" style="position:relative;padding:16px 12px;margin:4px -12px 0">
+    <div style="display:grid;grid-template-columns:40px 1fr">
+      <svg width="24" height="12" viewBox="0 0 24 12" style="margin-top:5px"><path d="M1,6 L19,6 M15,2 L20,6 L15,10" stroke="#9C927C" stroke-width="1.5" fill="none"></path></svg>
+      <div>
+        <div style="font-size:16px;line-height:1.6;max-width:62ch;text-wrap:pretty">Technicians move with the roll-ups — an acquired rival's workforce changed shirts overnight in Tempe, Gilbert, and Scottsdale. Consolidators buy teams, not trucks.</div>
+        <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:6px">KNOWN · MED · 1 SOURCE</div>
+      </div>
+    </div>
+    <span class="oph" style="position:absolute;top:12px;right:12px;font-size:13px;color:#9C927C">→ OPEN</span>
+  </div>
+  <sc-if value="{{ dz.p1 }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#322C1E;border:1px solid #403927;padding:14px 16px">
+      <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+      <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+      <div style="margin-top:10px"><sc-for list="{{ drawer.sources }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:#9C927C">{{ s.id }} · {{ s.kind }} · <a href="#lib-{{ s.id }}" style="color:#9C927C">{{ s.title }}</a> · {{ s.date }}</div></sc-for></div>
+      <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+    </div>
+  </sc-if>
+</section>
+
+<section data-screen-label="04 — Time" style="border-top:1px solid #403927;margin-top:72px;padding-top:20px">
+  <div style="font-size:24px;line-height:1.3;font-weight:600;letter-spacing:.02em"><span style="color:#9C927C">04 — </span>TIME</div>
+  <div style="font-size:15px;line-height:1.6;color:#9C927C;margin-top:6px">What already happened on this ground, and where it's heading.</div>
+  
+  <div style="font-size:15px;line-height:1.6;color:#9C927C;margin-top:10px;max-width:62ch">WHY — A terrain reading without trajectory is a snapshot. History earns the future's speculation.</div><div style="font-size:14px;line-height:1.6;color:#9C927C;margin-top:18px"><span style="font-weight:600;letter-spacing:.1em">HOW TO READ THIS</span> — <em>Left of the mark is what already happened. Right of it is where this is heading.</em></div>
+
+  <svg viewBox="0 0 880 44" style="display:block;width:100%;height:auto;margin-top:18px" role="img" aria-label="Undated time spine: solid walked half, dashed unwalked half, NOW tick at center; filled pins are known events, outlined pins inferred">
+    <path d="M8,24 L440,24" stroke="#9C927C" stroke-width="1" fill="none"></path>
+    <path d="M440,24 L872,24" stroke="#9C927C" stroke-width="1" stroke-dasharray="4 3" fill="none"></path>
+    <rect x="439" y="16" width="2" height="16" fill="#E9E2CF"></rect>
+    <text x="440" y="10" text-anchor="middle" font-size="13" fill="#9C927C">NOW</text>
+    <g onClick="{{ ok.tn1 }}" class="tpin"><title>1999 — box-truck founding · click to open</title><rect class="ph" x="106" y="8" width="32" height="32"></rect><rect class="pv" x="118" y="20" width="8" height="8" fill="#E9E2CF"></rect></g>
+    <g onClick="{{ ok.tn2 }}" class="tpin"><title>2022 — C.H.I. sold to Nucor, $3.0B · click to open</title><rect class="ph" x="226" y="8" width="32" height="32"></rect><rect class="pv" x="238" y="20" width="8" height="8" fill="#E9E2CF"></rect></g>
+    <g onClick="{{ ok.tn3 }}" class="tpin"><title>UL 325 revisions · click to open</title><rect class="ph" x="336" y="8" width="32" height="32"></rect><rect class="pv" x="348" y="20" width="8" height="8" fill="#E9E2CF"></rect></g>
+    <g onClick="{{ ok.ta1 }}" class="tpin"><title>Ahead — consolidation continues · click to open</title><rect class="ph" x="524" y="8" width="32" height="32"></rect><rect class="pv" x="536" y="20" width="8" height="8" fill="none" stroke="#9C927C" stroke-width="1"></rect></g>
+    <g onClick="{{ ok.ta2 }}" class="tpin"><title>Ahead — install demand grows · click to open</title><rect class="ph" x="644" y="8" width="32" height="32"></rect><rect class="pv" x="656" y="20" width="8" height="8" fill="none" stroke="#9C927C" stroke-width="1"></rect></g>
+    <g onClick="{{ ok.ta3 }}" class="tpin"><title>Ahead — the closing window · click to open</title><rect class="ph" x="764" y="8" width="32" height="32"></rect><rect class="pv" x="776" y="20" width="8" height="8" fill="none" stroke="#9C927C" stroke-width="1"></rect></g>
+  </svg>
+  <div style="font-size:14px;color:#9C927C;margin-top:6px">pins ordered as researched — spacing carries no dates. filled = known · outline = inferred · hover or click a pin for its note.</div>
+  <sc-if value="{{ dzTime }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#322C1E;border:1px solid #403927;margin-top:10px;padding:14px 16px">
+      <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+      <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+      <div style="margin-top:10px"><sc-for list="{{ drawer.sources }}" as="s" hint-placeholder-count="1"><div style="font-size:13px;line-height:1.7;color:#9C927C">{{ s.id }} · {{ s.kind }} · <a href="#lib-{{ s.id }}" style="color:#9C927C">{{ s.title }}</a> · {{ s.date }}</div></sc-for></div>
+      <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+    </div>
+  </sc-if>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:20px">
+    <div>
+      <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em">THEN</div>
+      <div style="padding:10px 0;border-bottom:1px solid #403927">
+        <div style="font-size:16px;line-height:1.6;text-wrap:pretty">Founded from a box truck, 1999 — repair-first, referral-grown.</div>
+        <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:6px">KNOWN · HIGH · 1 SOURCE</div>
+      </div>
+      <div style="padding:10px 0;border-bottom:1px solid #403927">
+        <div style="font-size:16px;line-height:1.6;text-wrap:pretty">C.H.I. Overhead Doors sold to Nucor for $3.0B (2022) — institutional capital arrives.</div>
+        <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:6px">KNOWN · HIGH · 1 SOURCE</div>
+      </div>
+      <div style="padding:10px 0">
+        <div style="font-size:16px;line-height:1.6;text-wrap:pretty">UL 325 safety revisions keep raising the compliance floor for openers and installs.</div>
+        <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:6px">KNOWN · MED · 1 SOURCE</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em">AHEAD</div>
+      <div style="padding:10px 0;border-bottom:1px solid #403927">
+        <div style="font-size:16px;line-height:1.6;text-wrap:pretty">Consolidation continues — the roll-up lane is funded and unfinished.</div>
+        <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:6px">[<em>inferred</em>] · MED · 2 SOURCES</div>
+      </div>
+      <div style="padding:10px 0;border-bottom:1px solid #403927">
+        <div style="font-size:16px;line-height:1.6;text-wrap:pretty">Install demand grows as Phoenix-metro housing stock ages into replacement cycles.</div>
+        <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:6px">[<em>inferred</em>] · LOW · 1 SOURCE</div>
+      </div>
+      <div style="padding:10px 0">
+        <div style="font-size:16px;line-height:1.6;text-wrap:pretty">A narrow, closing window: independents that build digital presence before saturation may hold defensible ground.</div>
+        <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:6px">[<em>inferred</em>] · LOW · 1 SOURCE</div>
+        <div style="font-size:13px;line-height:1.6;color:#9C927C;margin-top:6px"><em>Open question: how wide is the window — quarters or years? No date exists in evidence, so none is drawn.</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="05 — Legend &amp; Sources" style="border-top:1px solid #403927;margin-top:72px;padding-top:20px">
+  <div style="font-size:24px;line-height:1.3;font-weight:600;letter-spacing:.02em"><span style="color:#9C927C">05 — </span>THE LEGEND &amp; SOURCES</div>
+  <div style="font-size:15px;line-height:1.6;color:#9C927C;margin-top:6px">What the words mean, and where every fact lives.</div>
+  
+
+  <div style="margin-top:16px">
+    <div style="padding:10px 0;border-bottom:1px solid #403927">
+      <div style="font-size:15px;font-weight:600;letter-spacing:.1em">UL 325</div>
+      <div style="font-size:15px;line-height:1.6;color:#9C927C;margin-top:4px;max-width:62ch">The federal safety standard governing automatic openers — entrapment protection and monitoring; each revision raises the compliance floor.</div>
+      <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:4px">KNOWN · HIGH · 1 SOURCE</div>
+    </div>
+    <div style="padding:10px 0;border-bottom:1px solid #403927">
+      <div style="font-size:15px;font-weight:600;letter-spacing:.1em">ROLL-UP / CONSOLIDATOR</div>
+      <div style="font-size:15px;line-height:1.6;color:#9C927C;margin-top:4px;max-width:62ch">A buyer assembling many small local firms into one platform, to sell the aggregate at a higher multiple than its parts.</div>
+      <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:4px">KNOWN · HIGH · 2 SOURCES</div>
+    </div>
+    <div style="padding:10px 0;border-bottom:1px solid #403927">
+      <div style="font-size:15px;font-weight:600;letter-spacing:.1em">ACQUI-HIRE</div>
+      <div style="font-size:15px;line-height:1.6;color:#9C927C;margin-top:4px;max-width:62ch">An acquisition made for the workforce rather than the brand — the Tempe absorption pattern.</div>
+      <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:4px">KNOWN · MED · 1 SOURCE</div>
+    </div>
+    <div style="padding:10px 0">
+      <div style="font-size:15px;font-weight:600;letter-spacing:.1em">MISSED-CALL RATE</div>
+      <div style="font-size:15px;line-height:1.6;color:#9C927C;margin-top:4px;max-width:62ch">Share of inbound calls never answered live; industry range 27–62% depending on hours and staffing.</div>
+      <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:4px">KNOWN · MED · 2 SOURCES</div>
+    </div>
+  </div>
+
+  <div style="margin-top:28px">
+    <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em">SOURCES &amp; VOICES (14)</div>
+    <div style="font-size:14px;line-height:1.6;color:#9C927C;margin-top:8px">VOICES — a Phoenix-metro door distributor, on consolidator buying patterns · a home-services answering-service operator, on call-coverage economics — background interviews, Aug 2026.</div>
+    <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em;margin-top:24px">STANDING FEEDS — WHERE THIS MAP RE-SURVEYS (6)</div>
+    <div style="font-size:14px;line-height:1.6;color:#9C927C;margin-top:6px;max-width:62ch">Not one-off articles — the recurring places the surveyor returns to every run: where your customers talk, where deals surface, where footprints change.</div>
+    <div style="margin-top:8px">
+      <div style="display:grid;grid-template-columns:5ch 11ch 1fr 9ch;gap:8px;font-size:13px;line-height:1.6;padding:5px 6px;margin:0 -6px" data-op="" onClick="{{ ok.f01 }}" title="Opens the live feed in the research console"><div>F01</div><div style="color:#9C927C">SUBREDDIT</div><div>r/HomeImprovement — homeowner repair questions, demand language</div><div style="color:#9C927C;text-align:right">EACH RUN</div></div>
+      <div style="display:grid;grid-template-columns:5ch 11ch 1fr 9ch;gap:8px;font-size:13px;line-height:1.6;padding:5px 6px;margin:0 -6px" data-op="" onClick="{{ ok.f02 }}" title="Opens the live feed in the research console"><div>F02</div><div style="color:#9C927C">SUBREDDIT</div><div>r/smallbusiness + r/Entrepreneur — owner chatter on roll-up offers</div><div style="color:#9C927C;text-align:right">EACH RUN</div></div>
+      <div style="display:grid;grid-template-columns:5ch 11ch 1fr 9ch;gap:8px;font-size:13px;line-height:1.6;padding:5px 6px;margin:0 -6px" data-op="" onClick="{{ ok.f03 }}" title="Opens the live feed in the research console"><div>F03</div><div style="color:#9C927C">RSS</div><div>Door + access-systems trade newsfeed</div><div style="color:#9C927C;text-align:right">EACH RUN</div></div>
+      <div style="display:grid;grid-template-columns:5ch 11ch 1fr 9ch;gap:8px;font-size:13px;line-height:1.6;padding:5px 6px;margin:0 -6px" data-op="" onClick="{{ ok.f04 }}" title="Opens the live feed in the research console"><div>F04</div><div style="color:#9C927C">NEWSLETTER</div><div>Home-services M&amp;A / PE deal letter</div><div style="color:#9C927C;text-align:right">WEEKLY</div></div>
+      <div style="display:grid;grid-template-columns:5ch 11ch 1fr 9ch;gap:8px;font-size:13px;line-height:1.6;padding:5px 6px;margin:0 -6px" data-op="" onClick="{{ ok.f05 }}" title="Opens the live feed in the research console"><div>F05</div><div style="color:#9C927C">SITE</div><div>A1 + Guild locations pages — re-crawled for footprint change</div><div style="color:#9C927C;text-align:right">EACH RUN</div></div>
+      <div style="display:grid;grid-template-columns:5ch 11ch 1fr 9ch;gap:8px;font-size:13px;line-height:1.6;padding:5px 6px;margin:0 -6px" data-op="" onClick="{{ ok.f06 }}" title="Opens the live feed in the research console"><div>F06</div><div style="color:#9C927C">ALERT</div><div>Keyword alerts — "garage door" × Phoenix-metro news</div><div style="color:#9C927C;text-align:right">DAILY</div></div>
+    </div>
+    <sc-if value="{{ dzFeeds }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#322C1E;border:1px solid #403927;margin-top:10px;padding:14px 16px">
+        <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+        <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+        <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+      </div>
+    </sc-if>
+    <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em;margin-top:24px">EVIDENCE ON FILE THIS RUN (14)</div>
+    <div style="margin-top:10px">
+      <sc-for list="{{ lib }}" as="e" hint-placeholder-count="4">
+        <div id="lib-{{ e.id }}" style="display:grid;grid-template-columns:5ch 11ch 1fr 9ch;gap:8px;font-size:13px;line-height:1.6;padding:3px 0"><div>{{ e.id }}</div><div style="color:#9C927C">{{ e.kind }}</div><div><a href="#lib-{{ e.id }}" style="color:#9C927C">{{ e.title }}</a></div><div style="color:#9C927C;text-align:right">{{ e.date }}</div></div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="06 — The Close" style="border-top:1px solid #403927;margin-top:72px;padding-top:20px">
+  <div style="font-size:24px;line-height:1.3;font-weight:600;letter-spacing:.02em"><span style="color:#9C927C">06 — </span>THE CLOSE</div>
+  <div style="font-size:15px;line-height:1.6;color:#9C927C;margin-top:6px">What the map cannot say yet, and which frameworks read it next.</div>
+  
+
+  <div style="margin-top:16px;border:1px dashed #9C927C;padding:14px 16px">
+    <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em">UNSURVEYED</div>
+    <div style="font-size:16px;line-height:1.6;color:#9C927C;margin-top:6px;max-width:62ch;text-wrap:pretty">No confirmed data on whether any consolidator has approached Ironwood directly — an open strategic question only the owner can answer.</div>
+    <div style="font-size:13px;color:#9C927C;letter-spacing:.08em;margin-top:6px">[<em>missing</em>] · — · 0 SOURCES</div>
+  </div>
+
+  <div style="margin-top:24px;border-top:1px solid #403927;padding-top:14px">
+    <div style="font-size:15px;font-weight:600;color:#9C927C;letter-spacing:.1em">WHAT THIS MAP FEEDS</div>
+    <div data-op="" onClick="{{ ok.porter }}" title="Opens the Five Forces page" style="position:relative;padding:10px 8px;margin:0 -8px;border-bottom:1px solid #403927">
+      <div style="font-size:16px;line-height:1.6">PORTER'S FIVE FORCES — who holds power on this ground</div>
+      <div style="font-size:14px;color:#9C927C;margin-top:2px">reads: players, segments</div>
+      <span class="oph" style="position:absolute;top:12px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span>
+    </div>
+    <div data-op="" onClick="{{ ok.pestle }}" title="Opens the PESTLE page" style="position:relative;padding:10px 8px;margin:0 -8px;border-bottom:1px solid #403927">
+      <div style="font-size:16px;line-height:1.6">PESTLE — what outside weather bends it</div>
+      <div style="font-size:14px;color:#9C927C;margin-top:2px">reads: flows, time</div>
+      <span class="oph" style="position:absolute;top:12px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span>
+    </div>
+    <div data-op="" onClick="{{ ok.blue }}" title="Opens the Blue Ocean page" style="position:relative;padding:10px 8px;margin:0 -8px">
+      <div style="font-size:16px;line-height:1.6">BLUE OCEAN — where the uncontested ground is</div>
+      <div style="font-size:14px;color:#9C927C;margin-top:2px">reads: segments, glossary</div>
+      <span class="oph" style="position:absolute;top:12px;right:8px;font-size:13px;color:#9C927C">→ OPEN</span>
+    </div>
+    <sc-if value="{{ dzNext }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#322C1E;border:1px solid #403927;margin-top:10px;padding:14px 16px">
+        <div style="font-size:13px;letter-spacing:.14em;color:#9C927C">{{ drawer.kicker }}</div>
+        <div style="font-size:16px;line-height:1.6;margin-top:6px;max-width:62ch;text-wrap:pretty">{{ drawer.body }}</div>
+        <div style="margin-top:10px;font-size:13px;color:#9C927C">Discuss this in chat →</div>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="border-top:1px solid #403927;margin-top:24px;padding-top:14px;font-size:13px;line-height:1.6;color:#9C927C;letter-spacing:.06em">IRONWOOD DOOR CO. · INDUSTRY MAP · REV 3 · AUG 2026 · LAST SURVEYED THIS RUN — REDRAWN EACH RUN · EVERY CLAIM CITES ITS EVIDENCE OR SAYS SO</div>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;monogramsOnly&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Identity plates&quot;},
+  &quot;drawersEnabled&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Behavior&quot;}
+}">
+class Component extends DCLogic {
+  state = { drawer: null };
+  LIB = [
+    { id: 'S01', kind: 'NEWS', title: "A1 Garage Door absorbs Tempe rival's workforce — Phoenix-metro consolidation", date: '2025' },
+    { id: 'S02', kind: 'TRADE', title: 'US garage and overhead door market sizing, $16B', date: '2024' },
+    { id: 'S03', kind: 'TRADE', title: 'Industry structure: ~90% independent operators', date: '2024' },
+    { id: 'S04', kind: 'DEALS', title: 'Home-services PE tracker: 29 garage-door deals', date: '2024' },
+    { id: 'S05', kind: 'FILING', title: 'Nucor acquires C.H.I. Overhead Doors, $3.0B', date: '2022' },
+    { id: 'S06', kind: 'PRESS', title: 'Guild Garage Group platform launch', date: '2024' },
+    { id: 'S07', kind: 'WEB', title: 'A1 locations index: 44 locations, 19 states', date: '2026' },
+    { id: 'S08', kind: 'WEB', title: 'Desert Sky Garage Doors service pages', date: '2026' },
+    { id: 'S09', kind: 'WEB', title: 'A Authentic Garage Door company profile', date: '2026' },
+    { id: 'S10', kind: 'BENCHMARK', title: 'Missed-call losses and call-coverage pricing, small business', date: '2024' },
+    { id: 'S11', kind: 'STUDY', title: 'Lead response: 78% of leads go to the first responder', date: '2023' },
+    { id: 'S12', kind: 'STANDARD', title: 'UL 325 revision history', date: '2023' },
+    { id: 'S13', kind: 'TRADE', title: 'Residential door spend split: ~60% repair / same-day', date: '2024' },
+    { id: 'S14', kind: 'INTERVIEW', title: 'Owner interview — Derek Vance, Ironwood', date: 'AUG 2026' }
+  ];
+  DRAWERS = {
+    seg1: { k: 'TERRITORY — EMERGENCY / SAME-DAY REPAIR', b: 'Emergency and same-day repair dominates spend — roughly 60% of residential garage-door revenue is repair-driven, and speed-to-answer decides who wins the job.', s: ['S13', 'S02'] },
+    seg2: { k: 'TERRITORY — INSTALL & REPLACEMENT', b: 'New construction and door replacement, ~$6.4B of US TAM — the segment consolidators price on install crews and quote speed.', s: ['S02', 'S03'] },
+    seg3: { k: 'TERRITORY — MAINTENANCE & PARTS', b: 'Springs, openers, tune-up plans — recurring but small-ticket; a retention surface more than a growth one.', s: ['S03'] },
+    seg4: { k: 'TERRITORY — COMMERCIAL (ADJACENT)', b: 'Rolling steel and commercial overhead doors — adjacent to residential repair with a different buyer and bid cycle.', s: ['S03'] },
+    seg5: { k: 'TERRITORY — CALL-INTAKE LAYER (INFERRED)', b: 'Answering services and AI receptionists are forming a paid layer between demand and dispatch. Drawn as inferred terrain: sourced claims exist, boundaries do not.', s: ['S10', 'S11'] },
+    a1: { k: 'PLAYER — A1 GARAGE DOOR SERVICE · LEADER', b: "PE-backed national platform consolidating Phoenix-metro independents — including a rival's workforce absorbed in Tempe, Gilbert, and Scottsdale (2025). Locations figure is a demo-only illustration.", s: ['S01', 'S07'] },
+    chi: { k: 'PLAYER — C.H.I. OVERHEAD DOORS · INCUMBENT', b: "Illinois manufacturer sold by KKR to Nucor for $3.0B in 2022 — the deal that marked institutional capital's arrival in the category.", s: ['S05'] },
+    guild: { k: 'PLAYER — GUILD GARAGE GROUP · ENTRANT', b: 'PE-backed platform launched 2024 to roll up residential garage-door services; actively acquiring in Sun Belt metros.', s: ['S06'] },
+    desert: { k: 'PLAYER — DESERT SKY GARAGE DOORS · NICHE', b: 'Independent Phoenix-metro operator, repair-led, single market. Placed NICHE by geography and scale as researched.', s: ['S08'] },
+    authentic: { k: 'PLAYER — A AUTHENTIC GARAGE DOOR · NICHE', b: 'Phoenix and Tucson independent; long-tenured local brand. Placed NICHE by geography and scale as researched.', s: ['S09'] },
+    ironwood: { k: 'PLAYER — IRONWOOD DOOR CO. · YOU ARE HERE', b: 'The client. 27 years in the East Valley, repair and install — the only player on this map whose position the map exists to move.', s: ['S14'] },
+    t1: { k: 'FLOW — TECHNOLOGY', b: 'Answering coverage priced for small contractors ($150–500/mo) turns call-intake from a staffing problem into a purchasable layer — which is why the intake layer appears on the territory shelf as inferred terrain.', s: ['S10'] },
+    t2: { k: 'FLOW — TECHNOLOGY', b: "Connected openers put manufacturers in the service-notification path; whoever owns the homeowner's app influences whose truck gets dispatched.", s: ['S02'] },
+    e1: { k: 'FLOW — ECONOMIC · FLAGGED', b: 'The two benchmarks compound: if 27–62% of calls go unanswered and 78% of leads close with the first responder, the loss concentrates wherever after-hours coverage is thinnest — the exact gap the constraint diagnosis (Step 03) measures.', s: ['S10', 'S11'] },
+    e2: { k: 'FLOW — ECONOMIC', b: '29 deals in one year is a funded thesis, not a fad. Platform buyers pay for density in a metro — every Phoenix independent is now priced against that math.', s: ['S04', 'S05'] },
+    p1: { k: 'FLOW — PERSONNEL', b: 'When a consolidator buys a rival, the asset is the trained technicians. Retention risk flows downhill to independents whose best people now have a bidder.', s: ['S01'] },
+    tn1: { k: 'THEN — PIN 1', b: "1999, box-truck founding — Ironwood's origin per the owner; repair-first, referral-grown.", s: ['S14'] },
+    tn2: { k: 'THEN — PIN 2', b: '2022 — KKR sells C.H.I. Overhead Doors to Nucor for $3.0B; institutional capital marks the category.', s: ['S05'] },
+    tn3: { k: 'THEN — PIN 3', b: 'UL 325 revisions — entrapment-protection and monitoring requirements keep raising the opener compliance floor.', s: ['S12'] },
+    ta1: { k: 'AHEAD — PIN 4 (INFERRED)', b: 'Consolidation continues — the deal pipeline and fresh platform launches say the lane is funded and unfinished.', s: ['S04', 'S06'] },
+    ta2: { k: 'AHEAD — PIN 5 (INFERRED)', b: 'Install demand grows — aging Phoenix-metro housing stock rolls into replacement cycles.', s: ['S02'] },
+    f01: { k: 'STANDING FEED — r/HOMEIMPROVEMENT', b: 'A live watch, not a citation: homeowner repair questions and demand language, re-read every run. This row opens the feed console with the latest pulls.', s: [] },
+    f02: { k: 'STANDING FEED — r/SMALLBUSINESS + r/ENTREPRENEUR', b: 'Owner chatter on roll-up approaches, offer terms, and exit pressure — the earliest signal that a consolidator is calling your peers. Opens the feed console.', s: [] },
+    f03: { k: 'STANDING FEED — TRADE RSS', b: 'Door and access-systems trade newsfeed — product, standards, and dealer-network announcements, pulled every run. Opens the feed console.', s: [] },
+    f04: { k: 'STANDING FEED — M&A DEAL LETTER', b: 'A weekly home-services private-equity letter — deal counts, platform launches, multiples talk. Opens the feed console.', s: [] },
+    f05: { k: 'STANDING FEED — COMPETITOR SITES', b: 'A1 and Guild locations pages, re-crawled each run for footprint change — new metros, new branches, absorbed brands. Opens the feed console.', s: [] },
+    f06: { k: 'STANDING FEED — KEYWORD ALERTS', b: "Daily alerts on 'garage door' crossed with Phoenix-metro news — acquisitions, openings, closures, lawsuits. Opens the feed console.", s: [] },
+    porter: { k: "NEXT FRAMEWORK — PORTER'S FIVE FORCES (STEP 04)", b: 'Who holds power on this ground — suppliers, buyers, substitutes, entrants, rivalry — read from this map\'s players and segments. This row opens the Five Forces page in the full engagement.', s: [] },
+    pestle: { k: 'NEXT FRAMEWORK — PESTLE', b: "What outside weather bends the ground — political, economic, social, technological, legal, environmental — read from this map's flows and time spine. Opens the PESTLE page in the full engagement.", s: [] },
+    blue: { k: 'NEXT FRAMEWORK — BLUE OCEAN', b: "Where the uncontested ground is — drawn from the segment shelf and the map's inferred terrain. Opens the Blue Ocean page in the full engagement.", s: [] },
+    ta3: { k: 'AHEAD — PIN 6 (INFERRED)', b: 'The closing window — independents that build digital presence before saturation may hold defensible ground. Width unknown; no date exists in evidence.', s: ['S03'] }
+  };
+  componentDidMount() {
+    this._onKey = (e) => { if (e.key === 'Escape' && this.state.drawer) this.setState({ drawer: null }); };
+    window.addEventListener('keydown', this._onKey);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this._onKey);
+  }
+  renderVals() {
+    const byId = {};
+    for (const e of this.LIB) byId[e.id] = e;
+    const keys = Object.keys(this.DRAWERS);
+    if (!this._ok) {
+      this._ok = {};
+      for (const k of keys) this._ok[k] = () => {
+        if ((this.props.drawersEnabled ?? true) === false) return;
+        this.setState(s => ({ drawer: s.drawer === k ? null : k }));
+      };
+    }
+    const d = this.state.drawer;
+    const dz = {};
+    for (const k of keys) dz[k] = d === k;
+    const act = d ? this.DRAWERS[d] : null;
+    const drawer = act ? { kicker: act.k, body: act.b, sources: act.s.map(id => byId[id]) } : { kicker: '', body: '', sources: [] };
+    return {
+      lib: this.LIB,
+      ok: this._ok,
+      dz,
+      drawer,
+      dzShelf: !!d && d.indexOf('seg') === 0,
+      dzLaneL: d === 'a1',
+      dzLaneI: d === 'chi',
+      dzLaneE: d === 'guild',
+      dzLaneN: d === 'desert' || d === 'authentic' || d === 'ironwood',
+      dzTime: !!d && (d.indexOf('tn') === 0 || d.indexOf('ta') === 0),
+      dzFeeds: !!d && d.indexOf('f0') === 0,
+      dzNext: d === 'porter' || d === 'pestle' || d === 'blue',
+      logoMix: !(this.props.monogramsOnly ?? false),
+      monoOnly: this.props.monogramsOnly ?? false,
+      noDrawers: (this.props.drawersEnabled ?? true) ? '' : '1'
+    };
+  }
+}
+</script>
+</body>
+</html>
