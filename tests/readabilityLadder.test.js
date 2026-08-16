@@ -2,6 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { ORDER } from "../lib/frameworks.js";
+import { HOW_TO_READ, howToReadFor } from "../lib/howToRead.js";
+import HowToRead from "../components/HowToRead.jsx";
+import FrameworkArtifact from "../components/FrameworkArtifact.jsx";
+import { createFrameworkArtifact } from "../lib/frameworkArtifacts.js";
 
 const CSS = readFileSync(fileURLToPath(new URL("../app/globals.css", import.meta.url)), "utf8");
 const LOADER = readFileSync(fileURLToPath(new URL("../components/LoadingState.module.css", import.meta.url)), "utf8");
@@ -87,6 +94,26 @@ test("section and band headers are 24px / 600 with 15px subtitles", () => {
   assert.match(screenCss, /\.industry-map-band-subtitle\{[^}]*font-size:var\(--type-subtitle\)/);
   assert.match(screenCss, /\.export-fw h2\{[^}]*font-size:var\(--type-header\)/);
   assert.match(screenCss, /\.export-fw-subtitle\{[^}]*font-size:var\(--type-subtitle\)/);
+});
+
+test("HOW-TO-READ copy exists for every framework and named dense surface", () => {
+  for (const id of ORDER) {
+    assert.ok(howToReadFor(id), `missing HOW-TO-READ for ${id}`);
+    assert.doesNotMatch(howToReadFor(id), /lorem|DEMO-ONLY/i);
+  }
+  for (const id of ["pipeline", "export", "exportPrint", "tocRoster", "evidence"]) {
+    assert.ok(HOW_TO_READ[id], `missing HOW-TO-READ for ${id}`);
+  }
+  const html = renderToStaticMarkup(React.createElement(HowToRead, { of: "bmc" }));
+  assert.match(html, /how-to-read/);
+  assert.match(html, /Nine boxes, one business/);
+  const map = renderToStaticMarkup(React.createElement(FrameworkArtifact, {
+    artifact: createFrameworkArtifact("bmc"),
+    frameworkId: "bmc",
+    brief: true,
+  }));
+  assert.match(map, /how-to-read/);
+  assert.match(map, /Nine boxes, one business/);
 });
 
 test("print block stays hardcoded white paper / #111 ink", () => {

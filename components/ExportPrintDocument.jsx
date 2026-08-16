@@ -5,6 +5,7 @@ import { FW } from "@/lib/frameworks";
 import { currentConstraintLine, getArtifactSections, normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
 import { asList, formatBriefDate, orderBriefFrameworks } from "@/lib/exportBrief";
 import { playerLinkUrl } from "@/lib/playerLinks";
+import HowToRead from "@/components/HowToRead";
 
 // Print-only document. Screen /export keeps the maps. No grid on paper.
 
@@ -132,6 +133,7 @@ export default function ExportPrintDocument({
         {date && <p className="export-print-date">{date}</p>}
         {lede && <p className="export-print-lede">{lede}</p>}
         {constraint && <p className="export-print-lede">{constraint}</p>}
+        <HowToRead of="exportPrint" />
       </header>
 
       {briefIds.length === 0 && (

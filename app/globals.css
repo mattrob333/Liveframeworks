@@ -276,6 +276,7 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
 .framework-header h1{font-size:clamp(26px,3vw,36px);margin:0}
 .framework-constraint{margin-top:8px;font-size:var(--type-body);line-height:var(--type-body-lh);max-width:var(--type-measure);color:var(--amber)}
 .framework-map-label{margin-top:6px;color:var(--dim);font-size:var(--type-label)}
+.how-to-read{margin:8px 0 12px;color:var(--dim);font-size:var(--type-howto);font-style:italic;line-height:1.5;max-width:var(--type-measure)}
 .toc-payoff-header{margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--faint)}
 .toc-constraint-lockup{font-size:clamp(26px,3.4vw,44px);font-weight:600;line-height:1.15;margin:8px 0 0;max-width:none;color:var(--amber)}
 .toc-proof-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
@@ -618,4 +619,5 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
   .export-print-doc ul{margin:0;padding:0 0 0 1.1em;color:#111}
   .export-print-doc li{margin:0 0 3px;overflow-wrap:normal;word-break:normal}
   .export-print-doc a{color:#111;text-decoration:underline}
+  .export-print-doc .how-to-read{color:#111;font-size:14px;font-style:italic}
 }

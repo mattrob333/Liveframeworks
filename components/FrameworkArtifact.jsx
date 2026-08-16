@@ -9,6 +9,7 @@ import {
   validateFrameworkArtifact,
 } from "@/lib/frameworkArtifacts";
 import { playerLinkUrl } from "@/lib/playerLinks";
+import HowToRead from "@/components/HowToRead";
 
 const BMC_CLASSES = {
   keyPartners: "bmc-kp",
@@ -600,6 +601,7 @@ function EvidenceList({ evidence }) {
   return (
     <div className="artifact-evidence panel mt">
       <span className="artifact-evidence-title">Evidence used</span>
+      <HowToRead of="evidence" />
       <ul>
         {evidence.slice(0, 8).map(item => (
           <li key={item.id}>
@@ -696,6 +698,7 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
           })()}
         </header>
       )}
+      {!document && <HowToRead of={normalized.frameworkId} />}
       {!document && !validation.valid && (
         <div className="artifact-warning" role="status">
           Showing the safe normalized view. {validation.errors.length} contract {validation.errors.length === 1 ? "issue was" : "issues were"} detected.
