@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import "./globals.css";
 import Nav from "@/components/Nav";
 
@@ -6,20 +7,24 @@ export const metadata = {
   description: "Classic business frameworks run as connected, evidence-grounded agents.",
 };
 
+export const viewport = {
+  themeColor: "#F4F0E6",
+  colorScheme: "light",
+};
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html lang="en" data-scroll-behavior="smooth" data-theme="light">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
       </head>
       <body>
         <div className="wrap">
-          <Nav />
+          <Suspense fallback={<nav className="topnav" aria-label="Primary navigation" />}>
+            <Nav />
+          </Suspense>
           {children}
-          <footer>
-            <b>How it works:</b> save evidence, launch a ready framework, and let its validated structured artifact become shared state for the agents downstream. Follow-up chat can research and challenge the result but cannot silently overwrite it. Evidence, run records, research packets, and your API key remain in this browser.
-          </footer>
         </div>
       </body>
     </html>

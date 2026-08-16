@@ -1,12 +1,13 @@
 .root {
   width: 100%;
-  border: 1px solid var(--faint, #2a2f3a);
+  border: 1px solid var(--faint);
+  /* ~6% ink wash so the 24px grid reads on --bg and --panel. Never amber. */
   background:
-    linear-gradient(90deg, rgba(255, 176, 32, 0.035) 1px, transparent 1px),
-    linear-gradient(rgba(255, 176, 32, 0.035) 1px, transparent 1px),
-    var(--panel, #101318);
+    linear-gradient(90deg, color-mix(in srgb, var(--line) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, var(--line) 6%, transparent) 1px, transparent 1px),
+    var(--panel);
   background-size: 24px 24px;
-  color: var(--line, #e8e6e1);
+  color: var(--line);
   font-family: var(--mono, "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
   padding: 20px 22px;
 }
@@ -23,9 +24,9 @@
   height: 34px;
   display: grid;
   place-items: center;
-  border: 1px solid var(--amber, #ffb020);
-  background: var(--bg, #0b0d10);
-  box-shadow: inset 0 0 0 1px rgba(255, 176, 32, 0.07);
+  border: 1px solid var(--line);
+  background: var(--bg);
+  box-shadow: none;
 }
 
 .pixelGrid {
@@ -40,7 +41,7 @@
 .pixel {
   width: 4px;
   height: 4px;
-  background: var(--amber, #ffb020);
+  background: var(--line);
   opacity: 0.22;
   transform: scale(0.72);
   animation: pixel-on var(--pixel-duration) steps(2, jump-none) var(--pixel-delay) infinite;
@@ -52,7 +53,7 @@
 
 .pixelGrid[data-variant="orbit"] .pixel[data-center="true"] {
   animation: none;
-  background: var(--line, #e8e6e1);
+  background: var(--line);
   opacity: 0.18;
   transform: scale(0.65);
 }
@@ -63,7 +64,7 @@
 
 .label {
   width: fit-content;
-  color: var(--amber, #ffb020);
+  color: var(--dim);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -71,9 +72,9 @@
   text-transform: uppercase;
   background: linear-gradient(
     90deg,
-    var(--amber, #ffb020) 0%,
-    var(--line, #e8e6e1) 45%,
-    var(--amber, #ffb020) 70%
+    var(--line) 0%,
+    var(--dim) 45%,
+    var(--line) 70%
   );
   background-size: 220% 100%;
   background-clip: text;
@@ -86,7 +87,7 @@
 .currentPhase {
   margin-top: 4px;
   overflow: hidden;
-  color: var(--line, #e8e6e1);
+  color: var(--line);
   font-size: 13px;
   line-height: 1.45;
   text-overflow: ellipsis;
@@ -97,7 +98,7 @@
   display: grid;
   justify-items: end;
   min-width: 64px;
-  color: var(--dim, #6b7280);
+  color: var(--dim);
   font-size: 9px;
   letter-spacing: 0.12em;
   line-height: 1.25;
@@ -106,7 +107,7 @@
 
 .timer b {
   margin-top: 3px;
-  color: var(--line, #e8e6e1);
+  color: var(--line);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   font-weight: 400;
@@ -119,7 +120,7 @@
   gap: 0;
   margin: 18px 0 0;
   padding: 12px 0 0;
-  border-top: 1px solid var(--faint, #2a2f3a);
+  border-top: 1px solid var(--faint);
   list-style: none;
 }
 
@@ -129,7 +130,7 @@
   align-items: center;
   gap: 10px;
   min-height: 27px;
-  color: var(--dim, #6b7280);
+  color: var(--dim);
   font-size: 10.5px;
   letter-spacing: 0.035em;
 }
@@ -137,38 +138,38 @@
 .phaseMarker {
   width: 5px;
   height: 5px;
-  border: 1px solid var(--faint, #2a2f3a);
+  border: 1px solid var(--faint);
   background: transparent;
 }
 
 .phaseNumber {
-  color: var(--faint, #2a2f3a);
+  color: var(--faint);
   font-size: 9px;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.12em;
 }
 
 .progressItem[data-state="complete"] {
-  color: var(--dim, #6b7280);
+  color: var(--dim);
 }
 
 .progressItem[data-state="complete"] .phaseMarker {
-  border-color: var(--ok, #7bc96f);
-  background: var(--ok, #7bc96f);
+  border-color: var(--ok);
+  background: var(--ok);
 }
 
 .progressItem[data-state="current"] {
-  color: var(--line, #e8e6e1);
+  color: var(--line);
 }
 
 .progressItem[data-state="current"] .phaseMarker {
-  border-color: var(--amber, #ffb020);
-  background: var(--amber, #ffb020);
-  box-shadow: 0 0 0 3px rgba(255, 176, 32, 0.1);
+  border-color: var(--line);
+  background: var(--line);
+  box-shadow: none;
 }
 
 .progressItem[data-state="current"] .phaseNumber {
-  color: var(--amber, #ffb020);
+  color: var(--line);
 }
 
 .srOnly {
@@ -193,7 +194,7 @@
 .root[data-active="false"] .label {
   animation: none;
   background: none;
-  color: var(--amber, #ffb020);
+  color: var(--dim);
   -webkit-text-fill-color: currentColor;
 }
 
@@ -249,7 +250,7 @@
   .label {
     animation: none;
     background: none;
-    color: var(--amber, #ffb020);
+    color: var(--dim);
     -webkit-text-fill-color: currentColor;
   }
 }

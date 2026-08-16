@@ -93,7 +93,7 @@ export async function POST(request) {
     try { body = JSON.parse(rawBody); } catch { return jsonError("Request body must be valid JSON.", 400); }
 
     const { apiKey, system, messages, web = true } = body || {};
-    if (!apiKey || typeof apiKey !== "string") return jsonError("Missing API key. Add yours in Settings.", 400);
+    if (!apiKey || typeof apiKey !== "string") return jsonError("Missing API key. Add one in this browser first.", 400);
     if (apiKey.length > 500) return jsonError("API key is not valid.", 400);
     if (typeof system !== "string" || !system.trim()) return jsonError("Missing framework context.", 400);
     if (!Array.isArray(messages) || messages.length === 0) return jsonError("Chat history is missing.", 400);

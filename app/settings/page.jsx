@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getKey, resetAll, setKey } from "@/lib/store";
+import { validateApiKey } from "@/lib/apiKey";
 import { clearGenerationRecords } from "@/lib/generationStore";
 
 export default function Settings() {
@@ -10,7 +11,12 @@ export default function Settings() {
   useEffect(() => { setKeyState(getKey()); }, []);
 
   function saveKey() {
-    const result = setKey(key.trim());
+    const check = validateApiKey(key);
+    if (!check.ok) {
+      setStatus(check.error);
+      return;
+    }
+    const result = setKey(check.value);
     setStatus(result.ok ? "Key saved to this browser." : `Could not save the key: ${result.error}`);
   }
 
@@ -37,10 +43,10 @@ export default function Settings() {
           placeholder="sk-ant-…"
         />
         <div className="btnrow">
-          <button className="btn primary" type="submit">SAVE KEY</button>
+          <button className="btn primary" type="submit" disabled={!validateApiKey(key).ok}>SAVE KEY</button>
           <button className="btn" type="button" onClick={() => { setKeyState(""); setKey(""); setStatus("Key removed."); }}>REMOVE</button>
         </div>
-        <div className={`status${status ? " ok" : ""}`}>{status || "Every framework run and follow-up agent can use live web research."}</div>
+        <div className={`status${status ? (status.startsWith("Key saved") || status === "Key removed." || status === "Engagement reset." ? " ok" : " warning") : ""}`}>{status || "The key stays in this browser and is sent only with an explicit run."}</div>
       </form>
 
       <div className="panel mt settings-panel">

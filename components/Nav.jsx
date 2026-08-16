@@ -1,25 +1,48 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getKey } from "@/lib/store";
+import { getArtifact, getBucket, hasApiKey } from "@/lib/store";
+import { hasHomeCanvas, shouldShowNewCompany } from "@/lib/homeMode";
+import { companyHostname, parseBizIntake } from "@/lib/intake";
 
 export default function Nav() {
   const path = usePathname();
+  const searchParams = useSearchParams();
   const [hasKey, setHasKey] = useState(false);
+  const [hostname, setHostname] = useState("");
+  const [hasCanvas, setHasCanvas] = useState(false);
   useEffect(() => {
-    const refresh = () => setHasKey(Boolean(getKey()));
+    const refresh = () => {
+      setHasKey(hasApiKey());
+      setHostname(companyHostname(parseBizIntake(getBucket("biz")).url));
+      setHasCanvas(hasHomeCanvas(getArtifact("bmc")));
+    };
     refresh();
     window.addEventListener("lf:storage", refresh);
     return () => window.removeEventListener("lf:storage", refresh);
   }, [path]);
+  const showNewCompany = shouldShowNewCompany({
+    hasCanvas,
+    wantNew: searchParams.get("new") === "1",
+    path,
+    companyLoaded: Boolean(hostname),
+  });
   return (
     <nav className="topnav" aria-label="Primary navigation">
-      <Link className="brand" href="/">LIVEFRAMEWORKS</Link>
+      <Link className={"brand" + (hostname ? " brand-host" : "")} href="/">
+        {hostname || "LIVEFRAMEWORKS"}
+      </Link>
+      {showNewCompany && <Link href="/?new=1" className="nav-plain">New company</Link>}
       <Link href="/pipeline" className={path === "/pipeline" ? "on" : ""}>Pipeline</Link>
       <Link href="/export" className={path === "/export" ? "on" : ""}>Export</Link>
-      <Link href="/settings" className={path === "/settings" ? "on" : ""}>
-        <span className={"keydot" + (hasKey ? " ok" : "")}></span>API Key
+      <Link
+        href="/settings"
+        className={"keystatus" + (path === "/settings" ? " on" : "")}
+        aria-label={hasKey ? "Settings — key saved in this browser" : "Settings — no API key"}
+        title={hasKey ? "Key saved in this browser" : "No API key"}
+      >
+        <span className={"keydot" + (hasKey ? " ok" : "")} aria-hidden="true"></span>
       </Link>
     </nav>
   );

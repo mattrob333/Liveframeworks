@@ -6,6 +6,7 @@ import { INTAKE, ORDER } from "../lib/frameworks.js";
 import {
   ARTIFACT_SCHEMA_VERSION,
   createFrameworkArtifact,
+  currentConstraintLine,
   getArtifactDefinition,
   getArtifactJsonSchema,
   getArtifactSections,
@@ -19,6 +20,8 @@ import {
   getBucketAffectedFrameworks,
   shouldReplaceCurrentArtifact,
 } from "../lib/agentContext.js";
+import { formatBizIntake } from "../lib/intake.js";
+import { ANSOFF_IGNORE_ANSWER_DIRECTION } from "../lib/frameworkRunFollowUp.js";
 import FrameworkArtifact from "../components/FrameworkArtifact.jsx";
 
 const claim = text => ({ text, basis: "known", confidence: "high", evidenceRefs: ["E1"] });
@@ -32,6 +35,12 @@ const evidence = {
   url: null,
   retrievedAt: null,
 };
+
+const READY_BIZ = formatBizIntake({
+  url: "https://example.com",
+  paragraph: "We sell compliance software to mid-market operations teams.",
+});
+const readyBuckets = { biz: READY_BIZ };
 
 function sampleFromSchema(schema) {
   if (schema.const !== undefined) return schema.const;
@@ -115,7 +124,7 @@ test("the validated dependency DAG unlocks the exact nine waterfall waves", () =
   const previouslyReady = new Set();
 
   for (const expected of expectedWaves) {
-    const ready = deriveActiveAgents(artifacts);
+    const ready = deriveActiveAgents(artifacts, readyBuckets);
     const newlyReady = ready.filter(key => !previouslyReady.has(key));
     assert.deepEqual(newlyReady, expected);
     newlyReady.forEach(key => {
@@ -124,7 +133,7 @@ test("the validated dependency DAG unlocks the exact nine waterfall waves", () =
     });
   }
 
-  assert.deepEqual(deriveActiveAgents(artifacts), ORDER);
+  assert.deepEqual(deriveActiveAgents(artifacts, readyBuckets), ORDER);
 });
 
 test("Business Model Canvas validates only when every canonical box has supported content", () => {
@@ -141,10 +150,10 @@ test("Business Model Canvas validates only when every canonical box has supporte
 
 test("needs_input and malformed artifacts never unlock downstream agents", () => {
   const artifacts = { bmc: { frameworkId: "bmc", status: "needs_input" } };
-  assert.deepEqual(deriveActiveAgents(artifacts), ["bmc"]);
+  assert.deepEqual(deriveActiveAgents(artifacts, readyBuckets), ["bmc"]);
 
   artifacts.bmc = completeArtifact("bmc");
-  assert.deepEqual(deriveActiveAgents(artifacts), ["bmc", "industrymap", "jtbd", "sevens"]);
+  assert.deepEqual(deriveActiveAgents(artifacts, readyBuckets), ["bmc", "industrymap", "jtbd", "sevens"]);
 
   artifacts.industrymap = completeArtifact("industrymap");
   artifacts.fiveforces = completeArtifact("fiveforces");
@@ -152,7 +161,7 @@ test("needs_input and malformed artifacts never unlock downstream agents", () =>
   artifacts.vrio = completeArtifact("vrio");
   artifacts.jtbd = completeArtifact("jtbd");
   artifacts.sevens = completeArtifact("sevens");
-  assert.deepEqual(deriveActiveAgents(artifacts), [
+  assert.deepEqual(deriveActiveAgents(artifacts, readyBuckets), [
     "bmc", "industrymap", "fiveforces", "pestle", "swot", "vrio", "blueocean", "jtbd", "vpc", "sevens",
   ]);
 });
@@ -160,7 +169,13 @@ test("needs_input and malformed artifacts never unlock downstream agents", () =>
 test("validated readiness is bound to the framework-map slot", () => {
   const misplaced = completeArtifact("fiveforces");
   assert.equal(artifactIsComplete(misplaced, "bmc"), false);
-  assert.deepEqual(deriveActiveAgents({ bmc: misplaced }), ["bmc"]);
+  assert.deepEqual(deriveActiveAgents({ bmc: misplaced }, readyBuckets), ["bmc"]);
+});
+
+test("Business Model Canvas stays locked until the required URL + paragraph bucket is loaded", () => {
+  assert.deepEqual(deriveActiveAgents({}, {}), []);
+  assert.deepEqual(deriveActiveAgents({}, { biz: "just a sentence with no url" }), []);
+  assert.deepEqual(deriveActiveAgents({}, readyBuckets), ["bmc"]);
 });
 
 test("every bucket mutation invalidates all agents that receive shared context", () => {
@@ -228,6 +243,37 @@ test("chat answers travel as authoritative clarifications and change the input f
   assert.notEqual(withChats.inputFingerprint, withoutChats.inputFingerprint);
 });
 
+test("a needs_input follow-up snapshot carries prior questions and the run direction", () => {
+  const prior = {
+    frameworkId: "ansoff",
+    status: "needs_input",
+    nextQuestions: [
+      "What is current market share in the beachhead segment?",
+      "What capacity is available for a penetration push?",
+    ],
+  };
+  const first = buildContextSnapshot("ansoff", { biz: "desc" }, { ansoff: prior }, "");
+  assert.deepEqual(first.priorQuestions, prior.nextQuestions);
+  assert.equal(first.manifest.priorQuestionCount, 2);
+  assert.equal(first.userClarifications.length, 0);
+
+  const directed = buildContextSnapshot(
+    "ansoff",
+    { biz: "desc" },
+    { ansoff: prior },
+    `Read the saved context, research the company, and create the Ansoff Matrix.\n\nAdditional direction: ${ANSOFF_IGNORE_ANSWER_DIRECTION}`,
+  );
+  assert.deepEqual(directed.priorQuestions, prior.nextQuestions);
+  assert.equal(directed.userClarifications.length, 1);
+  assert.equal(directed.userClarifications[0].statement, ANSOFF_IGNORE_ANSWER_DIRECTION);
+  assert.equal(directed.userClarifications[0].agent, "The Route Setter");
+  assert.notEqual(first.inputFingerprint, directed.inputFingerprint);
+
+  const emptyFirst = buildContextSnapshot("ansoff", { biz: "desc" }, {}, ANSOFF_IGNORE_ANSWER_DIRECTION);
+  assert.deepEqual(emptyFirst.priorQuestions, []);
+  assert.equal(emptyFirst.userClarifications.length, 0);
+});
+
 test("stale propagation reaches every transitive descendant and snapshots preserve legacy text", () => {
   assert.deepEqual(getAffectedFrameworks(["bmc"], false), ORDER.filter(key => key !== "bmc"));
   assert.deepEqual(getAffectedFrameworks(["jtbd"], false), ["vpc", "kano", "bsc", "toc", "raci"]);
@@ -289,4 +335,116 @@ test("RACI renders its canonical Roles section as the default selectable region"
   assert.doesNotMatch(workMatrixHtml, /<tr[^>]*role="button"/);
   assert.equal((workMatrixHtml.match(/aria-selected="true"/g) || []).length, 0);
   assert.equal((workMatrixHtml.match(/aria-selected="false"/g) || []).length, 2);
+});
+
+test("Industry Map is four bands on one 12-column grid, not a 2-col masonry", () => {
+  const artifact = completeArtifact("industrymap");
+  artifact.payload.map.players = [
+    { name: "AppDirect", position: "leader", revenue: null, marketShare: null, growth: null, geography: null, basis: "known", confidence: "high", evidenceRefs: ["E1"] },
+    { name: "Stripe", position: "entrant", revenue: null, marketShare: null, growth: null, geography: null, url: "https://stripe.com", basis: "known", confidence: "high", evidenceRefs: ["E1"] },
+  ];
+  artifact.evidence = [{
+    id: "E1",
+    kind: "web",
+    title: "AppDirect",
+    sourceKey: null,
+    artifactRevision: null,
+    messageId: null,
+    url: "https://www.appdirect.com",
+    retrievedAt: null,
+  }];
+  const html = renderToStaticMarkup(
+    React.createElement(FrameworkArtifact, { artifact, frameworkId: "industrymap", brief: true, onSelect: () => {} }),
+  );
+  assert.match(html, /industry-map/);
+  assert.equal((html.match(/industry-map-band /g) || []).length, 4);
+  assert.match(html, /industry-map-band-label">Terrain</);
+  assert.match(html, /industry-map-band-label">Players</);
+  assert.match(html, /industry-map-band-label">Flows</);
+  assert.match(html, /industry-map-band-label">Time</);
+  assert.match(html, /industry-map-terrain/);
+  assert.match(html, /industry-map-players/);
+  assert.match(html, /industry-map-flows/);
+  assert.match(html, /industry-map-time/);
+  assert.match(html, /industry-map-players-strip/);
+  assert.match(html, /player-chip/);
+  assert.doesNotMatch(html, /industry-map-players-strip[^>]*artifact-findings/);
+  assert.doesNotMatch(html, /grid2/);
+  assert.match(html, /href="https:\/\/stripe\.com\/?"/);
+  assert.match(html, /href="https:\/\/www\.appdirect\.com\/?"/);
+  assert.doesNotMatch(html, /href="https:\/\/appdirect\.com"/);
+});
+
+test("industry map players may omit url and still validate", () => {
+  const artifact = completeArtifact("industrymap");
+  artifact.payload.map.players = [{
+    name: "AppDirect",
+    position: "leader",
+    revenue: null,
+    marketShare: null,
+    growth: null,
+    geography: null,
+    basis: "known",
+    confidence: "high",
+    evidenceRefs: ["E1"],
+  }];
+  const result = validateFrameworkArtifact(artifact, "industrymap", { requireContent: false });
+  assert.equal(result.valid, true, result.errors.join("; "));
+});
+
+test("a player without a url and without a matching evidence title stays plain text", () => {
+  const artifact = completeArtifact("industrymap");
+  artifact.payload.map.players = [
+    { name: "AppDirect", position: "leader", revenue: null, marketShare: null, growth: null, geography: null, basis: "known", confidence: "high", evidenceRefs: [] },
+  ];
+  const html = renderToStaticMarkup(
+    React.createElement(FrameworkArtifact, { artifact, frameworkId: "industrymap", brief: true, onSelect: () => {} }),
+  );
+  assert.match(html, /AppDirect/);
+  assert.doesNotMatch(html, /href=/);
+  assert.doesNotMatch(html, /appdirect\.com/i);
+});
+
+test("brief BMC keeps the nine-box and drops handbook chrome", () => {
+  const artifact = completeBmcArtifact();
+  artifact.gaps = [claim("Unknown renewal terms")];
+  const html = renderToStaticMarkup(
+    React.createElement(FrameworkArtifact, { artifact, frameworkId: "bmc", brief: true, onSelect: () => {} }),
+  );
+  assert.match(html, /bmc-grid/);
+  assert.match(html, /bmc-kp/);
+  assert.match(html, /bmc-vp/);
+  assert.doesNotMatch(html, /Structured framework/);
+  assert.doesNotMatch(html, /Current position/);
+  assert.doesNotMatch(html, /Gaps/);
+  assert.doesNotMatch(html, /Evidence used/);
+});
+
+test("currentConstraintLine reads ToC payload.constraint.text and is blank without it", () => {
+  const toc = createFrameworkArtifact("toc", {
+    payload: {
+      constraint: {
+        text: "Wholesale quotes bottleneck through the founder.",
+        type: "capacity",
+        location: "Founder desk",
+        throughputMetric: "quotes per week",
+        basis: "known",
+        confidence: "high",
+        evidenceRefs: [],
+      },
+    },
+  });
+
+  assert.equal(
+    currentConstraintLine(toc),
+    "Wholesale quotes bottleneck through the founder.",
+  );
+  assert.equal(currentConstraintLine(null), "");
+  assert.equal(currentConstraintLine(undefined), "");
+  assert.equal(currentConstraintLine(createFrameworkArtifact("toc")), "");
+  assert.equal(currentConstraintLine(createFrameworkArtifact("bmc")), "");
+  assert.equal(currentConstraintLine({
+    frameworkId: "toc",
+    payload: { constraint: { text: "   " } },
+  }), "");
 });
