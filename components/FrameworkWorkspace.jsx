@@ -36,6 +36,7 @@ import {
 import FrameworkArtifact from "@/components/FrameworkArtifact";
 import Chat from "@/components/Chat";
 import LoadingState from "@/components/LoadingState";
+import WhyThisStep from "@/components/WhyThisStep";
 
 function scalarText(value) {
   if (typeof value === "string" || typeof value === "number") return String(value);
@@ -311,6 +312,7 @@ export default function FrameworkWorkspace({ id, home = false, orgInstalls = {} 
               {needsInput && <p className="framework-state-note">This run is waiting on clarifying questions.</p>}
             </header>
           )}
+          <WhyThisStep insight={framework.insight} />
           {showTocStaleBannerBetweenHeroAndRoster({ stale, hero: tocHero, roster: tocRoster }) && (
             <p className="framework-state-note">This map is stale. Review it, or regenerate from the pipeline.</p>
           )}

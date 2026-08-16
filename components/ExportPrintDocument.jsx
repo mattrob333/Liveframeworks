@@ -5,6 +5,7 @@ import { FW } from "@/lib/frameworks";
 import { currentConstraintLine, getArtifactSections, normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
 import { asList, formatBriefDate, orderBriefFrameworks } from "@/lib/exportBrief";
 import { playerLinkUrl } from "@/lib/playerLinks";
+import HowToRead from "@/components/HowToRead";
 
 // Print-only document. Screen /export keeps the maps. No grid on paper.
 
@@ -93,6 +94,7 @@ function PrintFramework({ frameworkId, artifact }) {
   return (
     <section className="export-print-fw">
       <h2>{FW[frameworkId]?.name || frameworkId}</h2>
+      {FW[frameworkId]?.out && <p className="export-print-subtitle">{FW[frameworkId].out}</p>}
       {normalized.summary && <p>{normalized.summary}</p>}
       {sections.map(section => {
         const isPlayers = section.id === "players" || section.kind === "players";
@@ -131,6 +133,7 @@ export default function ExportPrintDocument({
         {date && <p className="export-print-date">{date}</p>}
         {lede && <p className="export-print-lede">{lede}</p>}
         {constraint && <p className="export-print-lede">{constraint}</p>}
+        <HowToRead of="exportPrint" />
       </header>
 
       {briefIds.length === 0 && (

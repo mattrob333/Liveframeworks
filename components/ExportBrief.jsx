@@ -4,6 +4,7 @@ import React from "react";
 import { FW } from "@/lib/frameworks";
 import { currentConstraintLine, normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
 import FrameworkArtifact from "@/components/FrameworkArtifact";
+import HowToRead from "@/components/HowToRead";
 import { formatBriefDate, orderBriefFrameworks } from "@/lib/exportBrief";
 
 // The /export preview *is* the client brief. Constraint leads. Only
@@ -28,6 +29,7 @@ export default function ExportBrief({
         {date && <p className="export-date">{date}</p>}
         {lede && <p className="export-engagement">{lede}</p>}
         {constraint && <p className="export-constraint">{constraint}</p>}
+        <HowToRead of="export" />
       </header>
 
       {briefIds.length === 0 && (
@@ -42,6 +44,7 @@ export default function ExportBrief({
           <section key={id} className={`export-fw${isBmc ? " export-fw-bmc" : ""}`}>
             {/* BMC is the map. Later completed frameworks get a section title. */}
             {!isBmc && <h2>{FW[id]?.name || id}</h2>}
+            {!isBmc && FW[id]?.out && <p className="export-fw-subtitle">{FW[id].out}</p>}
             {!isBmc && normalized.summary && (
               <p className="export-prose">{normalized.summary}</p>
             )}

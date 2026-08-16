@@ -9,6 +9,7 @@ import {
   validateFrameworkArtifact,
 } from "@/lib/frameworkArtifacts";
 import { playerLinkUrl } from "@/lib/playerLinks";
+import HowToRead from "@/components/HowToRead";
 
 const BMC_CLASSES = {
   keyPartners: "bmc-kp",
@@ -317,10 +318,10 @@ function SectionView({ artifact, definition, onSelect, selectedSectionId, sectio
 }
 
 const INDUSTRY_MAP_BANDS = [
-  { id: "terrain", label: "Terrain", items: ["segments", "glossary", "expertsAndSources"] },
-  { id: "players", label: "Players", items: ["players"] },
-  { id: "flows", label: "Flows", items: ["technologyFlows", "economicFlows", "personnelFlows"] },
-  { id: "time", label: "Time", items: ["history", "future"] },
+  { id: "terrain", label: "Terrain", subtitle: "The parts of the market, and the words people use for them.", items: ["segments", "glossary", "expertsAndSources"] },
+  { id: "players", label: "Players", subtitle: "The companies standing on that ground.", items: ["players"] },
+  { id: "flows", label: "Flows", subtitle: "How technology, money, and people move through the market.", items: ["technologyFlows", "economicFlows", "personnelFlows"] },
+  { id: "time", label: "Time", subtitle: "What the ground looked like, and where it is heading.", items: ["history", "future"] },
 ];
 
 // Classic Ansoff geometry: existing/new products × existing/new markets.
@@ -453,6 +454,7 @@ function IndustryMapView({ artifact, definition, onSelect, selectedSectionId }) 
       {INDUSTRY_MAP_BANDS.map(band => (
         <div key={band.id} className={`industry-map-band industry-map-${band.id}`}>
           <span className="industry-map-band-label">{band.label}</span>
+          {band.subtitle && <p className="industry-map-band-subtitle">{band.subtitle}</p>}
           {band.items.map(id => byId[id] && (
             <SelectableSection
               key={id}
@@ -599,6 +601,7 @@ function EvidenceList({ evidence }) {
   return (
     <div className="artifact-evidence panel mt">
       <span className="artifact-evidence-title">Evidence used</span>
+      <HowToRead of="evidence" />
       <ul>
         {evidence.slice(0, 8).map(item => (
           <li key={item.id}>
@@ -695,6 +698,7 @@ export default function FrameworkArtifact({ artifact, frameworkId, selectedSecti
           })()}
         </header>
       )}
+      {!document && <HowToRead of={normalized.frameworkId} />}
       {!document && !validation.valid && (
         <div className="artifact-warning" role="status">
           Showing the safe normalized view. {validation.errors.length} contract {validation.errors.length === 1 ? "issue was" : "issues were"} detected.

@@ -34,6 +34,7 @@ import {
 } from "@/lib/intake";
 import BizIntakeFields from "@/components/BizIntakeFields";
 import LoadingState from "@/components/LoadingState";
+import HowToRead from "@/components/HowToRead";
 
 function statusFor(frameworkId, artifact, latestRun, ready) {
   if (latestRun && ["queued", "researching", "generating", "validating"].includes(latestRun.status)) return "running";
@@ -389,6 +390,7 @@ export default function Pipeline() {
             <div className="eyebrow">Fig. 01·B — Agent Roster</div>
             <h1>The Frameworks Are Alive Now</h1>
             <p className="sub">Load the evidence you have, launch a ready framework, and let each validated artifact become the exact context for the agents downstream.</p>
+            <HowToRead of="pipeline" />
           </header>
 
           <section className="stage" data-num="00">

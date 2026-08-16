@@ -237,6 +237,8 @@ test("Industry Map markup is Terrain / Players / Flows / Time — nine cells, fo
   assert.match(html, /industry-map-band-label">Players</);
   assert.match(html, /industry-map-band-label">Flows</);
   assert.match(html, /industry-map-band-label">Time</);
+  assert.match(html, /industry-map-band-subtitle">The parts of the market/);
+  assert.match(html, /industry-map-band-subtitle">The companies standing on that ground/);
   assert.match(html, /industry-map-terrain/);
   assert.match(html, /industry-map-players/);
   assert.match(html, /industry-map-flows/);
@@ -335,7 +337,7 @@ test("7S scorecard wraps at a title-safe min, not seven 87px 1fr tracks", () => 
   const minMatch = sevens.match(/grid-template-columns:repeat\(auto-fit,minmax\((\d+)px,1fr\)\)/);
   assert.ok(minMatch, "7S must auto-fit columns with a px min, not seven equal 1fr tracks");
   const columnMin = Number(minMatch[1]);
-  // STRUCTURE at 12px mono + 12px cell padding needs ~96px; 148px also holds
+  // STRUCTURE at 13px mono + 12px cell padding needs ~96px; 148px also holds
   // "independently" / "relationship" on Current/Target lines. Four 148px tracks
   // plus 8px gaps still fit in the 657px 1280+chat pane, so all seven S-elements wrap to two rows.
   assert.ok(columnMin >= 148, `7S column min ${columnMin}px cannot hold STRUCTURE at a word boundary`);

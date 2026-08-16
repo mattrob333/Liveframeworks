@@ -2,6 +2,7 @@
 // Roster reads org-install glance fields only — no invented seats.
 
 import React from "react";
+import HowToRead from "@/components/HowToRead";
 
 function ProofChips({ hero }) {
   if (!hero) return null;
@@ -46,6 +47,7 @@ export function TocRoster({ roster }) {
   if (!roster?.teams?.length) return null;
   return (
     <section className="toc-roster" aria-label="Agent team">
+      <HowToRead of="tocRoster" />
       {roster.router && (
         <p className="toc-roster-router">
           <b>{roster.router.name}</b>
