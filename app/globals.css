@@ -365,6 +365,11 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
 .artifact-details{margin-top:5px;color:var(--dim);font-size:var(--type-label)}
 .artifact-details b,.artifact-nested b{color:var(--line);font-weight:400}
 .artifact-score,.artifact-direction{display:inline-block;width:max-content;margin-top:4px;border:1px solid var(--faint);padding:2px 5px;color:var(--dim);font-size:var(--type-label);text-transform:uppercase}
+/* Colorless provenance. Caps are formatted in JS so inferred/assumed stay lowercase italics. */
+.apparatus{color:var(--dim);font-size:var(--type-label);letter-spacing:.08em;line-height:1.45}
+.apparatus-hedge{letter-spacing:0;text-transform:none}
+.apparatus-hedge em{font-style:italic}
+.apparatus-sep{letter-spacing:0}
 .artifact-meta{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
 .artifact-meta>span{border:1px solid var(--faint);padding:2px 5px;color:var(--dim);font-size:var(--type-label);letter-spacing:.04em;text-transform:uppercase}
 .artifact-meta .basis-known,.artifact-meta .confidence-high{color:var(--ok)}
