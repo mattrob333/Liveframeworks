@@ -3,12 +3,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getArtifact, getBucket, getKey, setBucket, setKey } from "@/lib/store";
-import { getBucketAffectedFrameworks } from "@/lib/agentContext";
-import { hasHomeCanvas } from "@/lib/homeMode";
+import { clearCompanyWork, getArtifact, getBucket, getKey, setBucket, setKey } from "@/lib/store";
+import { hasHomeCanvas, shouldClearPriorCompany } from "@/lib/homeMode";
 import { formatBizIntake, parseBizIntake, validateBizIntake } from "@/lib/intake";
 import { validateApiKey } from "@/lib/apiKey";
-import { markDependentArtifactsStale } from "@/lib/frameworkRunClient";
 import BizIntakeFields from "@/components/BizIntakeFields";
 
 export default function FirstRunHome() {
@@ -53,14 +51,17 @@ export default function FirstRunHome() {
       url: intake.url,
       paragraph: intake.paragraph,
     });
-    const previous = getBucket("biz");
+    if (shouldClearPriorCompany({ committingDraw: true })) {
+      const cleared = clearCompanyWork();
+      if (!cleared.ok) {
+        setStatus(`Could not start a new company: ${cleared.error}`);
+        return;
+      }
+    }
     const saved = setBucket("biz", formatted);
     if (!saved.ok) {
       setStatus(`Could not save: ${saved.error}`);
       return;
-    }
-    if (previous !== formatted) {
-      markDependentArtifactsStale(getBucketAffectedFrameworks("biz"), "Business description & URL changed.");
     }
     setStatus("");
     router.push("/?autorun=1");

@@ -16,7 +16,7 @@ import {
 import { INTAKE } from "../lib/frameworks.js";
 import { validateApiKey } from "../lib/apiKey.js";
 import { getArtifactJsonSchema } from "../lib/frameworkArtifacts.js";
-import { autorunReplaceUrl, hasHomeCanvas, resolveHomeMode, shouldShowNewCompany } from "../lib/homeMode.js";
+import { autorunReplaceUrl, hasHomeCanvas, resolveHomeMode, shouldClearPriorCompany, shouldShowNewCompany } from "../lib/homeMode.js";
 import { interpretRunEvent } from "../lib/frameworkRunClient.js";
 
 function sampleFromSchema(schema) {
@@ -320,6 +320,9 @@ test("home is the canvas after a complete BMC, unless New company", () => {
   assert.equal(resolveHomeMode({ ready: true, autorun: true, hasCanvas: false, wantNew: false }), "canvas");
   assert.equal(resolveHomeMode({ ready: true, autorun: false, hasCanvas: true, wantNew: false }), "canvas");
   assert.equal(resolveHomeMode({ ready: true, autorun: false, hasCanvas: true, wantNew: true }), "intake");
+  assert.equal(shouldClearPriorCompany({}), false);
+  assert.equal(shouldClearPriorCompany({ bucketsChanged: true }), true);
+  assert.equal(shouldClearPriorCompany({ committingDraw: true }), true);
 });
 
 test("first-run autorun must not unmount-abort before a BMC exists", () => {

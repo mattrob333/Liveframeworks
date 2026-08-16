@@ -2,12 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { INTAKE } from "@/lib/frameworks";
-import { getArtifact, getBucket, setBucket } from "@/lib/store";
-import { getBucketAffectedFrameworks } from "@/lib/agentContext";
+import { getArtifact, getBucket, setBucket, clearCompanyWork } from "@/lib/store";
 import { applyDemoBuckets } from "@/lib/demoPacks";
-import { markDependentArtifactsStale } from "@/lib/frameworkRunClient";
-import { hasHomeCanvas, resolveHomeMode } from "@/lib/homeMode";
+import { hasHomeCanvas, resolveHomeMode, shouldClearPriorCompany } from "@/lib/homeMode";
 import FirstRunHome from "@/components/FirstRunHome";
 import FrameworkWorkspace from "@/components/FrameworkWorkspace";
 import LoadingState from "@/components/LoadingState";
@@ -21,15 +18,13 @@ export default function HomeGate({ demoBuckets = null }) {
     // Apply before ready flips so FirstRunHome hydrates from the filled biz bucket.
     if (demoBuckets) {
       const applied = applyDemoBuckets(demoBuckets, { getBucket, setBucket });
-      if (applied.ok) {
-        for (const write of applied.writes) {
-          if (write.previous === write.next) continue;
-          const source = INTAKE.find(item => item.key === write.key);
-          markDependentArtifactsStale(
-            getBucketAffectedFrameworks(write.key),
-            `${source.name} changed.`,
-          );
-        }
+      if (
+        applied.ok
+        && shouldClearPriorCompany({
+          bucketsChanged: applied.writes.some(write => write.previous !== write.next),
+        })
+      ) {
+        clearCompanyWork();
       }
     }
     const sync = () => setHasCanvas(hasHomeCanvas(getArtifact("bmc")));
