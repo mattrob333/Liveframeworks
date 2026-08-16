@@ -15,10 +15,13 @@ import {
   engagementMeta,
   flattenFrameworkMarkdown,
   formatBriefDate,
+  listBriefFrameworks,
   listCompleteFrameworks,
+  orderBriefFrameworks,
 } from "../lib/exportBrief.js";
 import ExportBrief from "../components/ExportBrief.jsx";
 import ExportPrintDocument from "../components/ExportPrintDocument.jsx";
+import FrameworkArtifact from "../components/FrameworkArtifact.jsx";
 
 const claim = text => ({ text, basis: "known", confidence: "high", evidenceRefs: ["E1"] });
 const evidence = {
@@ -493,6 +496,197 @@ test("ToC constraint is one line on the on-screen brief lede; no ToC means no li
     }),
   );
   assert.doesNotMatch(emptyToc, /export-constraint/);
+});
+
+test("brief order puts ToC first and keeps each framework once", () => {
+  assert.deepEqual(orderBriefFrameworks(["bmc", "swot", "toc", "raci", "toc"]), ["toc", "bmc", "swot", "raci"]);
+  assert.deepEqual(orderBriefFrameworks(["bmc", "swot"]), ["bmc", "swot"]);
+  assert.deepEqual(orderBriefFrameworks([]), []);
+
+  const artifacts = {
+    bmc: completeBmcArtifact(),
+    swot: { ...completeArtifact("swot"), status: "stale" },
+    toc: tocWithConstraint("Quotes stall at the founder."),
+  };
+  assert.deepEqual(listCompleteFrameworks(artifacts), ["bmc", "swot", "toc"]);
+  assert.deepEqual(listBriefFrameworks(artifacts), ["toc", "bmc", "swot"]);
+});
+
+function clientToc(text) {
+  return createFrameworkArtifact("toc", {
+    status: "complete",
+    summary: "Exploit the founder-routing policy first, then elevate packing. Ranked: publish the price sheet, name a wholesale owner, then buy packing capacity.",
+    gaps: [claim("No packer output data")],
+    assumptions: [claim("Priya can own wholesale")],
+    nextQuestions: ["Will Maya name the constraint?"],
+    payload: {
+      constraint: {
+        text,
+        type: "policy",
+        location: "Founder desk",
+        throughputMetric: "quotes per week",
+        basis: "known",
+        confidence: "high",
+        evidenceRefs: ["E1", "E2"],
+      },
+      focusingSteps: {
+        identify: claim("The binding constraint is founder routing."),
+        exploit: [claim("Pause new wholesale intake.")],
+        subordinate: [claim("Protect the subscription line.")],
+        elevate: [claim("Name a wholesale owner.")],
+        repeat: [claim("Re-measure after the policy moves.")],
+      },
+      interventions: [],
+    },
+  });
+}
+
+function longBmc() {
+  const artifact = completeBmcArtifact();
+  artifact.gaps = [claim("Unknown renewal terms")];
+  artifact.assumptions = [claim("Buyers already have a compliance owner")];
+  artifact.nextQuestions = ["Who signs the annual attestation?"];
+  artifact.payload.boxes.keyPartners = [
+    claim("Partner one"),
+    claim("Partner two"),
+    claim("Partner three"),
+    claim("Partner four"),
+    claim("Partner five"),
+  ];
+  return artifact;
+}
+
+function clientBriefProps() {
+  const constraint = "Wholesale quotes bottleneck through the founder.";
+  const bmc = longBmc();
+  const toc = clientToc(constraint);
+  const industrymap = completeArtifact("industrymap");
+  return {
+    constraint,
+    props: {
+      meta: engagementMeta({
+        biz: READY_BIZ,
+        leadership: "LEADERSHIP INTERVIEW — Maya T.\n1. What does this business do?",
+        calls: "CALL TRANSCRIPTS — Driftline\n=== CALL: discovery ===\nPRIYA: Hey.",
+      }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds: ["bmc", "industrymap", "toc"],
+      artifacts: { bmc, industrymap, toc },
+    },
+  };
+}
+
+function headings(html, tag) {
+  return [...html.matchAll(new RegExp(`<${tag}[^>]*>([^<]+)</${tag}>`, "g"))].map(match => match[1]);
+}
+
+function assertClientBriefOmissions(html) {
+  const glued = html.replace(/<[^>]+>/g, "");
+  assert.doesNotMatch(html, /LEADERSHIP INTERVIEW/);
+  assert.doesNotMatch(html, /CALL TRANSCRIPTS/);
+  assert.doesNotMatch(html, /### Leadership interviews/);
+  assert.doesNotMatch(html, /### Call transcripts/);
+  assert.doesNotMatch(html, /<h3[^>]*>Gaps<\/h3>/);
+  assert.doesNotMatch(html, /<h3[^>]*>Assumptions<\/h3>/);
+  assert.doesNotMatch(html, /<h3[^>]*>Next questions<\/h3>/);
+  assert.doesNotMatch(html, /<b>Gaps<\/b>/);
+  assert.doesNotMatch(html, /artifact-note-title/);
+  assert.doesNotMatch(html, /Ranked Interventions/);
+  assert.doesNotMatch(html, /No supported finding yet/);
+  assert.doesNotMatch(html, /Complete:\s*\d+\s*of\s*\d+/);
+  assert.doesNotMatch(html, /\d+ of \d+ evidence/);
+  assert.doesNotMatch(html, /of 16 frameworks/);
+  assert.doesNotMatch(html, /\+\d+ more/);
+  assert.doesNotMatch(html, /open for the full readout/);
+  assert.doesNotMatch(html, /artifact-meta/);
+  assert.doesNotMatch(html, /artifact-basis/);
+  assert.doesNotMatch(glued, /knownhigh\d/i);
+  assert.doesNotMatch(html, /Showing the safe normalized view/);
+  assert.doesNotMatch(html, /Structured framework/);
+  assert.doesNotMatch(html, /This result is not a recognized/);
+}
+
+test("on-screen brief leads with title, date, lede, then the constraint", () => {
+  const { constraint, props } = clientBriefProps();
+  const html = renderToStaticMarkup(React.createElement(ExportBrief, props));
+  const h1 = html.indexOf("<h1");
+  const date = html.indexOf("14 August 2026");
+  const lede = html.indexOf("We sell compliance software");
+  const constraintAt = html.indexOf(constraint);
+  const tocHeading = html.indexOf("Theory of Constraints");
+  const industry = html.indexOf("Industry Map");
+  const bmc = html.indexOf("bmc-grid");
+
+  assert.match(html, /<h1[^>]*>example\.com<\/h1>/);
+  assert.ok(h1 >= 0 && date > h1 && lede > date && constraintAt > lede);
+  assert.ok(tocHeading > constraintAt);
+  assert.ok(industry > tocHeading);
+  assert.ok(bmc > constraintAt);
+  assert.deepEqual(headings(html, "h2"), ["Theory of Constraints", "Industry Map"]);
+  assert.match(html, /Partner five/);
+  assert.match(html, /Exploit the founder-routing policy first/);
+  assertClientBriefOmissions(html);
+});
+
+test("print brief matches the same lead order and omissions", () => {
+  const { constraint, props } = clientBriefProps();
+  const html = renderToStaticMarkup(React.createElement(ExportPrintDocument, props));
+  const h1 = html.indexOf("<h1");
+  const date = html.indexOf("14 August 2026");
+  const lede = html.indexOf("We sell compliance software");
+  const constraintAt = html.indexOf(constraint);
+  const tocHeading = html.indexOf("Theory of Constraints");
+  const bmcHeading = html.indexOf("Business Model Canvas");
+  const industry = html.indexOf("Industry Map");
+
+  assert.match(html, /<h1[^>]*>example\.com<\/h1>/);
+  assert.ok(h1 >= 0 && date > h1 && lede > date && constraintAt > lede);
+  assert.ok(tocHeading > constraintAt);
+  assert.ok(bmcHeading > tocHeading);
+  assert.ok(industry > bmcHeading);
+  assert.deepEqual(headings(html, "h2"), ["Theory of Constraints", "Business Model Canvas", "Industry Map"]);
+  assert.doesNotMatch(html, /<h3[^>]*>The Constraint<\/h3>/);
+  assert.match(html, /<h3[^>]*>1\. Identify<\/h3>/);
+  assert.match(html, /Partner five/);
+  assert.match(html, /Exploit the founder-routing policy first/);
+  assertClientBriefOmissions(html);
+});
+
+test("canvas digest still truncates; the export document shows the full cell", () => {
+  const artifact = longBmc();
+  const canvas = renderToStaticMarkup(
+    React.createElement(FrameworkArtifact, {
+      artifact,
+      frameworkId: "bmc",
+      brief: true,
+      onSelect: () => {},
+    }),
+  );
+  assert.match(canvas, /Partner one/);
+  assert.match(canvas, /open for the full readout/);
+  assert.doesNotMatch(canvas, /Partner five/);
+
+  const brief = renderToStaticMarkup(
+    React.createElement(ExportBrief, {
+      meta: engagementMeta({ biz: READY_BIZ }),
+      generatedAt: "2026-08-14T12:00:00.000Z",
+      completeIds: ["bmc"],
+      artifacts: { bmc: artifact },
+    }),
+  );
+  assert.match(brief, /Partner five/);
+  assert.doesNotMatch(brief, /open for the full readout/);
+  assert.doesNotMatch(brief, /\+\d+ more/);
+});
+
+test("export page keeps coverage in screen chrome, not the brief body", () => {
+  const page = readFileSync(fileURLToPath(new URL("../app/export/page.jsx", import.meta.url)), "utf8");
+  assert.match(page, /className="export-chrome"/);
+  assert.match(page, /coverageLine\(evidenceCount, completeIds\.length\)/);
+  assert.match(page, /<ExportBrief/);
+  assert.match(page, /<ExportPrintDocument/);
+  assert.doesNotMatch(page, /ExportBrief[\s\S]*buckets=/);
+  assert.doesNotMatch(page, /ExportPrintDocument[\s\S]*buckets=/);
 });
 
 test("print brief lede also carries the ToC constraint when present", () => {

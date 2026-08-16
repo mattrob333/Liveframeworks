@@ -3,7 +3,7 @@
 import React from "react";
 import { FW } from "@/lib/frameworks";
 import { currentConstraintLine, getArtifactSections, normalizeFrameworkArtifact } from "@/lib/frameworkArtifacts";
-import { asList, formatBriefDate } from "@/lib/exportBrief";
+import { asList, formatBriefDate, orderBriefFrameworks } from "@/lib/exportBrief";
 import { playerLinkUrl } from "@/lib/playerLinks";
 
 // Print-only document. Screen /export keeps the maps. No grid on paper.
@@ -87,7 +87,9 @@ function PrintPlayers({ players, evidence }) {
 
 function PrintFramework({ frameworkId, artifact }) {
   const normalized = normalizeFrameworkArtifact(artifact, frameworkId);
-  const sections = sectionOrder(frameworkId, getArtifactSections(frameworkId, normalized));
+  const constraintLeads = frameworkId === "toc" && currentConstraintLine(normalized);
+  const sections = sectionOrder(frameworkId, getArtifactSections(frameworkId, normalized))
+    .filter(section => !(constraintLeads && section.id === "constraint"));
   return (
     <section className="export-print-fw">
       <h2>{FW[frameworkId]?.name || frameworkId}</h2>
@@ -117,23 +119,25 @@ export default function ExportPrintDocument({
   artifacts = {},
 }) {
   const date = formatBriefDate(generatedAt);
+  const title = String(meta.title || meta.company || "LiveFrameworks").trim() || "LiveFrameworks";
   const lede = String(meta.paragraph || "").trim();
   const constraint = currentConstraintLine(artifacts.toc);
+  const briefIds = orderBriefFrameworks(completeIds);
 
   return (
     <article className="export-print-doc">
       <header className="export-print-head">
-        <h1>{meta.title}</h1>
+        <h1>{title}</h1>
         {date && <p className="export-print-date">{date}</p>}
         {lede && <p className="export-print-lede">{lede}</p>}
         {constraint && <p className="export-print-lede">{constraint}</p>}
       </header>
 
-      {completeIds.length === 0 && (
+      {briefIds.length === 0 && (
         <p>No completed frameworks yet.</p>
       )}
 
-      {completeIds.map(id => (
+      {briefIds.map(id => (
         <PrintFramework key={id} frameworkId={id} artifact={artifacts[id]} />
       ))}
     </article>
