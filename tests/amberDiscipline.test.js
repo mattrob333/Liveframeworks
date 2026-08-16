@@ -8,12 +8,18 @@ const [screenCss, printCss = ""] = CSS.split("@media print");
 const LOADER = readFileSync(fileURLToPath(new URL("../components/LoadingState.module.css", import.meta.url)), "utf8");
 
 test("provenance families are dim only; constraint amber stays", () => {
-  assert.match(screenCss, /\.toc-proof-chips\{[^}]*color:var\(--dim\)/);
-  assert.match(screenCss, /\.artifact-meta\{[^}]*color:var\(--dim\)/);
-  assert.match(screenCss, /\.artifact-source-kind\{[^}]*color:var\(--dim\)/);
-  assert.doesNotMatch(screenCss, /\.toc-proof-chips[^{;\n]*\{[^}]*(?:--ok|--amber)/);
-  assert.doesNotMatch(screenCss, /\.artifact-meta[^{;\n]*\{[^}]*(?:--ok|--amber)/);
-  assert.doesNotMatch(screenCss, /\.artifact-source-kind[^{;\n]*\{[^}]*(?:--ok|--amber)/);
+  assert.match(
+    screenCss,
+    /\.apparatus,\.artifact-meta,\.artifact-source-kind,\.toc-proof-chips\{[^}]*color:var\(--dim\)/,
+  );
+  const families = ["apparatus", "artifact-meta", "artifact-source-kind", "toc-proof-chips"];
+  for (const name of families) {
+    const rules = screenCss.match(new RegExp(`[^}]*\\.${name}[^{]*\\{[^}]+\\}`, "g")) || [];
+    assert.ok(rules.length, `missing screen rules for .${name}`);
+    for (const rule of rules) {
+      assert.doesNotMatch(rule, /--ok|--amber|#8FBF6F|#E39A2B/i, rule);
+    }
+  }
 });
 
 test("constraint lines are amber; export engagement stays ink", () => {
@@ -35,7 +41,13 @@ test("focus rings stay amber", () => {
 
 test("print block has no amber", () => {
   assert.match(printCss, /background:#fff/);
+  assert.match(printCss, /html,body\{background:#fff;color:#111\}/);
+  assert.match(
+    printCss,
+    /\.apparatus,\.artifact-meta,\.artifact-source-kind,\.toc-proof-chips,\.artifact-unsurveyed\{color:#111;border-color:#111\}/,
+  );
   assert.doesNotMatch(printCss, /--amber|#E39A2B|#C47A08/i);
+  assert.doesNotMatch(printCss, /print-color-adjust/);
 });
 
 test("LoadingState leftover paper-orange is gone", () => {
