@@ -2,8 +2,8 @@
   width: 100%;
   border: 1px solid var(--faint, #D4CDBB);
   background:
-    linear-gradient(90deg, rgba(196, 122, 8, 0.06) 1px, transparent 1px),
-    linear-gradient(rgba(196, 122, 8, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, var(--faint) 1px, transparent 1px),
+    linear-gradient(var(--faint) 1px, transparent 1px),
     var(--panel, #FBF8F1);
   background-size: 24px 24px;
   color: var(--line, #1C1A14);
@@ -23,9 +23,9 @@
   height: 34px;
   display: grid;
   place-items: center;
-  border: 1px solid var(--amber, #C47A08);
+  border: 1px solid var(--line);
   background: var(--bg, #F4F0E6);
-  box-shadow: inset 0 0 0 1px rgba(196, 122, 8, 0.08);
+  box-shadow: none;
 }
 
 .pixelGrid {
@@ -40,7 +40,7 @@
 .pixel {
   width: 4px;
   height: 4px;
-  background: var(--amber, #C47A08);
+  background: var(--line);
   opacity: 0.22;
   transform: scale(0.72);
   animation: pixel-on var(--pixel-duration) steps(2, jump-none) var(--pixel-delay) infinite;
@@ -63,7 +63,7 @@
 
 .label {
   width: fit-content;
-  color: var(--amber, #C47A08);
+  color: var(--dim);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -71,9 +71,9 @@
   text-transform: uppercase;
   background: linear-gradient(
     90deg,
-    var(--amber, #C47A08) 0%,
-    var(--line, #1C1A14) 45%,
-    var(--amber, #C47A08) 70%
+    var(--line) 0%,
+    var(--dim) 45%,
+    var(--line) 70%
   );
   background-size: 220% 100%;
   background-clip: text;
@@ -162,13 +162,13 @@
 }
 
 .progressItem[data-state="current"] .phaseMarker {
-  border-color: var(--amber, #C47A08);
-  background: var(--amber, #C47A08);
-  box-shadow: 0 0 0 3px rgba(196, 122, 8, 0.12);
+  border-color: var(--line);
+  background: var(--line);
+  box-shadow: none;
 }
 
 .progressItem[data-state="current"] .phaseNumber {
-  color: var(--amber, #C47A08);
+  color: var(--line);
 }
 
 .srOnly {
@@ -193,7 +193,7 @@
 .root[data-active="false"] .label {
   animation: none;
   background: none;
-  color: var(--amber, #C47A08);
+  color: var(--dim);
   -webkit-text-fill-color: currentColor;
 }
 
@@ -249,7 +249,7 @@
   .label {
     animation: none;
     background: none;
-    color: var(--amber, #C47A08);
+    color: var(--dim);
     -webkit-text-fill-color: currentColor;
   }
 }
