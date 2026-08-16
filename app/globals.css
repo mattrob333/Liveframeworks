@@ -1,7 +1,7 @@
 :root{
   /* Warm-dark field manual — char and tobacco, never console navy (Matt, 2026-08-16).
      Same paper, lights off: cream ink on warm char, amber brighter to hold its glow.
-     The print brief stays white paper / #111 ink — hardcoded in @media print, immune. */
+     The print brief stays white paper / #111 ink — hardcoded in the print block, immune. */
   --bg:#211D15; --panel:#282318; --panel2:#322C1E; --line:#E9E2CF;
   --dim:#9C927C; --faint:#403927; --amber:#E39A2B; --amber-dim:rgba(227,154,43,.12);
   --ok:#8FBF6F; --danger:#C96A6A; --danger-ink:#E08A8A;
