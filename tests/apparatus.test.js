@@ -159,3 +159,12 @@ test("artifact-meta and source-kind call sites use Apparatus, not colored chips"
   assert.doesNotMatch(html, /source-web/);
   assert.doesNotMatch(html, />web</);
 });
+
+test("honest empty cells are dashed UNSURVEYED, not a fake fill", () => {
+  const html = renderToStaticMarkup(React.createElement(FrameworkArtifact, {
+    artifact: createFrameworkArtifact("swot"),
+  }));
+  assert.match(html, /artifact-unsurveyed/);
+  assert.match(html, /UNSURVEYED/);
+  assert.doesNotMatch(html, /No supported finding yet/);
+});

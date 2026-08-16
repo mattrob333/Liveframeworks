@@ -369,6 +369,7 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
 .apparatus-sep{letter-spacing:0}
 .artifact-meta{display:block;margin-top:7px;color:var(--dim);font-size:var(--type-label)}
 .artifact-empty,.artifact-more{color:var(--dim);font-size:var(--type-label);font-style:italic}
+.artifact-unsurveyed{display:block;border:1px dashed var(--dim);padding:8px 10px;font-style:normal;letter-spacing:.08em;text-transform:uppercase}
 .artifact-table-wrap{max-width:100%;overflow-x:auto}
 .artifact-table{width:100%;border-collapse:collapse;min-width:680px;font-size:var(--type-digest);line-height:var(--type-digest-lh)}
 .artifact-table th,.artifact-table td{padding:10px;border:1px solid var(--faint);text-align:left;vertical-align:top}

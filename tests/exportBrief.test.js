@@ -404,6 +404,7 @@ test("print document stacks BMC as headed sections, not a nine-box", () => {
   assert.doesNotMatch(html, /bmc-grid/);
   assert.doesNotMatch(html, /bmc-kp/);
   assert.doesNotMatch(html, /No supported finding yet/);
+  assert.doesNotMatch(html, /UNSURVEYED/);
   assert.doesNotMatch(html, /Terrain/);
   assert.doesNotMatch(html, /SWOT/);
 });
@@ -597,6 +598,7 @@ function assertClientBriefOmissions(html) {
   assert.doesNotMatch(html, /artifact-note-title/);
   assert.doesNotMatch(html, /Ranked Interventions/);
   assert.doesNotMatch(html, /No supported finding yet/);
+  assert.doesNotMatch(html, /UNSURVEYED/);
   assert.doesNotMatch(html, /Complete:\s*\d+\s*of\s*\d+/);
   assert.doesNotMatch(html, /\d+ of \d+ evidence/);
   assert.doesNotMatch(html, /of 16 frameworks/);

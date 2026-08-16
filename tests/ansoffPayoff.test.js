@@ -110,7 +110,7 @@ test("empty or missing Ansoff quadrants stay empty — no invented cells", () =>
   const emptyHtml = renderAnsoff(createFrameworkArtifact("ansoff"));
   assert.match(emptyHtml, /ansoff-matrix/);
   assert.equal((emptyHtml.match(/Open Market Penetration|Open Product Development|Open Market Development|Open Diversification/g) || []).length, 4);
-  assert.equal((emptyHtml.match(/No supported finding yet/g) || []).length >= 4, true);
+  assert.equal((emptyHtml.match(/UNSURVEYED/g) || []).length >= 4, true);
   for (const banned of INVENTED) {
     assert.equal(emptyHtml.includes(banned), false, `invented cell leaked: ${banned}`);
   }
@@ -127,10 +127,10 @@ test("empty or missing Ansoff quadrants stay empty — no invented cells", () =>
     },
   }));
   assert.match(missingHtml, /ansoff-matrix/);
-  assert.match(quadrantBlock(missingHtml, "marketPenetration"), /No supported finding yet/);
-  assert.match(quadrantBlock(missingHtml, "productDevelopment"), /No supported finding yet/);
-  assert.match(quadrantBlock(missingHtml, "marketDevelopment"), /No supported finding yet/);
-  assert.match(quadrantBlock(missingHtml, "diversification"), /No supported finding yet/);
+  assert.match(quadrantBlock(missingHtml, "marketPenetration"), /UNSURVEYED/);
+  assert.match(quadrantBlock(missingHtml, "productDevelopment"), /UNSURVEYED/);
+  assert.match(quadrantBlock(missingHtml, "marketDevelopment"), /UNSURVEYED/);
+  assert.match(quadrantBlock(missingHtml, "diversification"), /UNSURVEYED/);
   assert.doesNotMatch(quadrantBlock(missingHtml, "marketPenetration"), /Penetrate the current wholesale book first/);
   assert.doesNotMatch(missingHtml, /<b>Title:<\/b>/);
   for (const banned of ["Keep current cafes buying more", "Add cold brew kegs", "Open a second city", "Sell roasting equipment"]) {
@@ -145,9 +145,9 @@ test("empty or missing Ansoff quadrants stay empty — no invented cells", () =>
     },
   }));
   assert.match(quadrantBlock(partialHtml, "marketPenetration"), /Only this cell/);
-  assert.match(quadrantBlock(partialHtml, "productDevelopment"), /No supported finding yet/);
-  assert.match(quadrantBlock(partialHtml, "marketDevelopment"), /No supported finding yet/);
-  assert.match(quadrantBlock(partialHtml, "diversification"), /No supported finding yet/);
+  assert.match(quadrantBlock(partialHtml, "productDevelopment"), /UNSURVEYED/);
+  assert.match(quadrantBlock(partialHtml, "marketDevelopment"), /UNSURVEYED/);
+  assert.match(quadrantBlock(partialHtml, "diversification"), /UNSURVEYED/);
   assert.doesNotMatch(partialHtml, /Keep current cafes buying more/);
   assert.doesNotMatch(partialHtml, /<b>Title:<\/b>/);
 });

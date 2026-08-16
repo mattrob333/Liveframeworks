@@ -95,7 +95,7 @@ function Meta({ value }) {
 function EmptyFinding() {
   const documentMode = useContext(ExportDocument);
   if (documentMode) return null;
-  return <span className="artifact-empty">No supported finding yet.</span>;
+  return <span className="artifact-empty artifact-unsurveyed">UNSURVEYED</span>;
 }
 
 function PlayerName({ player, evidence = [] }) {

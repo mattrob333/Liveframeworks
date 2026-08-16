@@ -125,20 +125,20 @@ test("empty or missing SWOT quadrants and TOWS stay empty — no invented cells"
   assert.match(emptyHtml, /swot-tows/);
   assert.equal((emptyHtml.match(/Open Strengths|Open Weaknesses|Open Opportunities|Open Threats/g) || []).length, 4);
   assert.equal((emptyHtml.match(/Open SO Strategies|Open ST Strategies|Open WO Strategies|Open WT Strategies/g) || []).length, 4);
-  assert.ok((emptyHtml.match(/No supported finding yet/g) || []).length >= 8);
+  assert.ok((emptyHtml.match(/UNSURVEYED/g) || []).length >= 8);
   for (const banned of INVENTED) {
     assert.equal(emptyHtml.includes(banned), false, `invented cell leaked: ${banned}`);
   }
 
   const missingHtml = renderSwot(createFrameworkArtifact("swot", { payload: {} }));
-  assert.match(cellBlock(missingHtml, "strengths"), /No supported finding yet/);
-  assert.match(cellBlock(missingHtml, "weaknesses"), /No supported finding yet/);
-  assert.match(cellBlock(missingHtml, "opportunities"), /No supported finding yet/);
-  assert.match(cellBlock(missingHtml, "threats"), /No supported finding yet/);
-  assert.match(cellBlock(missingHtml, "so"), /No supported finding yet/);
-  assert.match(cellBlock(missingHtml, "st"), /No supported finding yet/);
-  assert.match(cellBlock(missingHtml, "wo"), /No supported finding yet/);
-  assert.match(cellBlock(missingHtml, "wt"), /No supported finding yet/);
+  assert.match(cellBlock(missingHtml, "strengths"), /UNSURVEYED/);
+  assert.match(cellBlock(missingHtml, "weaknesses"), /UNSURVEYED/);
+  assert.match(cellBlock(missingHtml, "opportunities"), /UNSURVEYED/);
+  assert.match(cellBlock(missingHtml, "threats"), /UNSURVEYED/);
+  assert.match(cellBlock(missingHtml, "so"), /UNSURVEYED/);
+  assert.match(cellBlock(missingHtml, "st"), /UNSURVEYED/);
+  assert.match(cellBlock(missingHtml, "wo"), /UNSURVEYED/);
+  assert.match(cellBlock(missingHtml, "wt"), /UNSURVEYED/);
   for (const banned of ["Roast quality wins on taste", "Pitch Northgate", "Assign a wholesale owner"]) {
     assert.equal(missingHtml.includes(banned), false, `invented SWOT copy: ${banned}`);
   }
@@ -151,10 +151,10 @@ test("empty or missing SWOT quadrants and TOWS stay empty — no invented cells"
     },
   }));
   assert.match(cellBlock(partialHtml, "strengths"), /Only this cell/);
-  assert.match(cellBlock(partialHtml, "weaknesses"), /No supported finding yet/);
-  assert.match(cellBlock(partialHtml, "opportunities"), /No supported finding yet/);
-  assert.match(cellBlock(partialHtml, "threats"), /No supported finding yet/);
-  assert.match(cellBlock(partialHtml, "so"), /No supported finding yet/);
+  assert.match(cellBlock(partialHtml, "weaknesses"), /UNSURVEYED/);
+  assert.match(cellBlock(partialHtml, "opportunities"), /UNSURVEYED/);
+  assert.match(cellBlock(partialHtml, "threats"), /UNSURVEYED/);
+  assert.match(cellBlock(partialHtml, "so"), /UNSURVEYED/);
   assert.doesNotMatch(partialHtml, /Roast quality wins on taste/);
   assert.doesNotMatch(partialHtml, /<b>Title:<\/b>/);
 });
