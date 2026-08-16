@@ -4,7 +4,8 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { ORDER } from "../lib/frameworks.js";
+import { FW, ORDER } from "../lib/frameworks.js";
+import WhyThisStep from "../components/WhyThisStep.jsx";
 import { HOW_TO_READ, howToReadFor } from "../lib/howToRead.js";
 import HowToRead from "../components/HowToRead.jsx";
 import FrameworkArtifact from "../components/FrameworkArtifact.jsx";
@@ -114,6 +115,20 @@ test("HOW-TO-READ copy exists for every framework and named dense surface", () =
   }));
   assert.match(map, /how-to-read/);
   assert.match(map, /Nine boxes, one business/);
+});
+
+test("WHY-THIS-STEP is generated from FW insight and skipped when missing", () => {
+  for (const id of ORDER) {
+    assert.ok(String(FW[id].insight || "").trim(), `missing insight for ${id} — page would skip WHY-THIS-STEP`);
+  }
+  const html = renderToStaticMarkup(React.createElement(WhyThisStep, { insight: FW.bmc.insight }));
+  assert.match(html, /why-this-step/);
+  assert.match(html, /Why this step/);
+  assert.ok(html.includes(FW.bmc.insight));
+  assert.equal(renderToStaticMarkup(React.createElement(WhyThisStep, { insight: "" })), "");
+  assert.equal(renderToStaticMarkup(React.createElement(WhyThisStep, { insight: "   " })), "");
+  const workspace = readFileSync(fileURLToPath(new URL("../components/FrameworkWorkspace.jsx", import.meta.url)), "utf8");
+  assert.match(workspace, /<WhyThisStep insight=\{framework\.insight\} \/>/);
 });
 
 test("print block stays hardcoded white paper / #111 ink", () => {
