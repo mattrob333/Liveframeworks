@@ -1,12 +1,13 @@
 .root {
   width: 100%;
-  border: 1px solid var(--faint, #D4CDBB);
+  border: 1px solid var(--faint);
+  /* ~6% ink wash so the 24px grid reads on --bg and --panel. Never amber. */
   background:
-    linear-gradient(90deg, var(--faint) 1px, transparent 1px),
-    linear-gradient(var(--faint) 1px, transparent 1px),
-    var(--panel, #FBF8F1);
+    linear-gradient(90deg, color-mix(in srgb, var(--line) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, var(--line) 6%, transparent) 1px, transparent 1px),
+    var(--panel);
   background-size: 24px 24px;
-  color: var(--line, #1C1A14);
+  color: var(--line);
   font-family: var(--mono, "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
   padding: 20px 22px;
 }
@@ -24,7 +25,7 @@
   display: grid;
   place-items: center;
   border: 1px solid var(--line);
-  background: var(--bg, #F4F0E6);
+  background: var(--bg);
   box-shadow: none;
 }
 
@@ -52,7 +53,7 @@
 
 .pixelGrid[data-variant="orbit"] .pixel[data-center="true"] {
   animation: none;
-  background: var(--line, #1C1A14);
+  background: var(--line);
   opacity: 0.18;
   transform: scale(0.65);
 }
@@ -86,7 +87,7 @@
 .currentPhase {
   margin-top: 4px;
   overflow: hidden;
-  color: var(--line, #1C1A14);
+  color: var(--line);
   font-size: 13px;
   line-height: 1.45;
   text-overflow: ellipsis;
@@ -97,7 +98,7 @@
   display: grid;
   justify-items: end;
   min-width: 64px;
-  color: var(--dim, #6B6558);
+  color: var(--dim);
   font-size: 9px;
   letter-spacing: 0.12em;
   line-height: 1.25;
@@ -106,7 +107,7 @@
 
 .timer b {
   margin-top: 3px;
-  color: var(--line, #1C1A14);
+  color: var(--line);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   font-weight: 400;
@@ -119,7 +120,7 @@
   gap: 0;
   margin: 18px 0 0;
   padding: 12px 0 0;
-  border-top: 1px solid var(--faint, #D4CDBB);
+  border-top: 1px solid var(--faint);
   list-style: none;
 }
 
@@ -129,7 +130,7 @@
   align-items: center;
   gap: 10px;
   min-height: 27px;
-  color: var(--dim, #6B6558);
+  color: var(--dim);
   font-size: 10.5px;
   letter-spacing: 0.035em;
 }
@@ -137,28 +138,28 @@
 .phaseMarker {
   width: 5px;
   height: 5px;
-  border: 1px solid var(--faint, #D4CDBB);
+  border: 1px solid var(--faint);
   background: transparent;
 }
 
 .phaseNumber {
-  color: var(--faint, #D4CDBB);
+  color: var(--faint);
   font-size: 9px;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.12em;
 }
 
 .progressItem[data-state="complete"] {
-  color: var(--dim, #6B6558);
+  color: var(--dim);
 }
 
 .progressItem[data-state="complete"] .phaseMarker {
-  border-color: var(--ok, #3D7A38);
-  background: var(--ok, #3D7A38);
+  border-color: var(--ok);
+  background: var(--ok);
 }
 
 .progressItem[data-state="current"] {
-  color: var(--line, #1C1A14);
+  color: var(--line);
 }
 
 .progressItem[data-state="current"] .phaseMarker {
