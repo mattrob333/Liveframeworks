@@ -174,6 +174,13 @@ phases in order; each is its own slice and its own PR chain.
 ### Phase 2 — The three pages (one slice each, in this order, each G-judged against
 its reference prototype in `design/reference/` plus its written spec)
 
+**Sequencing change (2026-08-17):** 2a ships in this phase; **2b waits for the Engine
+Phase.** The constraint reveal renders a diagnosis, and the Engine Phase changes what a
+diagnosis *is* (candidate ledger, rejected alternatives, diagnosis status, measurement
+plan). Building 2b first means building it twice — and "here are the three candidates we
+ruled out, and why" is the most credibility-buying content that page could carry. Order
+is now: **2a → E1–E3 → 2b → 2c → Phase 3.**
+
 2a. **The canvas workspace + draw moment** (first — it's every user's first three
     minutes): survey ledger replacing LoadingState on the bmc path (append-only
     logLines, live-line amber caret, quiet cancel, failure keeps the ledger), the
@@ -210,6 +217,132 @@ its reference prototype in `design/reference/` plus its written spec)
 Ironwood org-install landed (once the file reaches the repo), Quartermast end-to-end
 (G3) + its org-install (G4 blind), the G5 voice pass on all reference briefs, and D3
 finally flown: every framework map re-signed in dark at the G2 bar.
+
+---
+
+## THE ENGINE PHASE (accepted 2026-08-17) — the Constraint Intelligence Engine
+
+**Full specification:** [`design/specs/constraint-intelligence-engine.md`](design/specs/constraint-intelligence-engine.md).
+Read it before working any E-order. That document is the argument and the contracts;
+this section is the work.
+
+### The hole it closes
+
+Today the ToC run hands Claude an evidence package and asks for a schema-valid artifact.
+`locate_constraint()` and `rank_by_throughput_effect()` are persona strings, not
+functions. The validator checks structure and grounding — **not causal correctness.** So
+the product currently asserts a constraint; it does not prove one. A severe problem is
+not necessarily the system constraint: the honest question is *if this were relieved,
+would global throughput rise, while relieving the alternatives would not?*
+
+**And it catches us.** The demo packs contain near-explicit answer language ("sampling
+and quoting still run through me personally"; "maxed at two packers"). Our "two
+verticals, two unprompted diagnoses" result therefore tested **synthesis of a visible
+causal story, not discovery of a hidden constraint.** Until G7 (below) passes, that claim
+carries an asterisk in every deck and every conversation. Nobody repeats it unqualified.
+
+### Prerequisites
+
+- Design Phase **1c** (the optional-properties `objectSchema` variant) must ship first —
+  every engine field depends on it. Diagnostic state lands as **companion fields /
+  companion artifact**, never by widening the shared `claimSchema`.
+- Design Phase **1d** (event-type allowlist): the engine adds real run stages, so its
+  progress lines are honest new event types — add them to the allowlist deliberately,
+  with the same rule (a line the wire cannot emit does not render).
+
+### The orders
+
+**E1 — Operational model compiler** (`lib/operationalModel.js`). Compile completed
+artifacts + intake + clarifications into a derived, inspectable model: flows, stages,
+resources, policies, queues/buffers, metrics, actors, systems, evidence, uncertainties.
+Re-runs deterministically when any artifact completes or goes stale. **Preserve
+conflicts** — two executives who disagree are two nodes with evidence, never an average.
+Resolve the same entity across frameworks where possible, and **emit a compiler report of
+unresolved merges and missing throughput units** — the engine must know where its own
+evidence is thin. It is a compiled derivative, never a second source of truth.
+**Done:** unit tests on fixture models; provenance traceable for every node; the report
+names its own gaps.
+
+**E2 — Candidate ledger + falsification + signing** (`lib/constraintEngine.js`).
+Generate multiple candidates by scanning the model for constraint signatures (queues,
+downstream starvation, demand vs. capacity/approval bandwidth, repeated cycle-time delay
+at one resource/policy, losses tied to one stage, single points of failure, forced
+approval paths, leadership belief contradicted by flow evidence, demand generation
+proposed while demand already leaks). Each candidate carries type, location, gated flows,
+**throughput unit**, evidence refs, pressure signals, counterfactual prediction, the
+strongest alternative explanation, disconfirming evidence, status.
+Score to **rank attention only** — scoring can never sign. Then falsify the top 2–5:
+*if we increased this tomorrow, what would still stop throughput?* Sign only when the
+signing criteria in the spec (§6.5) are all met, in code.
+**Three honest statuses:** `signed_constraint` · `constraint_hypothesis` ·
+`insufficient_evidence` — and when two candidates cannot be separated, the engine
+**returns the one discriminating measurement or question**, never a forced winner.
+**Done:** pure-logic tests including "score alone cannot sign," "unresolved contradiction
+blocks signing," and "two equal candidates ⇒ insufficient_evidence."
+
+**E3 — Measurement architecture** (`lib/measurementArchitecture.js`). Derive metrics
+from *this* business's flow and *this* constraint — no universal KPI catalog. Every
+metric carries the full contract (decision question, formula, unit, source, owner,
+cadence, baseline, target, **target basis**, success window, guardrail, evidence refs).
+Enforce the benchmark hierarchy: internal observed baseline → internal historical best →
+contractual/SLA → capacity model → external peer benchmark → expert heuristic →
+measurement-first. **Never invent a baseline or a target.** Missing data stays missing
+and becomes a concrete acquisition step. An external benchmark may not override a
+stronger internal baseline without explicit rationale.
+**Done:** tests for the hierarchy, for refusal-to-invent, and for "signable diagnosis
+always yields ≥1 outcome metric and ≥1 leading metric."
+
+*(E1–E3 are the MVP boundary — falsification without measurement can argue better but
+still cannot prove. Ship all three before calling the engine real.)*
+
+**E4 — Intervention contracts** (`lib/interventionEngine.js`). Turn focusing steps into
+work packets: hypothesis (change X → metric Y moves Z within window W), ToC step,
+smallest concrete actions, executor type (human / agent / software / vendor / mixed),
+owner, approval gates, inputs, success metrics by ID, guardrails, review-at, stop
+conditions. Feed these into RACI context instead of prose. Routing doctrine per spec §8.2.
+
+**E5 — Continuous validation loop.** Persist observations, compare predicted vs. actual
+including guardrails, and resolve to confirmed / partially confirmed / falsified /
+inconclusive → `constraint_relieved` triggers the next-constraint search; a falsified
+prediction reopens the candidate ledger. This is what turns a one-time export into an
+operating loop — and it is the honest version of "the constraint moves."
+
+**Supporting modifications:** `agentContext` (ToC gets the model + candidates; RACI gets
+signed constraint + measurement plan + interventions), `server/frameworkRun` (ToC-specific
+protocol with candidate/falsification/measurement stages + their progress events),
+`frameworkArtifacts` (companion diagnostic state), `frameworkRunClient` (new phases
+persisted with the run archive), `exportBrief` + UI (client brief shows signed constraint,
+proof chain, intervention, and how success is measured — internal scoring chrome stays in
+the expert/pipeline views, never on the client page).
+
+### G7 — the blind diagnosis gauntlet (this phase's bar)
+
+Sanitized fixtures of Driftline and Ironwood with **answer language removed** ("bottleneck,"
+"constraint," "throughput problem," "the thing holding us back," any sentence naming the
+answer) while preserving the causal facts: delays, ownership, queues, lost deals, capacity,
+timing, and the conflicting executive beliefs. **Pass criteria:**
+1. Driftline still surfaces founder-mediated wholesale approval as the leading policy
+   constraint — or asks for one genuinely discriminating measurement.
+2. Ironwood still surfaces phone/dispatch capacity ahead of marketing spend and the
+   second install crew.
+3. Explanations cite causal evidence, never answer-language artifacts.
+4. One **adversarial** fixture where the founder's preferred (wrong) diagnosis is made
+   persuasive — the engine must not be flattered into it.
+5. One fixture with **no signable constraint** that must return `insufficient_evidence`.
+6. Counterfactual regressions: local-optimization interventions that don't clear the
+   binding stage are rejected (e.g. doubling marketing while intake still leaks).
+
+**No regressions:** the 16-framework DAG, grounding validation, stale propagation,
+first-run flow, and exports all keep working. Runs get slower and cost more — that is
+accepted; narrate the new stages honestly in the ledger rather than hiding them.
+
+**Guardrails for this phase:** no 17th framework, no new agent personas — this is product
+infrastructure around ToC and RACI. No universal numeric constraint formula. No giant
+executive questionnaire as a precondition; targeted questions only, to close named gaps.
+Scoring weights may be configurable but are never presented as science. And the oldest
+law still governs the newest engine: **a labeled hole beats a plausible patch** —
+`insufficient_evidence` with the right question is a better product than a confident
+answer that cannot be proven.
 
 Standing rules, unchanged: tests + build green before every push; judge signatures in
 PRs; a parked gauntlet with an honest defect list beats a quietly lowered bar; no
