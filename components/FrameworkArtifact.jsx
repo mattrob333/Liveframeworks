@@ -10,6 +10,8 @@ import {
 } from "@/lib/frameworkArtifacts";
 import { playerLinkUrl } from "@/lib/playerLinks";
 import HowToRead from "@/components/HowToRead";
+import Apparatus from "@/components/Apparatus";
+import { apparatusPropsFromGrounding } from "@/lib/apparatus";
 
 const BMC_CLASSES = {
   keyPartners: "bmc-kp",
@@ -78,24 +80,22 @@ const textValue = value => {
 function Meta({ value }) {
   const documentMode = useContext(ExportDocument);
   if (documentMode) return null;
-  if (!value || typeof value !== "object") return null;
-  const basis = value.basis;
-  const confidence = value.confidence;
-  const refs = Array.isArray(value.evidenceRefs) ? value.evidenceRefs.length : 0;
-  if (!basis && !confidence && !refs) return null;
+  const props = apparatusPropsFromGrounding(value);
+  if (!props) return null;
   return (
-    <span className="artifact-meta" role="group" aria-label="Grounding metadata">
-      {basis && <span className={`artifact-basis basis-${basis}`}>{basis}</span>}
-      {confidence && <span className={`artifact-confidence confidence-${confidence}`}>{confidence}</span>}
-      {refs > 0 && <span className="artifact-evidence-count">{refs} {refs === 1 ? "source" : "sources"}</span>}
-    </span>
+    <Apparatus
+      className="artifact-meta"
+      role="group"
+      aria-label="Grounding metadata"
+      {...props}
+    />
   );
 }
 
 function EmptyFinding() {
   const documentMode = useContext(ExportDocument);
   if (documentMode) return null;
-  return <span className="artifact-empty">No supported finding yet.</span>;
+  return <span className="artifact-empty artifact-unsurveyed">UNSURVEYED</span>;
 }
 
 function PlayerName({ player, evidence = [] }) {
@@ -605,7 +605,7 @@ function EvidenceList({ evidence }) {
       <ul>
         {evidence.slice(0, 8).map(item => (
           <li key={item.id}>
-            <span className={`artifact-source-kind source-${item.kind}`}>{item.kind}</span>{" "}
+            <Apparatus className="artifact-source-kind" kind={item.kind} />{" "}
             {item.url ? <a href={item.url} target="_blank" rel="noreferrer">{item.title || item.url}</a> : <span>{item.title || item.id}</span>}
           </li>
         ))}

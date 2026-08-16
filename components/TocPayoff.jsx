@@ -3,31 +3,24 @@
 
 import React from "react";
 import HowToRead from "@/components/HowToRead";
+import Apparatus from "@/components/Apparatus";
+import { apparatusSegments } from "@/lib/apparatus";
 
-function ProofChips({ hero }) {
+function ProofLine({ hero }) {
   if (!hero) return null;
-  const chips = [];
-  if (hero.basis) chips.push({ key: "basis", className: `artifact-basis basis-${hero.basis}`, label: hero.basis });
-  if (hero.confidence) {
-    chips.push({
-      key: "confidence",
-      className: `artifact-confidence confidence-${hero.confidence}`,
-      label: hero.confidence,
-    });
-  }
-  if (hero.sourceCount > 0) {
-    chips.push({
-      key: "sources",
-      className: "artifact-evidence-count",
-      label: `${hero.sourceCount} ${hero.sourceCount === 1 ? "source" : "sources"}`,
-    });
-  }
-  if (!chips.length) return null;
+  const parts = apparatusSegments({
+    basis: hero.basis,
+    confidence: hero.confidence,
+    sourceCount: hero.sourceCount,
+  });
+  if (!parts.length) return null;
   return (
     <p className="toc-proof-chips" role="group" aria-label="Grounding metadata">
-      {chips.map(chip => (
-        <span key={chip.key} className={chip.className}>{chip.label}</span>
-      ))}
+      <Apparatus
+        basis={hero.basis}
+        confidence={hero.confidence}
+        sourceCount={hero.sourceCount}
+      />
     </p>
   );
 }
@@ -38,7 +31,7 @@ export function TocConstraintHero({ hero }) {
     <header className="framework-header toc-payoff-header">
       <p className="framework-map-label">THE constraint</p>
       <h1 className="toc-constraint-lockup">{hero.text}</h1>
-      <ProofChips hero={hero} />
+      <ProofLine hero={hero} />
     </header>
   );
 }
