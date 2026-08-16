@@ -138,5 +138,8 @@ test("print block stays hardcoded white paper / #111 ink", () => {
   assert.match(printCss, /\.export-print-date\{font-size:13px;color:#111/);
   assert.match(printCss, /\.export-print-fw h2\{[^}]*color:#111/);
   assert.match(printCss, /\.export-print-sec h3\{[^}]*color:#111/);
+  assert.match(printCss, /\.export-print-doc \.how-to-read\{color:#111/);
+  assert.match(printCss, /\.export-print-subtitle\{[^}]*color:#111/);
   assert.doesNotMatch(printCss, /var\(--bg\)|var\(--line\)|var\(--amber\)|#211D15|#E9E2CF|#E39A2B/);
+  assert.doesNotMatch(printCss, /font-size:(?:[0-9]|1[0-2])(?:\.\d+)?px/);
 });

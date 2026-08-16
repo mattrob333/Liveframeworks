@@ -337,7 +337,7 @@ test("7S scorecard wraps at a title-safe min, not seven 87px 1fr tracks", () => 
   const minMatch = sevens.match(/grid-template-columns:repeat\(auto-fit,minmax\((\d+)px,1fr\)\)/);
   assert.ok(minMatch, "7S must auto-fit columns with a px min, not seven equal 1fr tracks");
   const columnMin = Number(minMatch[1]);
-  // STRUCTURE at 12px mono + 12px cell padding needs ~96px; 148px also holds
+  // STRUCTURE at 13px mono + 12px cell padding needs ~96px; 148px also holds
   // "independently" / "relationship" on Current/Target lines. Four 148px tracks
   // plus 8px gaps still fit in the 657px 1280+chat pane, so all seven S-elements wrap to two rows.
   assert.ok(columnMin >= 148, `7S column min ${columnMin}px cannot hold STRUCTURE at a word boundary`);

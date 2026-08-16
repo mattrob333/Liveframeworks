@@ -600,7 +600,8 @@ body:has(.framework-page) .wrap{padding-bottom:24px}
   .chat-input button{padding:0 24px}
 }
 
-/* Print is a letter document, not a screenshot of the canvas. */
+/* Print is a letter document, not a screenshot of the canvas.
+   Colors stay hardcoded #fff / #111. Type floor is 13px; paper body stays 14. */
 @media print {
   @page{size:letter;margin:.75in}
   html,body{background:#fff;color:#111}
