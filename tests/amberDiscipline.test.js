@@ -43,8 +43,22 @@ test("print block has no amber", () => {
 
 test("LoadingState leftover paper-orange is gone", () => {
   assert.doesNotMatch(LOADER, /#C47A08/);
+  assert.doesNotMatch(LOADER, /#E39A2B/);
   assert.doesNotMatch(LOADER, /rgba\(\s*196\s*,\s*122\s*,\s*8/);
   assert.doesNotMatch(LOADER, /--amber/);
+});
+
+test("LoadingState has no light-paper comma hex fallbacks", () => {
+  assert.doesNotMatch(LOADER, /var\(--[\w-]+\s*,\s*#[0-9A-Fa-f]{3,8}\)/);
+});
+
+test("LoadingState grid is an ink wash, not a solid lattice", () => {
+  assert.match(
+    LOADER,
+    /\.root\s*\{[^}]*linear-gradient\(\s*90deg\s*,\s*color-mix\(\s*in\s+srgb\s*,\s*var\(--(?:line|faint)\)\s+\d+%\s*,\s*transparent\s*\)/,
+  );
+  assert.doesNotMatch(LOADER, /linear-gradient\([^)]*var\(--amber\)/);
+  assert.doesNotMatch(LOADER, /linear-gradient\([^)]*#(?:FBF8F1|F4F0E6|D4CDBB|C47A08|E39A2B)/i);
 });
 
 test(":root amber tokens remain for KEEP / LEAVE / PROMOTE", () => {
