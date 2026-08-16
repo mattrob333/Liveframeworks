@@ -2,7 +2,7 @@
 
 Read this before changing UX, copy, or first-run flow.
 This is the shared reasoning behind the `dev/first-run` work (PR #1) and the next slices.
-Do not treat production (`https://liveframeworks.vercel.app`) as this direction until this branch is merged.
+Production (`https://liveframeworks.vercel.app`) tracks `main`, which carries this direction as of the 2026-08-16 release.
 
 **Branch:** `dev/first-run` (working) · **`main` is the released line as of 2026-08-16**
 — Matt authorized the merge (PR #1). Continue developing on `dev/first-run`; releases to
@@ -119,7 +119,8 @@ including the company-bleed fix (ToC roster now scoped to the loaded company —
 bug the second vertical flushed out). The Ironwood constraint (booking capacity, not
 marketing spend) surfaced unprompted — **two verticals, two unprompted correct
 diagnoses.** Dark sweep D1–D5 complete: amber discipline merged, print verified
-diff-clean, empty states clean, maps re-signed in dark, LoadingState fixed (#28). G1
+diff-clean, empty states clean (D1; D3's full map re-sign in dark never flew — it
+carries into the next slice), LoadingState fixed (#28). G1
 export overhaul merged (#29): the client brief leads with the constraint and drops all
 tool chrome. Everything merged to `main` on Matt's order — 150/150 tests, clean build.
 
@@ -130,42 +131,89 @@ unfixed. Quartermast never started. Partner sign-off on real `/export` renders i
 blocked by login-walled Vercel previews — either drop preview protection or attach one
 saved render per vertical.
 
-## Current slice (2026-08-16) — in priority order
+## THE DESIGN PHASE (2026-08-17 →) — implementing the three approved pages
 
-Same canon as before (ADR-0016 et al. in the Instinct repo; `docs/ideas/` there is
-context, not backlog).
+Three design studies produced three signed specifications, and Claude Design built HTML
+reference prototypes: the **constraint reveal** (Theory of Constraints payoff), the
+**Industry Map**, and the **canvas workspace + draw moment**. The prototypes will land
+in `design/reference/` — they are the visual bar, NOT code to port literally: every
+`DEMO-ONLY` comment marks content the app's data cannot honestly produce yet. Work the
+phases in order; each is its own slice and its own PR chain.
 
-1. **Clear the parked visual defects.** SWOT renders as **four quadrants** (with the
-   TOWS crossing legible), not two lists; BMC top-row cells stop breaking inside a word
-   at 1280. **Done:** both clean at 1280 and in the print brief; no other framework
-   regresses.
-2. **Intake learns from the export.** The org-install's "Missing data" table
-   (`driftline-org-install.md` §7) is the spec: extend the intake bucket guides and
-   templates so the next install has fewer missing rows — named inboxes/channels, the
-   account book, approval thresholds and $ gates, key vendor names,
-   production-rate/system facts. Existing pastes must keep parsing (backward
-   compatible); new fields are optional prompts, not validation gates. **Done:**
-   guides/templates updated; parse tests cover old and new formats; the PR lists which
-   missing-data rows the new intake would have filled.
-3. **The client-facing install summary (written deliverable).** The Partner writes
-   `demo-data/coffee/driftline-org-install-summary.md`: two pages max — the org-at-a-
-   glance chart, the signed constraint sentence, the steward list, the approval-gates
-   table, and one line each for the "Not staffed" refusals — pointing to the full
-   install for depth. The 925-line document is the advisor's copy; this is what Maya
-   reads. **Done:** Partner signs that a founder could read it in ten minutes and know
-   exactly what was installed and why; Inspector checks it against the brief's voice.
-4. **Prove it wasn't coffee-specific: run Ironwood end-to-end.** Same as the Driftline
-   mission — `?demo=ironwood`, full waterfall, argue with a map, both exports, fix what
-   breaks — then check in `demo-data/garage-doors/ironwood-brief-reference.md`. The
-   seeded constraint (booking capacity, not marketing spend) should surface unprompted;
-   record honestly if it doesn't. **Done:** clean run, brief checked in, run log in the
-   PR.
-5. **(Stretch) Ironwood org-install.** Only if 1–4 are done: the Order-5 export for
-   Ironwood, same grounding rule, same five artifacts. A second install from a second
-   vertical is what turns the Driftline document from an artifact into a schema.
+### Phase 1 — Foundations (everything else builds on this; do first, alone)
 
-Don't-touch, unchanged: no acquirer mode, no cartridges, no BIC comparison UI, no daily
-brief, no persistence layer, no new frameworks or agents, nothing merged to `main`.
+1a. **The readability ladder, system-wide.** New floors replace the old ones: body
+    16px/1.65 (~62ch max), box/claim digests 15px/1.5 (16px ≥1440), section/band
+    headers 24px/600 with 15px plain-English subtitles, labels/apparatus 13px dim —
+    **nothing below 13px anywhere**. Sweep every surface; the old 12px floor is dead.
+    Every dense element gains a HOW-TO-READ one-liner (14px dim italic); every
+    framework page gains its WHY-THIS-STEP note (generated from `FW[id].insight`).
+    **Done:** a G6 gauntlet pass — the two-meter test AND the smart-12-year-old test
+    ("know what you're looking at within one sentence of arriving") on every page,
+    judged by the Inspector.
+1b. **Colorless provenance, everywhere.** Kill green/amber in `.artifact-meta`,
+    `.artifact-source-kind`, `.toc-proof-chips`: the apparatus is 13px dim plain caps,
+    `[inferred]`/`[assumed]` italic in brackets, `medium`→`MED`, counts computed.
+    UNSURVEYED dashed blocks for missing data. One shared `Apparatus` component.
+1c. **Schema plumbing, one PR.** Build the optional-properties variant of
+    `objectSchema` (playerSchema's hand-rolled `required` is the precedent), THEN add
+    as optional-with-backfill: `bmc.readout`, `industrymap.map.verdict {headline,
+    subline, grounding}`, player `logoUrl/logoStatus/logoFetchedAt/logoSource`,
+    per-claim `feedsForward` (max one per artifact, renderer enforces first-wins).
+    Old artifacts must normalize clean — zero validation-banner regressions. Update
+    generation prompts to write `readout`/`verdict` (with the empty-fallback rule: an
+    absent thesis beats a hollow one).
+1d. **The event-type allowlist (structural honesty).** `interpretRunEvent` passes the
+    raw event type through; the run UI renders ONLY an allowlisted set (phase /
+    search_query / search_results / writing / research_complete / result / error) — so
+    fabricated narration is impossible by construction, not by discipline. Two
+    generations of designers independently invented fake research lines; the code must
+    make the lie unrepresentable.
+
+### Phase 2 — The three pages (one slice each, in this order, each G-judged against
+its reference prototype in `design/reference/` plus its written spec)
+
+2a. **The canvas workspace + draw moment** (first — it's every user's first three
+    minutes): survey ledger replacing LoadingState on the bmc path (append-only
+    logLines, live-line amber caret, quiet cancel, failure keeps the ledger), the
+    empty nine-box frame at final geometry, the hard cut (no stagger, no settle),
+    survey stamp once per revision, readout thesis in the masthead, dim box titles +
+    the nine plain-English glosses, digest sort by grounding, UNSURVEYED empty boxes,
+    inspector fixes (scrollIntoView — a real shipped bug — plus ×/Esc close).
+2b. **The constraint reveal**: five-act document (marquee verdict + precision line,
+    stakes band with visceral labels, value-equation block, chain graphic with solid
+    flow triangles and the pinch, argument spine, ledger, people, record), per the
+    revised spec including the Hormozi block. Data honesty: the stakes numbers render
+    ONLY from sourced fields/benchmarks with labels; where the artifact lacks a field
+    the element is absent, never faked.
+2c. **The Industry Map**: marquee verdict, territories shelf + player field with
+    monogram plates (deterministic algorithm + unit test), YOU-ARE-HERE client tile
+    (synthesized fallback mandatory), flows band with the feeds-forward lamp, time
+    spine, legend, UNSURVEYED close, trademark footer lines.
+
+### Phase 3 — Enrichment (after 2c, behind config)
+
+3a. **Firecrawl logo enrichment**: a server-side post-pass at artifact-generation time
+    keyed on `player.url` — favicon → og:image → apple-touch-icon; reject <24px and
+    generic CMS defaults; re-host the asset (never hotlink); write
+    `logoUrl/logoStatus/logoFetchedAt/logoSource`. API key via server env var
+    (`FIRECRAWL_API_KEY`) — absent key = feature silently off, monograms forever
+    (the fallback IS the design). Never recolor/distort third-party marks.
+3b. **(Experiment, flagged) Exa search for research**: optionally route agent research
+    through Exa alongside Anthropic web_search where it measurably improves source
+    quality; judged by comparing evidence libraries on the demo verticals. `EXA_API_KEY`
+    env var, same absent-key rule. Do not replace web_search until the comparison wins.
+
+### Phase 4 — Close the record
+
+Ironwood org-install landed (once the file reaches the repo), Quartermast end-to-end
+(G3) + its org-install (G4 blind), the G5 voice pass on all reference briefs, and D3
+finally flown: every framework map re-signed in dark at the G2 bar.
+
+Standing rules, unchanged: tests + build green before every push; judge signatures in
+PRs; a parked gauntlet with an honest defect list beats a quietly lowered bar; no
+acquirer mode, no cartridges, no persistence layer, no new frameworks or agents;
+releases to `main` only on Matt's explicit order.
 
 ### Appended 2026-08-16: THE DARK SWEEP (takes priority over remaining orders above)
 
